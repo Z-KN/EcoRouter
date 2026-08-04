@@ -1,31 +1,160 @@
-EcoRouter: Hardware-Aware Multi-Device GenAI Router
+# EcoRouter
 
-EcoRouter is a multi-device generative AI system that dynamically routes AI tasks across a
-Snapdragon-powered Copilot+ PC, a Samsung Galaxy S25 powered by Snapdragon 8 Elite, and
-Qualcomm Cloud AI 100 to deliver high-quality AI responses while minimizing hardware cost:
-latency, battery drain, energy usage, thermal pressure, and cloud token cost
+EcoRouter is a hardware-aware router for generative AI workloads. Given a text prompt, its
+origin, and a telemetry snapshot, it selects one of three destinations:
 
-Today, most generative AI applications decide only which model to use. EcoRouter instead
-decides where each part of an AI workflow should run. For example, a user can capture an
-image, voice note, or text request on the Galaxy S25; the Snapdragon X/X Elite PC acts as the
-central control surface and router; and Cloud AI 100 is used only when higher-quality reasoning
-or generation is needed. The system continuously monitors device state such as phone battery,
-PC load, network latency, estimated token cost, and response-quality requirements. Based on
-these signals, it chooses whether to execute locally on the phone, locally on the PC, or remotely
-on Cloud Al 100.
+- a model deployed on a phone;
+- a model deployed on a PC; or
+- a model deployed in the cloud.
 
-A sample demo use case is a "multimodal field assistant." The user captures a scene or
-document on the phone and asks for an explanation, summary, checklist, or action plan.
-EcoRouter decomposes the request into subtasks such as image/text extraction, privacy
-screening, local summarization, quality checking, and final generation. Lightweight or privacy-
-sensitive steps run on-device; more complex reasoning is escalated to the PC or Cloud Al 100
-The PC dashboard visualizes routing decisions in real time, showing why each subtask was
-placed on a specific device and reporting latency, estimated energy, battery impact, and cloud-
-token usage
+The MVP makes the routing decision and can dispatch it to deterministic simulated executors.
+It does not download models, contact cloud services, collect telemetry, or expose prompt text
+in its diagnostics. The longer-term multimodal system is tracked in [TODO.md](TODO.md).
 
-The project will use open-source software running natively on the Snapdragon-powered laptop,
-including Python, FastAP| or WebSockets for device communication, a local dashboard using
-Streamlit or React, and open-source small language/vision models for local inference. The
-routing policy will combine rule-based constraints, lightweight classifiers, and cost/quality
-scoring. Privacy will be treated as a guardrail: sensitive inputs can be summarized, redacted, or
-kept local before any cloud call.
+## Requirements
+
+- Python 3.11 or newer
+- No runtime dependencies
+
+Run directly from the repository:
+
+```powershell
+python -m ecorouter route --origin phone --prompt "What's the weather tomorrow?"
+```
+
+Or install the package and use the `ecorouter` command:
+
+```powershell
+python -m pip install -e .
+ecorouter route --origin phone --prompt "What's the weather tomorrow?"
+```
+
+For sensitive prompts, prefer stdin or `--prompt-file` so the text is not retained in shell
+history:
+
+```powershell
+"Summarize the account for person@example.com" | python -m ecorouter route --origin pc
+```
+
+## CLI
+
+Route without execution:
+
+```powershell
+python -m ecorouter route `
+  --origin phone `
+  --prompt "Compare three routing strategies step by step" `
+  --profile balanced `
+  --scenario healthy
+```
+
+Route and call the selected simulated executor:
+
+```powershell
+python -m ecorouter run `
+  --origin pc `
+  --prompt-file request.txt `
+  --scenario pc-congested `
+  --json
+```
+
+Available optimization profiles are `balanced`, `low-latency`, `energy-saver`, and
+`high-quality`. Built-in telemetry scenarios are `healthy`, `phone-low-battery`,
+`pc-congested`, and `cloud-offline`.
+
+Use a real telemetry snapshot or custom model catalog with:
+
+```powershell
+python -m ecorouter route `
+  --origin phone `
+  --prompt "Summarize this note" `
+  --telemetry examples/telemetry/healthy.json `
+  --config examples/models.json
+```
+
+`--telemetry` and `--scenario` are mutually exclusive. When neither is supplied, the healthy
+scenario is used.
+
+## Python API
+
+```python
+from ecorouter import Device, EcoRouter, RouteRequest
+from ecorouter.scenarios import built_in_scenarios
+
+request = RouteRequest(
+    prompt="What's the weather tomorrow?",
+    origin=Device.PHONE,
+    telemetry=built_in_scenarios()["healthy"],
+)
+
+decision = EcoRouter().route(request)
+print(decision.selected_device, decision.model_id)
+print(decision.explanation)
+```
+
+For a simulated end-to-end dispatch, call
+`EcoRouter.run(request, default_simulated_executors())`. Real runtimes can replace the
+simulators by implementing the `Executor.execute(prompt, decision)` protocol.
+
+## Telemetry schema
+
+The JSON root must contain exactly `phone`, `pc`, and `cloud`. Each object accepts:
+
+| Field | Meaning |
+| --- | --- |
+| `available` | Whether the destination can accept a request |
+| `network_latency_ms` | Network latency from the origin to this destination |
+| `throughput_tokens_per_second` | Current estimated inference throughput |
+| `energy_joules_per_token` | Current estimated energy efficiency |
+| `utilization` | Load from `0.0` to `1.0` |
+| `thermal_pressure` | Thermal pressure from `0.0` to `1.0` |
+| `battery_percent` | Battery from `0` to `100`, or `null` when inapplicable |
+| `cloud_cost_per_1k_tokens_usd` | Estimated token cost; normally zero for local devices |
+
+For the origin device, network latency is treated as zero. See
+[`examples/telemetry/healthy.json`](examples/telemetry/healthy.json) for a complete snapshot.
+
+## Routing pipeline
+
+1. Detect categories of PII and likely secrets; matched values are not retained.
+2. Classify intent and estimate prompt complexity, input tokens, output tokens, and required
+   quality with deterministic heuristics.
+3. Exclude unavailable devices, local devices at or below 5% battery, local devices at or above
+   0.95 thermal pressure, and cloud for sensitive prompts.
+4. Prefer destinations whose configured capability meets the required quality.
+5. Estimate latency, energy, and cloud cost and calculate a profile-weighted score. Lower is
+   better.
+6. If no eligible destination meets quality, select the highest-capability eligible model and
+   mark the decision as degraded. For sensitive prompts this is necessarily local because
+   privacy is never relaxed.
+
+Latency is estimated from network delay and token throughput. Energy and cloud cost are
+estimated from total tokens. The fixed normalization limits and profile weights live in
+`ecorouter/router.py`; they are intentionally transparent and are candidates for later
+calibration.
+
+Default model IDs and capability scores are logical placeholders:
+
+| Device | Model ID | Capability |
+| --- | --- | ---: |
+| Phone | `phone-model` | 0.60 |
+| PC | `pc-model` | 0.80 |
+| Cloud | `cloud-model` | 0.95 |
+
+Change them with a model configuration shaped like [`examples/models.json`](examples/models.json)
+or pass `DeviceConfig` objects to `EcoRouter` in Python.
+
+## Tests
+
+The suite uses only the standard library:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+## Current boundary
+
+This repository implements the decision-making core and a portable demonstration surface.
+Live device telemetry, actual phone/PC/cloud model adapters, multimodal ingestion, learned
+performance prediction, an API, and a dashboard are explicitly deferred and tracked in
+[TODO.md](TODO.md).

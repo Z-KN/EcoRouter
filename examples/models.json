@@ -1,0 +1,16 @@
+{
+  "devices": {
+    "phone": {
+      "model_id": "phone-model",
+      "capability_score": 0.6
+    },
+    "pc": {
+      "model_id": "pc-model",
+      "capability_score": 0.8
+    },
+    "cloud": {
+      "model_id": "cloud-model",
+      "capability_score": 0.95
+    }
+  }
+}

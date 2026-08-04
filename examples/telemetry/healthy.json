@@ -1,0 +1,32 @@
+{
+  "phone": {
+    "available": true,
+    "network_latency_ms": 8,
+    "throughput_tokens_per_second": 100,
+    "energy_joules_per_token": 0.01,
+    "utilization": 0.08,
+    "thermal_pressure": 0.08,
+    "battery_percent": 95,
+    "cloud_cost_per_1k_tokens_usd": 0
+  },
+  "pc": {
+    "available": true,
+    "network_latency_ms": 18,
+    "throughput_tokens_per_second": 120,
+    "energy_joules_per_token": 0.025,
+    "utilization": 0.18,
+    "thermal_pressure": 0.15,
+    "battery_percent": 85,
+    "cloud_cost_per_1k_tokens_usd": 0
+  },
+  "cloud": {
+    "available": true,
+    "network_latency_ms": 55,
+    "throughput_tokens_per_second": 70,
+    "energy_joules_per_token": 0.04,
+    "utilization": 0.2,
+    "thermal_pressure": 0.12,
+    "battery_percent": null,
+    "cloud_cost_per_1k_tokens_usd": 0.03
+  }
+}
