@@ -21,6 +21,12 @@ a priority, target version, dependency, and measurable completion condition.
 
 ## Next version
 
+- [ ] **P1 · v1.2 — Evaluate and calibrate Presidio detection.** Dependency: representative
+  privacy test corpus. Complete when PERSON and core-entity precision/recall are measured,
+  threshold changes are justified, and known false positives/negatives are documented.
+- [ ] **P2 · v1.2 — Support configurable and multilingual NLP models.** Dependency: target
+  language requirements and model benchmarks. Complete when model/language selection is
+  configuration-driven and each supported language has integration coverage.
 - [ ] **P0 · v1.1 — Connect live telemetry collectors.** Dependency: phone, PC, and cloud device
   agents. Complete when stale/unreachable states and current performance metrics flow into a
   `RouteRequest` without hand-authored JSON.

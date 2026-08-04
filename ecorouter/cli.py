@@ -11,10 +11,10 @@ from typing import Sequence
 from .executors import default_simulated_executors
 from .models import (
     Device,
-    EcoRouterError,
     ExecutionError,
     NoRouteError,
     OptimizationProfile,
+    PrivacyError,
     RouteDecision,
     RouteRequest,
     ValidationError,
@@ -130,6 +130,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ExecutionError as error:
         print(f"execution error: {error}", file=sys.stderr)
         return 4
+    except PrivacyError as error:
+        print(f"privacy error: {error}", file=sys.stderr)
+        return 5
     except (ValidationError, OSError, json.JSONDecodeError, ValueError) as error:
         print(f"input error: {error}", file=sys.stderr)
         return 2

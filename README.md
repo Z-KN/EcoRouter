@@ -7,33 +7,41 @@ origin, and a telemetry snapshot, it selects one of three destinations:
 - a model deployed on a PC; or
 - a model deployed in the cloud.
 
-The MVP makes the routing decision and can dispatch it to deterministic simulated executors.
-It does not download models, contact cloud services, collect telemetry, or expose prompt text
-in its diagnostics. The longer-term multimodal system is tracked in [TODO.md](TODO.md).
+The router analyzes prompts locally with Presidio, makes the routing decision, and can dispatch
+it to deterministic simulated executors. It does not contact cloud services, collect telemetry,
+or expose prompt or entity text in its diagnostics. The longer-term multimodal system is tracked
+in [TODO.md](TODO.md).
 
 ## Requirements
 
 - Python 3.11 or newer
-- No runtime dependencies
+- A virtual environment with the project dependencies installed
 
-Run directly from the repository:
+Create and activate a virtual environment on Windows, then install EcoRouter, Presidio Analyzer,
+and the pinned English spaCy model:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e .
+```
+
+The editable install provides both invocation styles:
 
 ```powershell
 python -m ecorouter route --origin phone --prompt "What's the weather tomorrow?"
-```
-
-Or install the package and use the `ecorouter` command:
-
-```powershell
-python -m pip install -e .
 ecorouter route --origin phone --prompt "What's the weather tomorrow?"
 ```
+
+EcoRouter pins `presidio-analyzer==2.2.364` and `en_core_web_sm==3.8.0`. If either
+dependency cannot initialize, routing fails closed with exit code `5`; there is no automatic
+regex-only fallback.
 
 For sensitive prompts, prefer stdin or `--prompt-file` so the text is not retained in shell
 history:
 
 ```powershell
-"Summarize the account for person@example.com" | python -m ecorouter route --origin pc
+"Summarize the profile for John Smith" | python -m ecorouter route --origin pc
 ```
 
 ## CLI
@@ -116,7 +124,8 @@ For the origin device, network latency is treated as zero. See
 
 ## Routing pipeline
 
-1. Detect categories of PII and likely secrets; matched values are not retained.
+1. Use local Presidio analysis to detect person names and other policy-selected PII at a
+   minimum confidence of `0.50`; supplement it with the existing likely-secret detector.
 2. Classify intent and estimate prompt complexity, input tokens, output tokens, and required
    quality with deterministic heuristics.
 3. Exclude unavailable devices, local devices at or below 5% battery, local devices at or above
@@ -127,6 +136,38 @@ For the origin device, network latency is treated as zero. See
 6. If no eligible destination meets quality, select the highest-capability eligible model and
    mark the decision as degraded. For sensitive prompts this is necessarily local because
    privacy is never relaxed.
+
+```mermaid
+flowchart LR
+    I["Text prompt + origin"] --> A["Local prompt analysis"]
+    A --> P["Presidio PII detection<br/>PERSON and core sensitive entities"]
+    A --> H["Intent, complexity, and token heuristics"]
+    P --> G{"Sensitive result<br/>score >= 0.50?"}
+    P -. "Initialization failure" .-> F["Stop: privacy initialization error"]
+    G -- "Yes" --> L["Mark sensitive<br/>exclude cloud"]
+    G -- "No" --> E["Keep all destinations eligible"]
+    T["Phone, PC, and cloud telemetry"] --> D["Availability, battery, and thermal gates"]
+    L --> D
+    E --> D
+    H --> Q["Quality-sufficiency gate"]
+    D --> Q
+    Q --> S["Profile-weighted scoring"]
+    S --> R{"Lowest eligible score"}
+    R --> PH["Phone model"]
+    R --> PC["PC model"]
+    R --> CL["Cloud model<br/>non-sensitive only"]
+```
+
+The hard privacy allowlist includes `PERSON`, `NRP`, email, phone, payment and financial
+identifiers, government identifiers, medical-license identifiers, IP/MAC addresses, and
+cryptocurrency addresses. Generic `LOCATION`, `DATE_TIME`, and `URL` findings are deliberately
+excluded so prompts such as weather questions do not become sensitive solely because they name
+a place or date. Only stable category names are retained; detected text and character offsets
+are discarded. Presidio is an automated detector and cannot guarantee that every sensitive
+value will be found; accuracy calibration and additional NLP models remain tracked in
+[TODO.md](TODO.md). See the [Presidio Analyzer documentation](https://microsoft.github.io/presidio/analyzer/)
+and [supported entity reference](https://microsoft.github.io/presidio/supported_entities/) for
+the underlying recognizer behavior.
 
 Latency is estimated from network delay and token throughput. Energy and cloud cost are
 estimated from total tokens. The fixed normalization limits and profile weights live in
@@ -146,7 +187,7 @@ or pass `DeviceConfig` objects to `EcoRouter` in Python.
 
 ## Tests
 
-The suite uses only the standard library:
+The suite uses the standard-library `unittest` runner and the installed privacy runtime:
 
 ```powershell
 python -m unittest discover -s tests -v
@@ -155,6 +196,6 @@ python -m unittest discover -s tests -v
 ## Current boundary
 
 This repository implements the decision-making core and a portable demonstration surface.
-Live device telemetry, actual phone/PC/cloud model adapters, multimodal ingestion, learned
-performance prediction, an API, and a dashboard are explicitly deferred and tracked in
-[TODO.md](TODO.md).
+Live device telemetry, actual phone/PC/cloud model adapters, multilingual or multimodal
+ingestion, privacy-preserving redaction, learned performance prediction, an API, and a dashboard
+are explicitly deferred and tracked in [TODO.md](TODO.md).

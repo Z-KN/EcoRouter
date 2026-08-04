@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Mapping
 
-from .analyzer import HeuristicPromptAnalyzer
+from .analyzer import PresidioPromptAnalyzer, PromptAnalyzer
 from .executors import Executor
 from .models import (
     CandidateEvaluation,
@@ -73,12 +73,12 @@ class EcoRouter:
     def __init__(
         self,
         device_configs: Mapping[Device, DeviceConfig] | None = None,
-        analyzer: HeuristicPromptAnalyzer | None = None,
+        analyzer: PromptAnalyzer | None = None,
     ) -> None:
         self.device_configs = dict(device_configs or default_device_configs())
         if set(self.device_configs) != set(Device):
             raise ValidationError("device configuration must describe phone, pc, and cloud")
-        self.analyzer = analyzer or HeuristicPromptAnalyzer()
+        self.analyzer = analyzer if analyzer is not None else PresidioPromptAnalyzer()
 
     def route(self, request: RouteRequest) -> RouteDecision:
         analysis = self.analyzer.analyze(request.prompt)

@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ecorouter"
-version = "0.1.0"
+version = "0.2.0"
 description = "Hardware-aware routing across phone, PC, and cloud AI models"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "Kaining Zhou" }]
-dependencies = []
+dependencies = [
+  "presidio-analyzer==2.2.364",
+  "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+]
 
 [project.scripts]
 ecorouter = "ecorouter.cli:main"

@@ -1,6 +1,6 @@
 """EcoRouter's public Python interface."""
 
-from .analyzer import HeuristicPromptAnalyzer
+from .analyzer import HeuristicPromptAnalyzer, PresidioPromptAnalyzer, PromptAnalyzer
 from .executors import Executor, SimulatedExecutor, default_simulated_executors
 from .models import (
     CandidateEvaluation,
@@ -13,6 +13,9 @@ from .models import (
     Intent,
     NoRouteError,
     OptimizationProfile,
+    PrivacyAnalysisError,
+    PrivacyError,
+    PrivacyInitializationError,
     PromptAnalysis,
     RouteDecision,
     RouteRequest,
@@ -34,7 +37,12 @@ __all__ = [
     "Intent",
     "NoRouteError",
     "OptimizationProfile",
+    "PresidioPromptAnalyzer",
+    "PrivacyAnalysisError",
+    "PrivacyError",
+    "PrivacyInitializationError",
     "PromptAnalysis",
+    "PromptAnalyzer",
     "RouteDecision",
     "RouteRequest",
     "SimulatedExecutor",

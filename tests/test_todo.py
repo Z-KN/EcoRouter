@@ -17,6 +17,8 @@ class TodoCoverageTests(unittest.TestCase):
             "mlp or gbdt",
             "real-time pc dashboard",
             "production security",
+            "evaluate and calibrate presidio",
+            "multilingual nlp models",
         )
         for item in expected:
             with self.subTest(item=item):

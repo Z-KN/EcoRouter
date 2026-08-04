@@ -23,6 +23,18 @@ class ExecutionError(EcoRouterError):
     """Raised when the selected destination has no usable executor."""
 
 
+class PrivacyError(EcoRouterError):
+    """Base class for fail-closed privacy analyzer failures."""
+
+
+class PrivacyInitializationError(PrivacyError):
+    """Raised when Presidio or its NLP model cannot initialize."""
+
+
+class PrivacyAnalysisError(PrivacyError):
+    """Raised when Presidio cannot safely analyze a prompt."""
+
+
 class Device(str, Enum):
     PHONE = "phone"
     PC = "pc"

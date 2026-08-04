@@ -2,8 +2,10 @@ import contextlib
 import io
 import json
 import unittest
+from unittest.mock import patch
 
 from ecorouter.cli import main
+from ecorouter.models import PrivacyInitializationError
 
 
 class CliTests(unittest.TestCase):
@@ -53,6 +55,23 @@ class CliTests(unittest.TestCase):
                     )
                 self.assertEqual(code, 0)
                 self.assertIn("Selected:", stdout.getvalue())
+
+    def test_privacy_initialization_failure_returns_exit_code_five(self) -> None:
+        stderr = io.StringIO()
+        with (
+            patch(
+                "ecorouter.cli.EcoRouter",
+                side_effect=PrivacyInitializationError("privacy runtime unavailable"),
+            ),
+            contextlib.redirect_stderr(stderr),
+        ):
+            code = main(["route", "--origin", "phone", "--prompt", "Hello"])
+
+        self.assertEqual(code, 5)
+        self.assertEqual(
+            stderr.getvalue().strip(),
+            "privacy error: privacy runtime unavailable",
+        )
 
 
 if __name__ == "__main__":

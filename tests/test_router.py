@@ -6,6 +6,7 @@ from ecorouter import (
     DeviceConfig,
     DeviceTelemetry,
     EcoRouter,
+    HeuristicPromptAnalyzer,
     NoRouteError,
     OptimizationProfile,
     RouteRequest,
@@ -25,9 +26,13 @@ def request_for(
     return RouteRequest(prompt, origin, built_in_scenarios()[scenario], profile)
 
 
+def heuristic_router(configs=None) -> EcoRouter:
+    return EcoRouter(configs, analyzer=HeuristicPromptAnalyzer())
+
+
 class EcoRouterTests(unittest.TestCase):
     def test_short_lookup_uses_efficient_phone_in_healthy_scenario(self) -> None:
-        decision = EcoRouter().route(request_for("What's the weather tomorrow?"))
+        decision = heuristic_router().route(request_for("What's the weather tomorrow?"))
 
         self.assertEqual(decision.selected_device, Device.PHONE)
         self.assertFalse(decision.quality_degraded)
@@ -39,13 +44,13 @@ class EcoRouterTests(unittest.TestCase):
             + "Which design wins? What could fail?"
         )
 
-        decision = EcoRouter().route(request_for(prompt))
+        decision = heuristic_router().route(request_for(prompt))
 
         self.assertEqual(decision.selected_device, Device.CLOUD)
 
     def test_high_quality_profile_can_change_the_winner(self) -> None:
-        balanced = EcoRouter().route(request_for("What's the weather tomorrow?"))
-        high_quality = EcoRouter().route(
+        balanced = heuristic_router().route(request_for("What's the weather tomorrow?"))
+        high_quality = heuristic_router().route(
             request_for("What's the weather tomorrow?", profile=OptimizationProfile.HIGH_QUALITY)
         )
 
@@ -54,7 +59,7 @@ class EcoRouterTests(unittest.TestCase):
 
     def test_pii_blocks_cloud_and_diagnostics_do_not_contain_value(self) -> None:
         private_value = "alice@example.com"
-        decision = EcoRouter().route(request_for(f"Summarize records for {private_value}"))
+        decision = heuristic_router().route(request_for(f"Summarize records for {private_value}"))
         cloud = next(item for item in decision.candidates if item.device == Device.CLOUD)
 
         self.assertFalse(cloud.eligible)
@@ -68,7 +73,7 @@ class EcoRouterTests(unittest.TestCase):
             + "What should change? What could fail?"
         )
 
-        decision = EcoRouter().route(request_for(prompt))
+        decision = heuristic_router().route(request_for(prompt))
 
         self.assertEqual(decision.selected_device, Device.PC)
         self.assertTrue(decision.quality_degraded)
@@ -77,7 +82,7 @@ class EcoRouterTests(unittest.TestCase):
         telemetry = built_in_scenarios()["phone-low-battery"]
         telemetry[Device.PC] = DeviceTelemetry(True, 18, 120, 0.025, 0.18, 0.95, 85, 0)
 
-        decision = EcoRouter().route(RouteRequest("Hello", Device.PHONE, telemetry))
+        decision = heuristic_router().route(RouteRequest("Hello", Device.PHONE, telemetry))
 
         self.assertEqual(decision.selected_device, Device.CLOUD)
         self.assertFalse(next(item for item in decision.candidates if item.device == Device.PHONE).eligible)
@@ -91,7 +96,7 @@ class EcoRouterTests(unittest.TestCase):
         }
 
         with self.assertRaises(NoRouteError):
-            EcoRouter().route(RouteRequest("Email alice@example.com", Device.PHONE, telemetry))
+            heuristic_router().route(RouteRequest("Email alice@example.com", Device.PHONE, telemetry))
 
     def test_origin_sets_local_network_latency_to_zero(self) -> None:
         telemetry = {
@@ -101,7 +106,7 @@ class EcoRouterTests(unittest.TestCase):
         configs = {device: DeviceConfig(f"{device.value}-model", 0.60) for device in Device}
         configs[Device.CLOUD] = DeviceConfig("cloud-model", 0.50)
 
-        decision = EcoRouter(configs).route(RouteRequest("Hello", Device.PC, telemetry))
+        decision = heuristic_router(configs).route(RouteRequest("Hello", Device.PC, telemetry))
 
         self.assertEqual(decision.selected_device, Device.PC)
 
@@ -112,7 +117,7 @@ class EcoRouterTests(unittest.TestCase):
         }
         configs = {device: DeviceConfig(f"{device.value}-model", 0.60) for device in Device}
 
-        decision = EcoRouter(configs).route(
+        decision = heuristic_router(configs).route(
             RouteRequest("Contact alice@example.com", Device.PHONE, telemetry)
         )
 
@@ -120,7 +125,7 @@ class EcoRouterTests(unittest.TestCase):
 
     def test_simulated_executor_dispatches_without_echoing_prompt(self) -> None:
         private_value = "alice@example.com"
-        result = EcoRouter().run(
+        result = heuristic_router().run(
             request_for(f"Summarize {private_value}"), default_simulated_executors()
         )
 
