@@ -29,6 +29,21 @@ class LiveCloudStub:
         )
 
 
+class LivePcStub:
+    def execute(self, prompt, decision):
+        return "live pc response"
+
+    def execute_observed(self, prompt, decision):
+        return ExecutionObservation(
+            response="live pc response",
+            api_turnaround_latency_ms=93.0,
+            model_id=decision.model_id,
+            prompt_tokens=30,
+            completion_tokens=22,
+            total_tokens=52,
+        )
+
+
 class CliTests(unittest.TestCase):
     def test_route_emits_machine_readable_json(self) -> None:
         stdout = io.StringIO()
@@ -215,6 +230,91 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(payload["decision"]["selected_device"], "phone")
         self.assertIn("Simulated", payload["response"])
+
+    def test_live_pc_flag_dispatches_pc_route(self) -> None:
+        executors = default_simulated_executors()
+        executors[Device.PC] = LivePcStub()
+        stdout = io.StringIO()
+        with (
+            patch("ecorouter.cli.x_elite_executors", return_value=executors) as factory,
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(
+                [
+                    "run",
+                    "--origin",
+                    "pc",
+                    "--prompt",
+                    "What model are you?",
+                    "--profile",
+                    "low-latency",
+                    "--live-pc",
+                    "--json",
+                ]
+            )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["decision"]["selected_device"], "pc")
+        self.assertEqual(payload["response"], "live pc response")
+        self.assertEqual(payload["metrics"]["api_turnaround_latency_ms"], 93.0)
+        self.assertEqual(payload["metrics"]["total_tokens"], 52)
+        factory.assert_called_once_with()
+
+    def test_live_pc_flag_keeps_other_routes_simulated(self) -> None:
+        executors = default_simulated_executors()
+        executors[Device.PC] = LivePcStub()
+        stdout = io.StringIO()
+        with (
+            patch("ecorouter.cli.x_elite_executors", return_value=executors),
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(
+                [
+                    "run",
+                    "--origin",
+                    "phone",
+                    "--prompt",
+                    "What's the weather?",
+                    "--live-pc",
+                    "--json",
+                ]
+            )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["decision"]["selected_device"], "phone")
+        self.assertIn("Simulated", payload["response"])
+
+    def test_live_cloud_and_live_pc_together_use_hybrid_factory(self) -> None:
+        executors = default_simulated_executors()
+        executors[Device.CLOUD] = LiveCloudStub()
+        executors[Device.PC] = LivePcStub()
+        stdout = io.StringIO()
+        with (
+            patch("ecorouter.cli.hybrid_executors", return_value=executors) as factory,
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(
+                [
+                    "run",
+                    "--origin",
+                    "pc",
+                    "--prompt",
+                    "What model are you?",
+                    "--profile",
+                    "low-latency",
+                    "--live-cloud",
+                    "--live-pc",
+                    "--json",
+                ]
+            )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["decision"]["selected_device"], "pc")
+        self.assertEqual(payload["response"], "live pc response")
+        factory.assert_called_once_with()
 
 
 if __name__ == "__main__":

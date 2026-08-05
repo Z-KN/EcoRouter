@@ -1,0 +1,13 @@
+# Qwen3-VL-4B-Instruct NPU inference server (GenieX + FastAPI).
+#
+# geniex pulls a precompiled QAIRT/HTP bundle from Qualcomm AI Hub and runs
+# it directly on the Hexagon NPU -- no torch, no separate build host. Must
+# run on a NATIVE ARM64 Python (an emulated x86-64 interpreter reports
+# machine()=AMD64 and cannot load the win-arm64 geniex.dll).
+geniex>=0.3.18
+
+fastapi>=0.110
+# Plain uvicorn, NOT uvicorn[standard] -- the [standard] extra pulls httptools,
+# which has no win-arm64 wheel and fails to build without MSVC Build Tools.
+uvicorn>=0.27
+pydantic>=2.0

@@ -4,6 +4,8 @@ from dataclasses import replace
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import urllib.error
+
 from ecorouter import (
     CirrascaleExecutor,
     CloudConfigurationError,
@@ -11,9 +13,14 @@ from ecorouter import (
     Device,
     EcoRouter,
     HeuristicPromptAnalyzer,
+    XEliteExecutor,
     OptimizationProfile,
+    PcConfigurationError,
+    PcExecutionError,
     RouteRequest,
     cirrascale_executors,
+    hybrid_executors,
+    x_elite_executors,
 )
 from ecorouter.executors import _ImagineBindings
 from ecorouter.scenarios import built_in_scenarios
@@ -61,6 +68,20 @@ def cloud_decision():
     decision = router.route(request)
     if decision.selected_device != Device.CLOUD:
         raise AssertionError("test fixture must route to cloud")
+    return decision
+
+
+def pc_decision():
+    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
+    request = RouteRequest(
+        "What model are you?",
+        Device.PC,
+        built_in_scenarios()["healthy"],
+        OptimizationProfile.LOW_LATENCY,
+    )
+    decision = router.route(request)
+    if decision.selected_device != Device.PC:
+        raise AssertionError("test fixture must route to pc")
     return decision
 
 
@@ -288,6 +309,132 @@ class CirrascaleExecutorTests(unittest.TestCase):
         self.assertEqual(set(executors), set(Device))
         self.assertEqual(executors[Device.PHONE].device, Device.PHONE)
         self.assertEqual(executors[Device.PC].device, Device.PC)
+
+
+class XEliteExecutorTests(unittest.TestCase):
+    def test_execute_observed_posts_prompt_and_parses_openai_shape(self) -> None:
+        captured = {}
+
+        def http_post(url, payload):
+            captured["url"] = url
+            captured["payload"] = payload
+            return {
+                "choices": [{"message": {"content": "I am Qwen3-VL-4B-Instruct."}}],
+                "model": "ai-hub-models/Qwen3-VL-4B-Instruct",
+                "usage": {"prompt_tokens": 30, "completion_tokens": 22, "total_tokens": 52},
+            }
+
+        ticks = iter((1_000_000_000, 1_093_000_000))
+        executor = XEliteExecutor(
+            endpoint="http://localhost:8000",
+            http_post=http_post,
+            clock_ns=lambda: next(ticks),
+        )
+        decision = pc_decision()
+
+        observation = executor.execute_observed("What model are you?", decision)
+
+        self.assertEqual(captured["url"], "http://localhost:8000/v1/chat/completions")
+        self.assertEqual(
+            captured["payload"]["messages"],
+            [{"role": "user", "content": "What model are you?"}],
+        )
+        self.assertEqual(
+            captured["payload"]["max_tokens"], decision.analysis.estimated_output_tokens
+        )
+        self.assertEqual(observation.response, "I am Qwen3-VL-4B-Instruct.")
+        self.assertEqual(observation.api_turnaround_latency_ms, 93.0)
+        self.assertEqual(observation.model_id, "ai-hub-models/Qwen3-VL-4B-Instruct")
+        self.assertEqual(observation.prompt_tokens, 30)
+        self.assertEqual(observation.completion_tokens, 22)
+        self.assertEqual(observation.total_tokens, 52)
+
+    def test_execute_forwards_exact_prompt(self) -> None:
+        executor = XEliteExecutor(
+            http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]}
+        )
+
+        self.assertEqual(executor.execute("What model are you?", pc_decision()), "hi")
+
+    def test_endpoint_defaults_and_reads_environment_override(self) -> None:
+        captured = {}
+
+        def http_post(url, payload):
+            captured["url"] = url
+            return {"choices": [{"message": {"content": "hi"}}]}
+
+        executor = XEliteExecutor(
+            environ={"XELITE_SERVER_ENDPOINT": "http://192.168.1.214:9000/"},
+            http_post=http_post,
+        )
+
+        executor.execute_observed("What model are you?", pc_decision())
+
+        self.assertEqual(captured["url"], "http://192.168.1.214:9000/v1/chat/completions")
+
+    def test_missing_or_malformed_usage_does_not_discard_response(self) -> None:
+        for body in (
+            {"choices": [{"message": {"content": "hi"}}]},
+            {"choices": [{"message": {"content": "hi"}}], "usage": "not-a-dict"},
+        ):
+            with self.subTest(body=body):
+                executor = XEliteExecutor(http_post=lambda url, payload, body=body: body)
+                observation = executor.execute_observed("What model are you?", pc_decision())
+
+                self.assertEqual(observation.response, "hi")
+                self.assertIsNone(observation.prompt_tokens)
+                self.assertIsNone(observation.completion_tokens)
+                self.assertIsNone(observation.total_tokens)
+
+    def test_non_pc_decision_is_rejected_before_any_request(self) -> None:
+        calls = []
+        executor = XEliteExecutor(
+            http_post=lambda url, payload: calls.append(1)
+            or {"choices": [{"message": {"content": "hi"}}]}
+        )
+
+        with self.assertRaisesRegex(PcExecutionError, "PC routing decision"):
+            executor.execute("What model are you?", cloud_decision())
+
+        self.assertEqual(calls, [])
+
+    def test_unreachable_server_raises_configuration_error(self) -> None:
+        def http_post(url, payload):
+            raise urllib.error.URLError("connection refused")
+
+        executor = XEliteExecutor(endpoint="http://localhost:8000", http_post=http_post)
+
+        with self.assertRaisesRegex(PcConfigurationError, "could not reach"):
+            executor.execute("What model are you?", pc_decision())
+
+    def test_malformed_and_empty_responses_raise_execution_error(self) -> None:
+        for body, expected in (
+            ({"unexpected": "shape"}, "unexpected response shape"),
+            ({"choices": []}, "unexpected response shape"),
+            ({"choices": [{"message": {"content": "   "}}]}, "empty response"),
+        ):
+            with self.subTest(expected=expected):
+                executor = XEliteExecutor(http_post=lambda url, payload, body=body: body)
+                with self.assertRaisesRegex(PcExecutionError, expected):
+                    executor.execute("What model are you?", pc_decision())
+
+    def test_x_elite_executors_keeps_phone_and_cloud_simulated(self) -> None:
+        pc = XEliteExecutor(http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]})
+        executors = x_elite_executors(pc)
+
+        self.assertIs(executors[Device.PC], pc)
+        self.assertEqual(set(executors), set(Device))
+        self.assertEqual(executors[Device.PHONE].device, Device.PHONE)
+        self.assertEqual(executors[Device.CLOUD].device, Device.CLOUD)
+
+    def test_hybrid_executors_makes_both_pc_and_cloud_live(self) -> None:
+        pc = XEliteExecutor(http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]})
+        cloud = CirrascaleExecutor(client=FakeClient(), message_factory=lambda **kwargs: kwargs)
+        executors = hybrid_executors(cloud_executor=cloud, pc_executor=pc)
+
+        self.assertIs(executors[Device.PC], pc)
+        self.assertIs(executors[Device.CLOUD], cloud)
+        self.assertEqual(executors[Device.PHONE].device, Device.PHONE)
 
 
 if __name__ == "__main__":

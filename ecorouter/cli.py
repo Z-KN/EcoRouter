@@ -8,7 +8,13 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from .executors import CirrascaleExecutor, cirrascale_executors, default_simulated_executors
+from .executors import (
+    CirrascaleExecutor,
+    cirrascale_executors,
+    default_simulated_executors,
+    hybrid_executors,
+    x_elite_executors,
+)
 from .models import (
     Device,
     ExecutionError,
@@ -59,6 +65,14 @@ def build_parser() -> argparse.ArgumentParser:
                 "--live-cloud",
                 action="store_true",
                 help="Invoke Cirrascale when cloud is selected; phone and PC remain simulated.",
+            )
+            subparser.add_argument(
+                "--live-pc",
+                action="store_true",
+                help=(
+                    "Invoke the local X-Elite NPU server (XELITE_SERVER_ENDPOINT, default "
+                    "http://localhost:8000) when PC is selected; phone and cloud remain as configured."
+                ),
             )
     cloud_models = subparsers.add_parser(
         "cloud-models", help="List LLMs available from the configured Cirrascale account."
@@ -163,9 +177,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         router = EcoRouter(configs)
         if args.command == "run":
-            executors = (
-                cirrascale_executors() if args.live_cloud else default_simulated_executors()
-            )
+            if args.live_cloud and args.live_pc:
+                executors = hybrid_executors()
+            elif args.live_cloud:
+                executors = cirrascale_executors()
+            elif args.live_pc:
+                executors = x_elite_executors()
+            else:
+                executors = default_simulated_executors()
             result = router.run(request, executors)
             if args.json:
                 print(json.dumps(result.to_dict(), indent=2, sort_keys=True))

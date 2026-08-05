@@ -31,6 +31,14 @@ class CloudExecutionError(ExecutionError):
     """Raised when a configured cloud provider cannot complete a request."""
 
 
+class PcConfigurationError(ExecutionError):
+    """Raised when the local NPU inference server is unreachable or misconfigured."""
+
+
+class PcExecutionError(ExecutionError):
+    """Raised when the local NPU inference server cannot complete a request."""
+
+
 class PrivacyError(EcoRouterError):
     """Base class for fail-closed privacy analyzer failures."""
 
