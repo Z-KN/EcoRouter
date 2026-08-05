@@ -1,0 +1,8 @@
+[
+  {
+    "scenario": "healthy",
+    "profile": "balanced",
+    "expected_device": "phone",
+    "notes": "Example entry: change after calibration or algorithm updates."
+  }
+]
