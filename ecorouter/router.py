@@ -5,12 +5,13 @@ from __future__ import annotations
 from typing import Mapping
 
 from .analyzer import PresidioPromptAnalyzer, PromptAnalyzer
-from .executors import Executor
+from .executors import Executor, ObservedExecutor
 from .models import (
     CandidateEvaluation,
     Device,
     DeviceConfig,
     ExecutionError,
+    ExecutionMetrics,
     ExecutionResult,
     NoRouteError,
     OptimizationProfile,
@@ -126,8 +127,31 @@ class EcoRouter:
         executor = executors.get(decision.selected_device)
         if executor is None:
             raise ExecutionError(f"no executor registered for {decision.selected_device.value}")
-        response = executor.execute(request.prompt, decision)
-        return ExecutionResult(decision=decision, response=response)
+        metrics = None
+        if isinstance(executor, ObservedExecutor):
+            observation = executor.execute_observed(request.prompt, decision)
+            telemetry = request.telemetry[decision.selected_device]
+            estimated_energy = (
+                observation.total_tokens * telemetry.energy_joules_per_token
+                if observation.total_tokens is not None
+                else None
+            )
+            metrics = ExecutionMetrics(
+                api_turnaround_latency_ms=observation.api_turnaround_latency_ms,
+                prompt_tokens=observation.prompt_tokens,
+                completion_tokens=observation.completion_tokens,
+                total_tokens=observation.total_tokens,
+                measured_energy_joules=None,
+                estimated_energy_joules=estimated_energy,
+                energy_joules_per_token=telemetry.energy_joules_per_token,
+                energy_estimate_method="actual_total_tokens_x_configured_joules_per_token",
+                energy_scope="uncalibrated cloud inference estimate",
+                confidence="uncalibrated",
+            )
+            response = observation.response
+        else:
+            response = executor.execute(request.prompt, decision)
+        return ExecutionResult(decision=decision, response=response, metrics=metrics)
 
     def _evaluate(self, device: Device, request: RouteRequest, analysis) -> CandidateEvaluation:
         telemetry = request.telemetry[device]

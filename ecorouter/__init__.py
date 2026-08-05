@@ -1,14 +1,25 @@
 """EcoRouter's public Python interface."""
 
 from .analyzer import HeuristicPromptAnalyzer, PresidioPromptAnalyzer, PromptAnalyzer
-from .executors import Executor, SimulatedExecutor, default_simulated_executors
+from .executors import (
+    CirrascaleExecutor,
+    Executor,
+    ObservedExecutor,
+    SimulatedExecutor,
+    cirrascale_executors,
+    default_simulated_executors,
+)
 from .models import (
     CandidateEvaluation,
+    CloudConfigurationError,
+    CloudExecutionError,
     Device,
     DeviceConfig,
     DeviceTelemetry,
     EcoRouterError,
     ExecutionError,
+    ExecutionMetrics,
+    ExecutionObservation,
     ExecutionResult,
     Intent,
     NoRouteError,
@@ -25,14 +36,20 @@ from .router import EcoRouter
 
 __all__ = [
     "CandidateEvaluation",
+    "CirrascaleExecutor",
+    "CloudConfigurationError",
+    "CloudExecutionError",
     "Device",
     "DeviceConfig",
     "DeviceTelemetry",
     "EcoRouter",
     "EcoRouterError",
     "ExecutionResult",
+    "ExecutionMetrics",
+    "ExecutionObservation",
     "ExecutionError",
     "Executor",
+    "ObservedExecutor",
     "HeuristicPromptAnalyzer",
     "Intent",
     "NoRouteError",
@@ -46,6 +63,7 @@ __all__ = [
     "RouteDecision",
     "RouteRequest",
     "SimulatedExecutor",
+    "cirrascale_executors",
     "ValidationError",
     "default_simulated_executors",
 ]

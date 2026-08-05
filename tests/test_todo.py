@@ -19,6 +19,10 @@ class TodoCoverageTests(unittest.TestCase):
             "production security",
             "evaluate and calibrate presidio",
             "multilingual nlp models",
+            "phone and pc simulated execution",
+            "cirrascale streaming",
+            "provider-side energy telemetry",
+            "prefill and decode energy coefficients",
         )
         for item in expected:
             with self.subTest(item=item):

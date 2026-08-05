@@ -8,10 +8,11 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from .executors import default_simulated_executors
+from .executors import CirrascaleExecutor, cirrascale_executors, default_simulated_executors
 from .models import (
     Device,
     ExecutionError,
+    ExecutionMetrics,
     NoRouteError,
     OptimizationProfile,
     PrivacyError,
@@ -31,7 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command, help_text in (
         ("route", "Select a destination without invoking it."),
-        ("run", "Select a destination and invoke its simulated executor."),
+        ("run", "Select a destination and invoke its configured executor."),
     ):
         subparser = subparsers.add_parser(command, help=help_text)
         prompt_group = subparser.add_mutually_exclusive_group()
@@ -53,6 +54,16 @@ def build_parser() -> argparse.ArgumentParser:
             default=OptimizationProfile.BALANCED.value,
         )
         subparser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+        if command == "run":
+            subparser.add_argument(
+                "--live-cloud",
+                action="store_true",
+                help="Invoke Cirrascale when cloud is selected; phone and PC remain simulated.",
+            )
+    cloud_models = subparsers.add_parser(
+        "cloud-models", help="List LLMs available from the configured Cirrascale account."
+    )
+    cloud_models.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     return parser
 
 
@@ -95,10 +106,51 @@ def _human_decision(decision: RouteDecision) -> str:
     return "\n".join(lines)
 
 
+def _human_metrics(metrics: ExecutionMetrics) -> str:
+    latency = (
+        f"{metrics.api_turnaround_latency_ms:.3f} ms"
+        if metrics.api_turnaround_latency_ms is not None
+        else "unavailable"
+    )
+    estimated_energy = (
+        f"{metrics.estimated_energy_joules:.6f} J"
+        if metrics.estimated_energy_joules is not None
+        else "unavailable"
+    )
+    return "\n".join(
+        [
+            "Live observations:",
+            f"  API turnaround latency: {latency}",
+            (
+                "  SDK tokens: "
+                f"prompt={metrics.prompt_tokens}, completion={metrics.completion_tokens}, "
+                f"total={metrics.total_tokens}"
+            ),
+            "  Measured energy: unavailable (provider energy telemetry is not exposed)",
+            (
+                f"  Estimated energy: {estimated_energy} "
+                f"({metrics.energy_joules_per_token:.6f} J/token; {metrics.confidence})"
+            ),
+            f"  Estimate scope: {metrics.energy_scope}",
+        ]
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
+        if args.command == "cloud-models":
+            models = CirrascaleExecutor().list_models()
+            if args.json:
+                payload = {"count": len(models), "models": list(models)}
+                print(json.dumps(payload, indent=2, sort_keys=True))
+            else:
+                print(f"Available Cirrascale LLMs: {len(models)}")
+                for model in models:
+                    print(f"  - {model}")
+            return 0
+
         prompt = _read_prompt(args)
         scenarios = built_in_scenarios()
         telemetry = load_telemetry(args.telemetry) if args.telemetry else scenarios[args.scenario]
@@ -111,12 +163,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         router = EcoRouter(configs)
         if args.command == "run":
-            result = router.run(request, default_simulated_executors())
+            executors = (
+                cirrascale_executors() if args.live_cloud else default_simulated_executors()
+            )
+            result = router.run(request, executors)
             if args.json:
                 print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
             else:
                 print(_human_decision(result.decision))
                 print("Response: " + result.response)
+                if result.metrics is not None:
+                    print(_human_metrics(result.metrics))
         else:
             decision = router.route(request)
             if args.json:

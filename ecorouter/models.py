@@ -23,6 +23,14 @@ class ExecutionError(EcoRouterError):
     """Raised when the selected destination has no usable executor."""
 
 
+class CloudConfigurationError(ExecutionError):
+    """Raised when live cloud execution is not safely configured."""
+
+
+class CloudExecutionError(ExecutionError):
+    """Raised when a configured cloud provider cannot complete a request."""
+
+
 class PrivacyError(EcoRouterError):
     """Base class for fail-closed privacy analyzer failures."""
 
@@ -119,7 +127,7 @@ def default_device_configs() -> dict[Device, DeviceConfig]:
     return {
         Device.PHONE: DeviceConfig("phone-model", 0.60),
         Device.PC: DeviceConfig("pc-model", 0.80),
-        Device.CLOUD: DeviceConfig("cloud-model", 0.95),
+        Device.CLOUD: DeviceConfig("Llama-3.1-8B", 0.95),
     }
 
 
@@ -240,9 +248,55 @@ class RouteDecision:
 
 
 @dataclass(frozen=True)
+class ExecutionObservation:
+    """Provider observations captured around a single executor call."""
+
+    response: str
+    api_turnaround_latency_ms: float | None = None
+    model_id: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    total_tokens: int | None = None
+
+
+@dataclass(frozen=True)
+class ExecutionMetrics:
+    """Optional live measurements and explicitly labeled energy estimates."""
+
+    api_turnaround_latency_ms: float | None
+    prompt_tokens: int | None
+    completion_tokens: int | None
+    total_tokens: int | None
+    measured_energy_joules: float | None
+    estimated_energy_joules: float | None
+    energy_joules_per_token: float
+    energy_estimate_method: str
+    energy_scope: str
+    confidence: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "api_turnaround_latency_ms": _rounded(self.api_turnaround_latency_ms, 3),
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "total_tokens": self.total_tokens,
+            "measured_energy_joules": _rounded(self.measured_energy_joules, 6),
+            "estimated_energy_joules": _rounded(self.estimated_energy_joules, 6),
+            "energy_joules_per_token": round(self.energy_joules_per_token, 6),
+            "energy_estimate_method": self.energy_estimate_method,
+            "energy_scope": self.energy_scope,
+            "confidence": self.confidence,
+        }
+
+
+@dataclass(frozen=True)
 class ExecutionResult:
     decision: RouteDecision
     response: str
+    metrics: ExecutionMetrics | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {"decision": self.decision.to_dict(), "response": self.response}
+        result: dict[str, Any] = {"decision": self.decision.to_dict(), "response": self.response}
+        if self.metrics is not None:
+            result["metrics"] = self.metrics.to_dict()
+        return result

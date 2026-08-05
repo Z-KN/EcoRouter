@@ -6,6 +6,7 @@ from ecorouter import (
     DeviceConfig,
     DeviceTelemetry,
     EcoRouter,
+    ExecutionObservation,
     HeuristicPromptAnalyzer,
     NoRouteError,
     OptimizationProfile,
@@ -31,6 +32,41 @@ def heuristic_router(configs=None) -> EcoRouter:
 
 
 class EcoRouterTests(unittest.TestCase):
+    def test_observed_executor_adds_rounded_live_metrics_and_energy_estimate(self) -> None:
+        class ObservedCloudExecutor:
+            def execute(self, prompt, decision):
+                raise AssertionError("legacy execute must not be called")
+
+            def execute_observed(self, prompt, decision):
+                return ExecutionObservation(
+                    response="observed response",
+                    api_turnaround_latency_ms=125.1236,
+                    model_id=decision.model_id,
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                )
+
+        executors = default_simulated_executors()
+        executors[Device.CLOUD] = ObservedCloudExecutor()
+        result = heuristic_router().run(
+            request_for(
+                "What model are you?",
+                origin=Device.PC,
+                profile=OptimizationProfile.HIGH_QUALITY,
+            ),
+            executors,
+        )
+
+        self.assertEqual(result.response, "observed response")
+        self.assertIsNotNone(result.metrics)
+        self.assertEqual(result.metrics.estimated_energy_joules, 1.2)
+        self.assertIsNone(result.metrics.measured_energy_joules)
+        self.assertEqual(result.metrics.energy_joules_per_token, 0.04)
+        self.assertEqual(result.metrics.confidence, "uncalibrated")
+        self.assertEqual(result.to_dict()["metrics"]["api_turnaround_latency_ms"], 125.124)
+        self.assertEqual(result.to_dict()["metrics"]["estimated_energy_joules"], 1.2)
+
     def test_short_lookup_uses_efficient_phone_in_healthy_scenario(self) -> None:
         decision = heuristic_router().route(request_for("What's the weather tomorrow?"))
 
@@ -131,6 +167,8 @@ class EcoRouterTests(unittest.TestCase):
 
         self.assertIn(result.decision.model_id, result.response)
         self.assertNotIn(private_value, result.response)
+        self.assertIsNone(result.metrics)
+        self.assertNotIn("metrics", result.to_dict())
 
     def test_request_requires_all_three_telemetry_entries(self) -> None:
         with self.assertRaises(ValidationError):

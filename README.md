@@ -8,9 +8,9 @@ origin, and a telemetry snapshot, it selects one of three destinations:
 - a model deployed in the cloud.
 
 The router analyzes prompts locally with Presidio, makes the routing decision, and can dispatch
-it to deterministic simulated executors. It does not contact cloud services, collect telemetry,
-or expose prompt or entity text in its diagnostics. The longer-term multimodal system is tracked
-in [TODO.md](TODO.md).
+privacy-safe cloud requests to Cirrascale. Phone and PC execution remains simulated. Live cloud
+access is explicit and never enabled by routing alone; prompt or entity text is not included in
+routing diagnostics. The longer-term multimodal system is tracked in [TODO.md](TODO.md).
 
 ## Requirements
 
@@ -24,6 +24,13 @@ and the pinned English spaCy model:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e .
+```
+
+To enable Cirrascale execution, install the optional cloud extra from the official Imagine SDK
+0.4.2 wheel:
+
+```powershell
+python -m pip install -e ".[cloud]"
 ```
 
 The editable install provides both invocation styles:
@@ -66,6 +73,61 @@ python -m ecorouter run `
   --json
 ```
 
+Live Cirrascale calls require an API key and an HTTPS endpoint in the current process
+environment. Never put either value in source code, model configuration, command arguments, or a
+committed `.env` file:
+
+```powershell
+$env:INFERENCE_CLOUD_API_KEY = "<rotated key>"
+$env:INFERENCE_CLOUD_ENDPOINT = "https://aisuite.cirrascale.com/apis/v2"
+python -m ecorouter cloud-models
+```
+
+`cloud-models` performs authenticated model discovery but does not send an inference prompt. It
+supports `--json` and reports both the model count and IDs. The current default cloud model is
+`Llama-3.1-8B`; live inference stops before sending the prompt if that model is unavailable.
+
+Route the exact smoke-test prompt and invoke Cirrascale only if cloud wins the policy decision:
+
+```powershell
+python -m ecorouter run `
+  --origin pc `
+  --prompt "What model are you?" `
+  --profile high-quality `
+  --scenario healthy `
+  --live-cloud `
+  --json
+```
+
+Without `--live-cloud`, `run` remains entirely simulated. With it, phone and PC still use their
+simulators and only a selected, non-sensitive cloud route makes a billable network request. Live
+execution uses a 60-second timeout, one retry, TLS certificate verification, deterministic
+temperature `0`, and the router's estimated output-token limit. Configuration or provider
+failures produce sanitized execution errors with exit code `4`.
+
+Every live Cirrascale inference also returns an optional `metrics` object. API turnaround is
+measured with a monotonic clock around only `ImagineClient.chat()`; it excludes local privacy
+analysis, routing, SDK initialization, and model discovery. Token counts come from the SDK
+response. If usage is missing or malformed, the valid response is retained and token-dependent
+energy fields are `null`.
+
+```json
+{
+  "metrics": {
+    "api_turnaround_latency_ms": 1234.567,
+    "prompt_tokens": 8,
+    "completion_tokens": 20,
+    "total_tokens": 28,
+    "measured_energy_joules": null,
+    "estimated_energy_joules": 1.12,
+    "energy_joules_per_token": 0.04,
+    "energy_estimate_method": "actual_total_tokens_x_configured_joules_per_token",
+    "energy_scope": "uncalibrated cloud inference estimate",
+    "confidence": "uncalibrated"
+  }
+}
+```
+
 Available optimization profiles are `balanced`, `low-latency`, `energy-saver`, and
 `high-quality`. Built-in telemetry scenarios are `healthy`, `phone-low-battery`,
 `pc-congested`, and `cloud-offline`.
@@ -101,8 +163,13 @@ print(decision.explanation)
 ```
 
 For a simulated end-to-end dispatch, call
-`EcoRouter.run(request, default_simulated_executors())`. Real runtimes can replace the
-simulators by implementing the `Executor.execute(prompt, decision)` protocol.
+`EcoRouter.run(request, default_simulated_executors())`. For simulated phone/PC execution plus
+live Cirrascale cloud execution, call `EcoRouter.run(request, cirrascale_executors())`. The cloud
+executor reads credentials lazily, verifies the selected model against Cirrascale's LLM catalog,
+and refuses sensitive or non-cloud decisions. It additionally implements
+`execute_observed(prompt, decision)` so `EcoRouter.run()` can attach live measurements without
+making a second request. Other runtimes can keep implementing the unchanged
+`Executor.execute(prompt, decision)` protocol; observation support is optional.
 
 ## Telemetry schema
 
@@ -156,6 +223,13 @@ flowchart LR
     R --> PH["Phone model"]
     R --> PC["PC model"]
     R --> CL["Cloud model<br/>non-sensitive only"]
+    PH --> LS["Simulated local executor"]
+    PC --> LS
+    CL --> CE["CirrascaleExecutor<br/>explicit --live-cloud"]
+    CE --> IM["Imagine API<br/>model preflight + one chat call"]
+    LS --> O["ExecutionResult"]
+    IM --> M["Observed API latency + SDK tokens<br/>energy estimate; measured energy unavailable"]
+    M --> O
 ```
 
 The hard privacy allowlist includes `PERSON`, `NRP`, email, phone, payment and financial
@@ -169,21 +243,50 @@ value will be found; accuracy calibration and additional NLP models remain track
 and [supported entity reference](https://microsoft.github.io/presidio/supported_entities/) for
 the underlying recognizer behavior.
 
-Latency is estimated from network delay and token throughput. Energy and cloud cost are
-estimated from total tokens. The fixed normalization limits and profile weights live in
-`ecorouter/router.py`; they are intentionally transparent and are candidates for later
-calibration.
+Routing-time latency is predicted from network delay and token throughput. Routing-time energy
+and cloud cost are predicted from estimated total tokens. For live cloud calls, API turnaround
+is instead directly timed and the SDK's actual total-token count is multiplied by the selected
+cloud telemetry coefficient, currently `0.04 J/token` in the healthy scenario.
 
-Default model IDs and capability scores are logical placeholders:
+That live energy value is an **uncalibrated estimate**, not a Cirrascale server measurement.
+Cirrascale's documented response DTOs expose token usage but no request-level power or energy
+telemetry. The estimate cannot account for unknown GPU type, batching and concurrent users,
+utilization, CPU/RAM and networking energy, cooling, or data-center PUE. See the
+[Cirrascale response DTOs](https://aisuite.cirrascale.com/sdk/api/dtos.html) and
+[`ImagineClient` usage API](https://aisuite.cirrascale.com/sdk/api/imagine_clients.html).
+
+For direct measurement on controlled server hardware, read a supported NVIDIA GPU's cumulative
+energy counter immediately before and after an isolated request, then subtract an idle baseline.
+Attribute CPU/RAM/node energy separately with CPU RAPL counters or a rack PDU/wall meter, account
+for concurrent work, and optionally apply PUE. NVIDIA documents the cumulative millijoule counter
+in the [NVML device query API](https://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html).
+Client-side tools such as CodeCarbon measure the machine running EcoRouter; for a remote API that
+mostly captures the PC waiting on the network and is not cloud inference energy. See the
+[CodeCarbon methodology](https://mlco2.github.io/codecarbon/methodology.html). A stronger
+black-box estimator would calibrate separate input-token/prefill and output-token/decode
+coefficients on known hardware.
+
+The fixed normalization limits and profile weights live in `ecorouter/router.py`; they are
+intentionally transparent and remain candidates for benchmark calibration. A model's answer to
+an account-limit question is generated text, not authoritative quota information; use a
+documented provider account or usage endpoint for account facts.
+
+Default model IDs and capability scores are:
 
 | Device | Model ID | Capability |
 | --- | --- | ---: |
 | Phone | `phone-model` | 0.60 |
 | PC | `pc-model` | 0.80 |
-| Cloud | `cloud-model` | 0.95 |
+| Cloud | `Llama-3.1-8B` | 0.95 |
 
 Change them with a model configuration shaped like [`examples/models.json`](examples/models.json)
 or pass `DeviceConfig` objects to `EcoRouter` in Python.
+
+The Cirrascale integration follows the official
+[Imagine SDK setup](https://aisuite.cirrascale.com/sdk/index.html),
+[model discovery and chat tutorial](https://aisuite.cirrascale.com/sdk/tutorials/1_0_basic_usage.html),
+and [`ImagineClient` API](https://aisuite.cirrascale.com/sdk/api/imagine_clients.html). The SDK is
+loaded only by live cloud operations, so routing and simulation do not require cloud credentials.
 
 ## Tests
 
@@ -195,7 +298,9 @@ python -m unittest discover -s tests -v
 
 ## Current boundary
 
-This repository implements the decision-making core and a portable demonstration surface.
-Live device telemetry, actual phone/PC/cloud model adapters, multilingual or multimodal
-ingestion, privacy-preserving redaction, learned performance prediction, an API, and a dashboard
-are explicitly deferred and tracked in [TODO.md](TODO.md).
+This repository implements the decision-making core, a real non-streaming Cirrascale cloud
+adapter with per-call API latency and SDK token observations, and simulated phone/PC adapters.
+Cloud energy remains an uncalibrated token-based estimate because provider-side measurements are
+not available. Live device telemetry, real local model runtimes, streaming and cancellation,
+multilingual or multimodal ingestion, privacy-preserving redaction, learned performance
+prediction, an API, and a dashboard are explicitly deferred and tracked in [TODO.md](TODO.md).
