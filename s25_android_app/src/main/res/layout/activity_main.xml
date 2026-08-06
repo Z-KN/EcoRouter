@@ -126,6 +126,15 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btn_router"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="EcoRouter (accept prompt on this phone)" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

@@ -234,6 +234,10 @@ class MainActivity : FragmentActivity() {
         swServer = findViewById(R.id.sw_server)
         tvServerStatus = findViewById(R.id.tv_server_status)
 
+        findViewById<Button>(R.id.btn_router).setOnClickListener {
+            startActivity(Intent(this, RouterActivity::class.java))
+        }
+
         findViewById<Button>(R.id.btn_test).setOnClickListener {
             Thread {
                 val exeFile = File(filesDir, "geniex_test_llm")
