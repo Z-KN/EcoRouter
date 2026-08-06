@@ -10,10 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "Kaining Zhou" }]
-dependencies = [
-  "presidio-analyzer==2.2.364",
-  "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
-]
+dependencies = []
 
 [project.optional-dependencies]
 cloud = [

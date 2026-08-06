@@ -1,6 +1,6 @@
 """EcoRouter's public Python interface."""
 
-from .analyzer import HeuristicPromptAnalyzer, PresidioPromptAnalyzer, PromptAnalyzer
+from .analyzer import HeuristicPromptAnalyzer, PromptAnalyzer
 from .executors import (
     CirrascaleExecutor,
     Executor,
@@ -69,7 +69,6 @@ __all__ = [
     "PcExecutionError",
     "PhoneConfigurationError",
     "PhoneExecutionError",
-    "PresidioPromptAnalyzer",
     "PrivacyAnalysisError",
     "PrivacyError",
     "PrivacyInitializationError",

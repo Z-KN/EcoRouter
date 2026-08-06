@@ -12,17 +12,24 @@ in the current implementation are documented in the README instead of duplicated
 - [ ] **P1 | v1.5 | Replace caller-supplied telemetry.** Dependency: device-agent protocols.
   Complete when phone, PC, and cloud snapshots can be collected and timestamped automatically.
 - [ ] **P1 | v1.5 | Calibrate static capabilities and scoring weights.** Dependency: benchmark
-  corpus and target hardware. Complete when configuration values are derived from repeatable
-  measurements rather than illustrative defaults.
+  corpus and target hardware. Per-device energy/throughput constants and the profile weights are
+  now derived from the 106-prompt calibration sweep (README's
+  [Energy honesty](README.md#energy-honesty) and
+  [Profile weights and calibration results](README.md#profile-weights-and-calibration-results));
+  remaining: the static per-device `capability_score` (0.60/0.80/0.95) is still an illustrative
+  fallback, only superseded per-prompt when the calibrated estimator is trusted. Complete when
+  that fallback number is also derived from repeatable measurements rather than a guess.
 - [ ] **P1 | v1.5 | Replace approximate token, latency, energy, and cost predictions.**
   Dependency: runtime observations. Complete when predictions are validated against held-out
   measurements and error metrics are reported.
 
 ## Next version
 
-- [ ] **P1 | v1.4 | Evaluate and calibrate Presidio detection.** Dependency: representative
-  privacy test corpus. Complete when PERSON and core-entity precision/recall are measured,
-  threshold changes are justified, and known false positives/negatives are documented.
+- [ ] **P1 | v1.4 | Evaluate and calibrate the regex privacy heuristic.** Dependency:
+  representative privacy test corpus. Complete when person/address/secret precision and recall
+  are measured against it and known false positives/negatives are documented. An NLP-backed
+  analyzer (e.g. Presidio) remains an option for a future version if regex recall proves
+  insufficient once real usage data exists.
 - [ ] **P2 | v1.5 | Support configurable and multilingual NLP models.** Dependency: target
   language requirements and model benchmarks. Complete when model/language selection is
   configuration-driven and each supported language has integration coverage.
@@ -37,8 +44,10 @@ in the current implementation are documented in the README instead of duplicated
   joules, idle-baseline treatment, concurrent-work attribution, and measurement scope are emitted
   separately from estimates.
 - [ ] **P1 | v1.5 | Calibrate separate prefill and decode energy coefficients.** Dependency:
-  benchmark runs on identified hardware. Complete when input-token and output-token coefficients
-  replace the illustrative single `0.04 J/token` value and held-out estimation error is reported.
+  benchmark runs on identified hardware. Phone/PC now have a real, measured single J/token
+  constant each (see README's [Energy honesty](README.md#energy-honesty)); complete when separate
+  input-token/prefill and output-token/decode coefficients replace that single figure and
+  held-out estimation error is reported.
 - [ ] **P1 | v1.5 | Benchmark and calibrate the policy.** Dependency: telemetry and real
   executors. Complete when thresholds and all four profiles are backed by a versioned benchmark
   report.

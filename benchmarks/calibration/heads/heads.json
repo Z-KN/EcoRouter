@@ -1,0 +1,711 @@
+{
+  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "devices": [
+    "phone",
+    "pc",
+    "cloud"
+  ],
+  "k": 5,
+  "similarity_floor": 0.308792307972908,
+  "calibrated_intents": [
+    "coding",
+    "general",
+    "lookup",
+    "summarization"
+  ],
+  "device_constants": {
+    "phone": {
+      "model_id": "Qwen3-0.6B",
+      "energy_joules_per_token": 0.041198876642857145,
+      "energy_samples": 5,
+      "decode_tokens_per_second": 94.2241789761417,
+      "ttft_ms": 23.094,
+      "samples": 106
+    },
+    "pc": {
+      "model_id": "ai-hub-models/Qwen3-VL-4B-Instruct",
+      "energy_joules_per_token": 0.44466533155589993,
+      "energy_samples": 106,
+      "decode_tokens_per_second": 20.188470398995086,
+      "ttft_ms": 99.939,
+      "samples": 106
+    },
+    "cloud": {
+      "model_id": "Llama-3.3-70B",
+      "energy_joules_per_token": null,
+      "energy_samples": 0,
+      "decode_tokens_per_second": null,
+      "ttft_ms": null,
+      "samples": 100
+    }
+  },
+  "prompts": [
+    {
+      "id": "math_001",
+      "prompt": "What is 15 + 27?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_002",
+      "prompt": "What is 9 times 8?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_003",
+      "prompt": "What is 100 minus 37?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_004",
+      "prompt": "What is 144 divided by 12?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_005",
+      "prompt": "What is 25 percent of 80?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_006",
+      "prompt": "What is 7 squared?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_007",
+      "prompt": "What is the sum of all integers from 1 to 10?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_008",
+      "prompt": "What is 3 times 4 plus 5?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_009",
+      "prompt": "What is 60 divided by 5, minus 3?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_010",
+      "prompt": "What is 2 to the power of 5?",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "math_011",
+      "prompt": "A shirt costs $40. It is discounted by 25 percent, then 10 percent tax is added to the discounted price. What is the final price in dollars?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_012",
+      "prompt": "A train travels at 60 miles per hour for 2.5 hours. How many miles does it travel?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_013",
+      "prompt": "If 3 apples cost $1.50, how many dollars do 10 apples cost?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_014",
+      "prompt": "A rectangle is 8 cm long and 5 cm wide. What is its perimeter in centimeters?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_015",
+      "prompt": "What is 17 multiplied by 23?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_016",
+      "prompt": "How many minutes are there in 480 seconds?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_017",
+      "prompt": "If x plus 7 equals 22, what is x?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_018",
+      "prompt": "What is the average of 12, 18, 24 and 30?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_019",
+      "prompt": "What is two fifths of 350?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_020",
+      "prompt": "A car uses 8 litres of fuel per 100 km. How many litres does it use for 250 km?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_021",
+      "prompt": "You invest $1000 at 10 percent interest compounded annually. How many dollars do you have after 2 years?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_022",
+      "prompt": "What is a 20 percent tip on an $85 restaurant bill, in dollars?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_023",
+      "prompt": "Two angles of a triangle measure 45 and 60 degrees. What is the third angle in degrees?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_024",
+      "prompt": "Three consecutive integers add up to 48. What is the largest of the three?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_025",
+      "prompt": "A book has 300 pages. You read one third of it, then 40 more pages. How many pages remain unread?",
+      "category": "math",
+      "difficulty": "medium"
+    },
+    {
+      "id": "math_026",
+      "prompt": "Sally has 3 brothers. Each of her brothers has 2 sisters. How many sisters does Sally have?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_027",
+      "prompt": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How many dollars does the ball cost?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_028",
+      "prompt": "If 5 machines take 5 minutes to make 5 widgets, how many minutes would 100 machines take to make 100 widgets?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_029",
+      "prompt": "Lily pads on a lake double in area every day. It takes 48 days for the pads to cover the whole lake. On which day was the lake half covered?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_030",
+      "prompt": "A farmer has 17 sheep. All but 9 of them die. How many sheep are left alive?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_031",
+      "prompt": "How many times does the digit 7 appear when writing out every integer from 1 to 100 inclusive?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_032",
+      "prompt": "What is the sum of the first 20 odd numbers?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_033",
+      "prompt": "If every person in a room of 5 people shakes hands exactly once with every other person, how many handshakes occur in total?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_034",
+      "prompt": "A tank fills in 6 hours through an inlet pipe and empties in 9 hours through a drain. With both open, how many hours does it take to fill the empty tank?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "math_035",
+      "prompt": "A quantity of 500 is increased by 20 percent and then the result is decreased by 20 percent. What is the final value?",
+      "category": "math",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_001",
+      "prompt": "What is the capital of Australia?\nA) Sydney\nB) Melbourne\nC) Canberra\nD) Perth",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_002",
+      "prompt": "Which planet is closest to the Sun?\nA) Venus\nB) Mercury\nC) Earth\nD) Mars",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_003",
+      "prompt": "What is the chemical symbol for gold?\nA) Ag\nB) Au\nC) Gd\nD) Go",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_004",
+      "prompt": "Who wrote the novel 1984?\nA) Aldous Huxley\nB) George Orwell\nC) Ray Bradbury\nD) J.D. Salinger",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_005",
+      "prompt": "Which is the largest ocean on Earth?\nA) Atlantic\nB) Indian\nC) Arctic\nD) Pacific",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_006",
+      "prompt": "Which data structure follows last-in first-out order?\nA) Queue\nB) Stack\nC) Heap\nD) Graph",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_007",
+      "prompt": "Which HTTP status code means Not Found?\nA) 200\nB) 301\nC) 404\nD) 500",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_008",
+      "prompt": "Which organelle is known as the powerhouse of the cell?\nA) Nucleus\nB) Ribosome\nC) Mitochondria\nD) Golgi apparatus",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_009",
+      "prompt": "In which year did the Second World War end?\nA) 1943\nB) 1944\nC) 1945\nD) 1946",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_010",
+      "prompt": "What is the currency of Japan?\nA) Won\nB) Yuan\nC) Yen\nD) Ringgit",
+      "category": "mcq",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mcq_011",
+      "prompt": "Which of these numbers is prime?\nA) 51\nB) 57\nC) 59\nD) 63",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_012",
+      "prompt": "What is the average-case time complexity of binary search?\nA) O(n)\nB) O(log n)\nC) O(n log n)\nD) O(1)",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_013",
+      "prompt": "Which of these languages is statically typed?\nA) Python\nB) JavaScript\nC) Ruby\nD) Java",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_014",
+      "prompt": "Which SQL keyword removes rows from a table while keeping the table itself?\nA) REMOVE\nB) DELETE\nC) DROP\nD) CLEAR",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_015",
+      "prompt": "Which sorting algorithm has O(n log n) worst-case time complexity?\nA) Quicksort\nB) Bubble sort\nC) Merge sort\nD) Insertion sort",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_016",
+      "prompt": "Approximately what is the speed of light in a vacuum?\nA) 3 x 10^8 m/s\nB) 3 x 10^6 m/s\nC) 3 x 10^10 m/s\nD) 3 x 10^5 m/s",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_017",
+      "prompt": "Which gas do plants absorb from the atmosphere during photosynthesis?\nA) Oxygen\nB) Nitrogen\nC) Carbon dioxide\nD) Hydrogen",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_018",
+      "prompt": "How many ways can 5 distinct books be arranged in a row?\nA) 24\nB) 60\nC) 120\nD) 720",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_019",
+      "prompt": "What is the probability of getting heads twice in a row with a fair coin?\nA) 1/2\nB) 1/3\nC) 1/4\nD) 1/8",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_020",
+      "prompt": "What is the median of 3, 7, 9, 15, 21?\nA) 7\nB) 9\nC) 11\nD) 15",
+      "category": "mcq",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mcq_021",
+      "prompt": "All roses are flowers. Some flowers fade quickly. Which conclusion necessarily follows?\nA) All roses fade quickly\nB) Some roses fade quickly\nC) Neither conclusion necessarily follows\nD) No roses fade quickly",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_022",
+      "prompt": "If it rains, the ground gets wet. The ground is wet. What can be concluded?\nA) It rained\nB) It did not rain\nC) Nothing can be concluded about rain\nD) It always rains",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_023",
+      "prompt": "What number comes next in the sequence 3, 6, 11, 18, 27?\nA) 36\nB) 38\nC) 40\nD) 42",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_024",
+      "prompt": "Which shape is the odd one out?\nA) Square\nB) Triangle\nC) Circle\nD) Rectangle",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_025",
+      "prompt": "A is taller than B. B is taller than C. Who is shortest?\nA) A\nB) B\nC) C\nD) Cannot be determined",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_026",
+      "prompt": "Which number completes the sequence 2, 4, 8, 16, __?\nA) 20\nB) 24\nC) 32\nD) 64",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_027",
+      "prompt": "Which of these is NOT a programming paradigm?\nA) Functional\nB) Procedural\nC) Photosynthetic\nD) Object-oriented",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_028",
+      "prompt": "A drawer holds 3 red and 5 blue marbles. One marble is drawn at random. What is the probability it is red?\nA) 3/8\nB) 5/8\nC) 3/5\nD) 1/2",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_029",
+      "prompt": "Every student who passed studied. Maria studied. Which statement necessarily follows?\nA) Maria passed\nB) Maria failed\nC) Maria may or may not have passed\nD) Nobody passed",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mcq_030",
+      "prompt": "What comes next in the sequence 2, 6, 12, 20, 30?\nA) 36\nB) 40\nC) 42\nD) 44",
+      "category": "mcq",
+      "difficulty": "hard"
+    },
+    {
+      "id": "fact_001",
+      "prompt": "What is the capital city of France?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_002",
+      "prompt": "Which is the largest planet in our solar system?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_003",
+      "prompt": "Who painted the Mona Lisa?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_004",
+      "prompt": "What is the chemical formula for water?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_005",
+      "prompt": "How many continents are there on Earth?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_006",
+      "prompt": "Which is the largest ocean on Earth?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_007",
+      "prompt": "Who wrote the play Romeo and Juliet?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_008",
+      "prompt": "Which element has the chemical symbol O?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_009",
+      "prompt": "What is the capital city of Japan?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_010",
+      "prompt": "In which year did humans first land on the Moon?",
+      "category": "fact",
+      "difficulty": "easy"
+    },
+    {
+      "id": "fact_011",
+      "prompt": "What is the freezing point of water in degrees Celsius?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_012",
+      "prompt": "What is the currency of the United Kingdom?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_013",
+      "prompt": "Who developed the theory of evolution by natural selection?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_014",
+      "prompt": "What does CPU stand for in computing?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_015",
+      "prompt": "What does HTML stand for?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_016",
+      "prompt": "What is the capital city of Canada?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_017",
+      "prompt": "How many sides does a hexagon have?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_018",
+      "prompt": "Which gas makes up the largest share of Earth's atmosphere?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_019",
+      "prompt": "Which planet is known as the Red Planet?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "fact_020",
+      "prompt": "What is the largest organ of the human body?",
+      "category": "fact",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_001",
+      "prompt": "What Python keyword is used to define an anonymous inline function?",
+      "category": "code",
+      "difficulty": "easy"
+    },
+    {
+      "id": "code_002",
+      "prompt": "Which Python list method removes and returns the last item of the list?",
+      "category": "code",
+      "difficulty": "easy"
+    },
+    {
+      "id": "code_003",
+      "prompt": "Which two Python keywords are used together to catch an exception?",
+      "category": "code",
+      "difficulty": "easy"
+    },
+    {
+      "id": "code_004",
+      "prompt": "Write a bash command that counts the number of lines in a file named data.txt.",
+      "category": "code",
+      "difficulty": "easy"
+    },
+    {
+      "id": "code_005",
+      "prompt": "Write a SQL query that selects all rows from a table named users where age is greater than 30.",
+      "category": "code",
+      "difficulty": "easy"
+    },
+    {
+      "id": "code_006",
+      "prompt": "Write a Python function that reverses a string.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_007",
+      "prompt": "Write a Python function that checks whether a string is a palindrome.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_008",
+      "prompt": "Show how to open a file in Python for reading so that it is closed automatically.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_009",
+      "prompt": "Write a Python program that prints FizzBuzz for the numbers 1 to 100.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_010",
+      "prompt": "How do you make an HTTP GET request in Python using the requests library?",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_011",
+      "prompt": "Write the git command that creates a new branch named feature and switches to it.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_012",
+      "prompt": "Write a Python list comprehension that returns the squares of the even numbers from 0 to 20.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "code_013",
+      "prompt": "Write a Python function that returns the second largest unique value in a list of integers, handling duplicates and lists shorter than two elements.",
+      "category": "code",
+      "difficulty": "hard"
+    },
+    {
+      "id": "code_014",
+      "prompt": "Write a Python function that removes duplicates from a list while preserving the original order.",
+      "category": "code",
+      "difficulty": "hard"
+    },
+    {
+      "id": "code_015",
+      "prompt": "Write a regular expression that matches a five-digit US ZIP code, optionally followed by a hyphen and four more digits.",
+      "category": "code",
+      "difficulty": "hard"
+    },
+    {
+      "id": "pii_001",
+      "prompt": "Summarize the medical history for John Smith, SSN 123-45-6789.",
+      "category": "pii",
+      "difficulty": "medium"
+    },
+    {
+      "id": "pii_002",
+      "prompt": "Draft a short email to sarah.connor@example.com about her overdue account balance.",
+      "category": "pii",
+      "difficulty": "medium"
+    },
+    {
+      "id": "pii_003",
+      "prompt": "My phone number is 415-555-0142. Please add it to my contact record.",
+      "category": "pii",
+      "difficulty": "easy"
+    },
+    {
+      "id": "pii_004",
+      "prompt": "Patient Maria Garcia, date of birth 1984-03-12, needs a discharge summary.",
+      "category": "pii",
+      "difficulty": "medium"
+    },
+    {
+      "id": "pii_005",
+      "prompt": "Is the credit card number 4111 1111 1111 1111 a valid card number?",
+      "category": "pii",
+      "difficulty": "easy"
+    },
+    {
+      "id": "pii_006",
+      "prompt": "Employee Robert Chen, who lives at 42 Oak Street and earns $95,000, needs a performance review written.",
+      "category": "pii",
+      "difficulty": "medium"
+    }
+  ],
+  "evaluation": {
+    "knn": {
+      "phone": {
+        "n": 90,
+        "accuracy": 0.6444444444444445,
+        "brier": 0.26180601119995117,
+        "base_rate": 0.46000000834465027,
+        "majority_baseline": 0.5399999618530273
+      },
+      "pc": {
+        "n": 90,
+        "accuracy": 0.9444444444444444,
+        "brier": 0.061566200107336044,
+        "base_rate": 0.9300000071525574,
+        "majority_baseline": 0.9300000071525574
+      },
+      "cloud": {
+        "n": 90,
+        "accuracy": 0.9222222222222223,
+        "brier": 0.069400854408741,
+        "base_rate": 0.9599999785423279,
+        "majority_baseline": 0.9599999785423279
+      }
+    },
+    "logistic": null
+  },
+  "source_sweep": [
+    "C:\\Users\\qc_de\\EcoRouter\\benchmarks\\calibration\\runs\\sweep.jsonl",
+    "C:\\Users\\qc_de\\EcoRouter\\benchmarks\\calibration\\runs\\sweep_phone.jsonl",
+    "C:\\Users\\qc_de\\EcoRouter\\benchmarks\\calibration\\runs\\sweep_cloud_llama70b.jsonl"
+  ]
+}

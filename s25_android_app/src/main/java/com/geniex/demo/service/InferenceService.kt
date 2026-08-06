@@ -11,10 +11,12 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.geniex.demo.GenerationConfigSample
@@ -79,6 +81,35 @@ class InferenceService : Service() {
     @Volatile var lastComputeUnitIsNpu = true
 
     private var httpServer: RouterHttpServer? = null
+
+    /**
+     * Held for the lifetime of the HTTP server so the CPU can't suspend
+     * between routed requests. A foreground service notification alone does
+     * not guarantee this on One UI: with the screen off and no wake lock, the
+     * CPU drops into a power-saving state between requests and each new
+     * incoming connection pays several seconds of resume latency before any
+     * app code -- including trivial handlers like [handleHealth] -- runs.
+     * That latency happens before [generateOnce] is ever called, so it never
+     * shows up in the SDK's own profiling ([GenResult]) and was previously
+     * invisible to callers, who saw it only as unexplained wall-clock time on
+     * top of the reported latency.
+     *
+     * Measured to be necessary but not sufficient on its own: with only this
+     * lock held, TTFB on a trivial /health call was still 3.7-6.3s. See
+     * [wifiLock] for the other half.
+     */
+    private var wakeLock: PowerManager.WakeLock? = null
+
+    /**
+     * Held alongside [wakeLock] for the same lifetime. A CPU wake lock keeps
+     * the processor scheduling threads; it says nothing about the Wi-Fi
+     * radio, which has its own independent power-save state (802.11 PSM) --
+     * with the radio asleep, an inbound packet sits buffered at the access
+     * point until the phone's next DTIM beacon wake, which is where the
+     * remaining multi-second, alternating-duration TTFB traced back to.
+     */
+    private var wifiLock: WifiManager.WifiLock? = null
+
     private val startedAtMs = System.currentTimeMillis()
     private var requestCount = 0L
     private var totalDecodeTokens = 0L
@@ -174,6 +205,11 @@ class InferenceService : Service() {
             null
         }
 
+    // WIFI_MODE_FULL_HIGH_PERF is deprecated as of API 34 in favor of
+    // WIFI_MODE_FULL_LOCK, which the platform now treats identically --
+    // deprecated in name only, not in effect. minSdk 31 still needs to run
+    // on pre-34 devices where FULL_LOCK does not exist.
+    @Suppress("DEPRECATION")
     fun startHttpServer(port: Int = DEFAULT_PORT): Result<Int> {
         val existing = httpServer
         if (existing != null) return Result.success(existing.listeningPort)
@@ -186,6 +222,19 @@ class InferenceService : Service() {
             // backgrounded/screen off, without showing a notification during
             // ordinary local chat use.
             startForeground(NOTIFICATION_ID, buildNotification())
+            // See [wakeLock]: without this, the foreground notification alone
+            // does not stop the CPU from suspending between requests.
+            val lock = (getSystemService(Context.POWER_SERVICE) as PowerManager)
+                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ecorouter:inference_service")
+            lock.acquire()
+            wakeLock = lock
+            // See [wifiLock]: the CPU wake lock above doesn't touch Wi-Fi
+            // radio power-save, which was still adding multi-second latency
+            // on its own.
+            val wifi = (applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
+                .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "ecorouter:inference_service")
+            wifi.acquire()
+            wifiLock = wifi
             Result.success(server.listeningPort)
         } catch (e: IOException) {
             Result.failure(e)
@@ -195,6 +244,10 @@ class InferenceService : Service() {
     fun stopHttpServer() {
         httpServer?.stop()
         httpServer = null
+        wakeLock?.let { if (it.isHeld) it.release() }
+        wakeLock = null
+        wifiLock?.let { if (it.isHeld) it.release() }
+        wifiLock = null
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 

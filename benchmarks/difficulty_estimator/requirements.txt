@@ -1,0 +1,15 @@
+# Isolated deps for the prompt-difficulty-estimator overhead benchmark.
+# Deliberately NOT part of pyproject.toml: the core ecorouter package (and
+# anything meant to run on the phone/PC as the router) should not gain a
+# multi-hundred-MB ML framework as a hard dependency just to prototype this.
+#
+# torch has no stable win-arm64 wheel on PyPI as of this writing, so this
+# pulls the CPU nightly build, which does. This is dev/verification tooling
+# only -- it is not the recommended deployment runtime. See README.md.
+--index-url https://download.pytorch.org/whl/nightly/cpu
+--extra-index-url https://pypi.org/simple
+
+torch
+transformers>=4.41
+numpy
+psutil

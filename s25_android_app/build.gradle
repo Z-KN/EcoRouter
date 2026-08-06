@@ -52,7 +52,12 @@ dependencies {
 
     // Embedded HTTP server: exposes /v1/chat/completions on the LAN so
     // EcoRouter can route to this phone like it does the PC and cloud.
-    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    // Vendored at src/main/java/fi/iki/elonen/NanoHTTPD.java instead of
+    // pulled from Maven -- upstream 2.3.1 does a blocking reverse-DNS
+    // lookup on every non-loopback connection before serve() runs; the
+    // vendored copy defers it to first actual use, which this app never
+    // makes. Do not also add the Maven artifact back: same package, same
+    // class names, duplicate-class build failure.
 
     // Kotlin
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3'

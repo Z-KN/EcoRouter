@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from .analyzer import HeuristicPromptAnalyzer
+from .estimator import CalibratedEstimator, EstimatorUnavailableError
 from .executors import (
     CirrascaleExecutor,
     build_executors,
@@ -27,6 +27,11 @@ from .models import (
 )
 from .router import EcoRouter
 from .scenarios import built_in_scenarios, load_device_configs, load_telemetry
+
+# Resolved from this file's location, not the working directory, so `ecorouter
+# route ...` finds the fitted heads regardless of where it's invoked from --
+# same convention as demo.py's HEADS_DIR.
+HEADS_DIR = Path(__file__).resolve().parent.parent / "benchmarks" / "calibration" / "heads"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -60,13 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
         )
         subparser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
         subparser.add_argument(
-            "--no-presidio",
+            "--no-estimator",
             action="store_true",
             help=(
-                "Use the dependency-free regex-based HeuristicPromptAnalyzer instead of "
-                "Presidio/spaCy. Detects fewer PII categories (no NER-based PERSON/NRP "
-                "detection) -- for environments where Presidio cannot be installed, not "
-                "for production use."
+                "Skip the calibrated per-prompt quality estimator; use static "
+                "capability scores only."
             ),
         )
         if command == "run":
@@ -219,8 +222,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             telemetry=telemetry,
             profile=OptimizationProfile(args.profile),
         )
-        analyzer = HeuristicPromptAnalyzer() if args.no_presidio else None
-        router = EcoRouter(configs, analyzer=analyzer)
+
+        estimator = None
+        if not args.no_estimator:
+            try:
+                estimator = CalibratedEstimator(HEADS_DIR)
+            except EstimatorUnavailableError as error:
+                print(f"! routing without the calibrated estimator: {error}", file=sys.stderr)
+
+        router = EcoRouter(configs, estimator=estimator)
         if args.command == "run":
             executors = build_executors(
                 live_phone=args.live_phone,

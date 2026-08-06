@@ -1,5 +1,6 @@
 import json
 import unittest
+from dataclasses import replace
 
 from ecorouter import (
     Device,
@@ -14,6 +15,7 @@ from ecorouter import (
     ValidationError,
     default_simulated_executors,
 )
+from ecorouter.estimator import EstimatorUnavailableError, PromptEstimate
 from ecorouter.scenarios import built_in_scenarios
 
 
@@ -27,8 +29,19 @@ def request_for(
     return RouteRequest(prompt, origin, built_in_scenarios()[scenario], profile)
 
 
-def heuristic_router(configs=None) -> EcoRouter:
-    return EcoRouter(configs, analyzer=HeuristicPromptAnalyzer())
+def heuristic_router(configs=None, estimator=None) -> EcoRouter:
+    return EcoRouter(configs, analyzer=HeuristicPromptAnalyzer(), estimator=estimator)
+
+
+def _untrusted_estimate() -> PromptEstimate:
+    return PromptEstimate(
+        p_pass={},
+        length_p50={},
+        length_p90={},
+        confidence="low",
+        mean_distance=1.0,
+        neighbours=(),
+    )
 
 
 class EcoRouterTests(unittest.TestCase):
@@ -60,13 +73,13 @@ class EcoRouterTests(unittest.TestCase):
 
         self.assertEqual(result.response, "observed response")
         self.assertIsNotNone(result.metrics)
-        self.assertEqual(result.metrics.estimated_energy_joules, 1.2)
+        self.assertAlmostEqual(result.metrics.estimated_energy_joules, 67.425832, places=5)
         self.assertIsNone(result.metrics.measured_energy_joules)
-        self.assertEqual(result.metrics.energy_joules_per_token, 0.04)
+        self.assertAlmostEqual(result.metrics.energy_joules_per_token, 2.247528, places=5)
         self.assertEqual(result.metrics.confidence, "uncalibrated")
         self.assertIn("cloud", result.metrics.energy_scope)
         self.assertEqual(result.to_dict()["metrics"]["api_turnaround_latency_ms"], 125.124)
-        self.assertEqual(result.to_dict()["metrics"]["estimated_energy_joules"], 1.2)
+        self.assertEqual(result.to_dict()["metrics"]["estimated_energy_joules"], 67.425832)
 
     def test_uncalibrated_pc_estimate_is_labeled_pc_not_cloud(self) -> None:
         class ObservedPcExecutor:
@@ -83,10 +96,17 @@ class EcoRouterTests(unittest.TestCase):
                     total_tokens=52,
                 )
 
+        # Phone/cloud made unavailable so PC wins by elimination -- this test
+        # is about the uncalibrated-energy-fallback labeling, not about which
+        # device the latency/energy/quality tradeoff would otherwise favour.
+        telemetry = dict(built_in_scenarios()["healthy"])
+        telemetry[Device.PHONE] = replace(telemetry[Device.PHONE], available=False)
+        telemetry[Device.CLOUD] = replace(telemetry[Device.CLOUD], available=False)
+
         executors = default_simulated_executors()
         executors[Device.PC] = ObservedPcExecutor()
         result = heuristic_router().run(
-            request_for("What model are you?", origin=Device.PC, profile=OptimizationProfile.LOW_LATENCY),
+            RouteRequest("What model are you?", Device.PC, telemetry, OptimizationProfile.LOW_LATENCY),
             executors,
         )
 
@@ -116,9 +136,13 @@ class EcoRouterTests(unittest.TestCase):
                     compute_unit="npu",
                 )
 
+        # Flat capability scores isolate the energy-telemetry assertions below
+        # from the quality penalty -- this test is about the passthrough, not
+        # about which device the quality/latency/energy tradeoff favours.
+        configs = {device: DeviceConfig(f"{device.value}-model", 0.80) for device in Device}
         executors = default_simulated_executors()
         executors[Device.PHONE] = ObservedPhoneExecutor()
-        result = heuristic_router().run(
+        result = heuristic_router(configs).run(
             request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
             executors,
         )
@@ -134,6 +158,55 @@ class EcoRouterTests(unittest.TestCase):
         self.assertEqual(result.metrics.compute_unit, "npu")
         # Estimated (telemetry-table) energy is still computed alongside the
         # measured figure -- useful as a comparison point, not a replacement.
+        self.assertIsNotNone(result.metrics.estimated_energy_joules)
+
+    def test_measured_pc_energy_is_passed_through_with_full_stats(self) -> None:
+        class ObservedPcExecutor:
+            def execute(self, prompt, decision):
+                raise AssertionError("legacy execute must not be called")
+
+            def execute_observed(self, prompt, decision):
+                return ExecutionObservation(
+                    response="pc response",
+                    api_turnaround_latency_ms=1500.0,
+                    model_id=decision.model_id,
+                    prompt_tokens=26,
+                    completion_tokens=153,
+                    total_tokens=179,
+                    ttft_ms=45.3,
+                    prefill_speed_tokens_per_second=900.0,
+                    decode_speed_tokens_per_second=21.0,
+                    measured_energy_joules=9.1467,
+                    tokens_per_joule=2.4,
+                    compute_unit="npu",
+                    backend="geniex",
+                )
+
+        # Phone/cloud made unavailable so PC wins by elimination -- this test
+        # is about the measured-energy passthrough, not about which device
+        # the latency/energy/quality tradeoff would otherwise favour.
+        telemetry = dict(built_in_scenarios()["healthy"])
+        telemetry[Device.PHONE] = replace(telemetry[Device.PHONE], available=False)
+        telemetry[Device.CLOUD] = replace(telemetry[Device.CLOUD], available=False)
+
+        executors = default_simulated_executors()
+        executors[Device.PC] = ObservedPcExecutor()
+        result = heuristic_router().run(
+            RouteRequest("What model are you?", Device.PC, telemetry, OptimizationProfile.LOW_LATENCY),
+            executors,
+        )
+
+        self.assertEqual(result.decision.selected_device, Device.PC)
+        self.assertAlmostEqual(result.metrics.measured_energy_joules, 9.1467)
+        self.assertEqual(result.metrics.confidence, "measured")
+        self.assertIn("measured whole-laptop battery discharge", result.metrics.energy_scope)
+        self.assertNotIn("phone is unplugged", result.metrics.energy_scope)
+        self.assertEqual(result.metrics.ttft_ms, 45.3)
+        self.assertEqual(result.metrics.prefill_speed_tokens_per_second, 900.0)
+        self.assertEqual(result.metrics.decode_speed_tokens_per_second, 21.0)
+        self.assertEqual(result.metrics.tokens_per_joule, 2.4)
+        self.assertEqual(result.metrics.compute_unit, "npu")
+        self.assertEqual(result.metrics.backend, "geniex")
         self.assertIsNotNone(result.metrics.estimated_energy_joules)
 
     def test_phone_energy_falls_back_to_uncalibrated_when_unmeasured(self) -> None:
@@ -155,9 +228,10 @@ class EcoRouterTests(unittest.TestCase):
                     compute_unit="cpu",
                 )
 
+        configs = {device: DeviceConfig(f"{device.value}-model", 0.80) for device in Device}
         executors = default_simulated_executors()
         executors[Device.PHONE] = ObservedPhoneExecutor()
-        result = heuristic_router().run(
+        result = heuristic_router(configs).run(
             request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
             executors,
         )
@@ -166,7 +240,11 @@ class EcoRouterTests(unittest.TestCase):
         self.assertEqual(result.metrics.confidence, "uncalibrated")
         self.assertIn("phone", result.metrics.energy_scope)
 
-    def test_short_lookup_uses_efficient_phone_in_healthy_scenario(self) -> None:
+    def test_short_lookup_in_balanced_profile(self) -> None:
+        # Real calibrated constants: PC is both slower and far more
+        # energy-hungry per token than phone on this hardware pairing (see
+        # scenarios.py), so phone wins a short lookup under balanced despite
+        # its lower static capability_score.
         decision = heuristic_router().route(request_for("What's the weather tomorrow?"))
 
         self.assertEqual(decision.selected_device, Device.PHONE)
@@ -213,15 +291,20 @@ class EcoRouterTests(unittest.TestCase):
         self.assertEqual(decision.selected_device, Device.PC)
         self.assertTrue(decision.quality_degraded)
 
-    def test_low_battery_and_thermal_pressure_are_hard_gates(self) -> None:
+    def test_low_battery_and_thermal_pressure_no_longer_affect_routing(self) -> None:
+        # Battery and thermal pressure are no longer hard gates or scored
+        # penalties -- only latency, energy, and quality drive routing now.
         telemetry = built_in_scenarios()["phone-low-battery"]
         telemetry[Device.PC] = DeviceTelemetry(True, 18, 120, 0.025, 0.18, 0.95, 85, 0)
 
         decision = heuristic_router().route(RouteRequest("Hello", Device.PHONE, telemetry))
 
-        self.assertEqual(decision.selected_device, Device.CLOUD)
-        self.assertFalse(next(item for item in decision.candidates if item.device == Device.PHONE).eligible)
-        self.assertFalse(next(item for item in decision.candidates if item.device == Device.PC).eligible)
+        self.assertTrue(next(item for item in decision.candidates if item.device == Device.PHONE).eligible)
+        self.assertTrue(next(item for item in decision.candidates if item.device == Device.PC).eligible)
+        self.assertEqual(
+            set(next(item for item in decision.candidates if item.device == Device.PHONE).penalties),
+            {"latency", "energy", "quality"},
+        )
 
     def test_no_route_when_all_destinations_are_blocked(self) -> None:
         telemetry = {
@@ -278,6 +361,77 @@ class EcoRouterTests(unittest.TestCase):
             DeviceTelemetry(True, "10", 100, 0.01, 0.1, 0.1, 80, 0)
         with self.assertRaises(ValidationError):
             DeviceTelemetry("true", 10, 100, 0.01, 0.1, 0.1, 80, 0)
+
+    def test_estimator_failure_mid_route_falls_back_to_static_behaviour(self) -> None:
+        class FlakyEstimator:
+            def estimate(self, prompt, intent=None):
+                raise EstimatorUnavailableError("weights unloaded")
+
+        router = heuristic_router(estimator=FlakyEstimator())
+
+        decision = router.route(request_for("What's the weather tomorrow?"))
+
+        # Same outcome as no estimator at all -- a runtime failure must not
+        # take routing down or silently change the decision.
+        self.assertEqual(decision.selected_device, Device.PHONE)
+        self.assertFalse(decision.quality_degraded)
+
+    def test_untrusted_estimate_forces_cloud_when_not_sensitive(self) -> None:
+        class LowConfidenceEstimator:
+            def estimate(self, prompt, intent=None):
+                return _untrusted_estimate()
+
+        router = heuristic_router(estimator=LowConfidenceEstimator())
+
+        decision = router.route(request_for("What's the weather tomorrow?"))
+
+        self.assertEqual(decision.selected_device, Device.CLOUD)
+        self.assertTrue(decision.quality_degraded)
+        self.assertIn("out of the calibration domain", decision.explanation)
+
+    def test_untrusted_estimate_forces_pc_when_sensitive(self) -> None:
+        class LowConfidenceEstimator:
+            def estimate(self, prompt, intent=None):
+                return _untrusted_estimate()
+
+        router = heuristic_router(estimator=LowConfidenceEstimator())
+
+        decision = router.route(request_for("Summarize records for alice@example.com"))
+
+        self.assertEqual(decision.selected_device, Device.PC)
+        self.assertTrue(decision.quality_degraded)
+        self.assertIn("privacy-sensitive", decision.explanation)
+
+    def test_untrusted_estimate_falls_back_when_forced_target_is_ineligible(self) -> None:
+        class LowConfidenceEstimator:
+            def estimate(self, prompt, intent=None):
+                return _untrusted_estimate()
+
+        router = heuristic_router(estimator=LowConfidenceEstimator())
+
+        decision = router.route(request_for("What's the weather tomorrow?", scenario="cloud-offline"))
+
+        self.assertNotEqual(decision.selected_device, Device.CLOUD)
+
+    def test_trusted_estimate_is_unaffected_by_the_untrusted_fallback(self) -> None:
+        class TrustedEstimator:
+            quality_floor = 0.5
+
+            def estimate(self, prompt, intent=None):
+                return PromptEstimate(
+                    p_pass={Device.PHONE: 0.9, Device.PC: 0.95, Device.CLOUD: 0.99},
+                    length_p50={Device.PHONE: 20, Device.PC: 20, Device.CLOUD: 20},
+                    length_p90={Device.PHONE: 30, Device.PC: 30, Device.CLOUD: 30},
+                    confidence="high",
+                    mean_distance=0.05,
+                    neighbours=(),
+                )
+
+        router = heuristic_router(estimator=TrustedEstimator())
+
+        decision = router.route(request_for("What's the weather tomorrow?"))
+
+        self.assertNotIn("out of the calibration domain", decision.explanation)
 
 
 if __name__ == "__main__":

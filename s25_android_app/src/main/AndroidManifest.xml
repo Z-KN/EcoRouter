@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Keeps the CPU alive during model downloads when the screen locks. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Keeps the Wi-Fi radio out of power-save between routed requests,
+         see InferenceService.wifiLock. -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- Optional in-app camera capture for VLM image input. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Foreground service so the in-app inference server keeps serving

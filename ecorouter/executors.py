@@ -13,6 +13,7 @@ from typing import Any, Protocol, runtime_checkable
 from urllib.parse import urlparse
 
 from .models import (
+    CLOUD_AI_100_TDP_WATTS,
     CloudConfigurationError,
     CloudExecutionError,
     Device,
@@ -177,13 +178,16 @@ class CirrascaleExecutor:
 
         response_model = getattr(response, "model", None)
         model_id = response_model if isinstance(response_model, str) and response_model else decision.model_id
+        latency_ms = (finished_ns - started_ns) / 1_000_000
+        measured_energy_joules = CLOUD_AI_100_TDP_WATTS * (latency_ms / 1000.0)
         return ExecutionObservation(
             response=content,
-            api_turnaround_latency_ms=(finished_ns - started_ns) / 1_000_000,
+            api_turnaround_latency_ms=latency_ms,
             model_id=model_id,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
             total_tokens=total_tokens,
+            measured_energy_joules=measured_energy_joules,
         )
 
     def _ensure_client(self) -> Any:
@@ -351,6 +355,15 @@ class XEliteExecutor:
         usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
         response_model = body.get("model")
         model_id = response_model if isinstance(response_model, str) and response_model else decision.model_id
+
+        profile = body.get("quad_profile") if isinstance(body.get("quad_profile"), dict) else {}
+        measured_energy_joules = None
+        energy_mj = _optional_float(profile.get("measured_energy_mj"))
+        if profile.get("energy_available") is True and energy_mj is not None:
+            measured_energy_joules = energy_mj / 1000.0
+        compute_unit = profile.get("device")
+        backend = profile.get("backend")
+
         return ExecutionObservation(
             response=content,
             api_turnaround_latency_ms=(finished_ns - started_ns) / 1_000_000,
@@ -358,6 +371,13 @@ class XEliteExecutor:
             prompt_tokens=_optional_nonnegative_int(usage.get("prompt_tokens")),
             completion_tokens=_optional_nonnegative_int(usage.get("completion_tokens")),
             total_tokens=_optional_nonnegative_int(usage.get("total_tokens")),
+            ttft_ms=_optional_float(profile.get("ttft_ms")),
+            prefill_speed_tokens_per_second=_optional_float(profile.get("prefill_speed_tok_s")),
+            decode_speed_tokens_per_second=_optional_float(profile.get("decode_speed_tok_s")),
+            measured_energy_joules=measured_energy_joules,
+            tokens_per_joule=_optional_float(profile.get("tokens_per_joule")),
+            compute_unit=compute_unit if isinstance(compute_unit, str) else None,
+            backend=backend if isinstance(backend, str) else None,
         )
 
 

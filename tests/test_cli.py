@@ -2,16 +2,42 @@ import contextlib
 import io
 import json
 import unittest
+from dataclasses import replace
 from unittest.mock import Mock, patch
 
-from ecorouter.cli import main
+from ecorouter.cli import HEADS_DIR, main
+from ecorouter.estimator import EstimatorUnavailableError
 from ecorouter.executors import default_simulated_executors
 from ecorouter.models import (
     CloudConfigurationError,
     Device,
+    DeviceConfig,
     ExecutionObservation,
     PrivacyInitializationError,
 )
+from ecorouter.scenarios import built_in_scenarios
+
+
+def _flat_configs():
+    # Equal capability scores isolate these dispatch tests from the quality
+    # penalty -- phone's lower static capability_score (0.60 vs pc's 0.80)
+    # can otherwise outweigh its latency/energy edge, since the profile
+    # weights now only cover latency/energy/quality.
+    return {device: DeviceConfig(f"{device.value}-model", 0.80) for device in Device}
+
+
+def _pc_forced_scenarios():
+    # Phone/cloud made unavailable in the "healthy" scenario so PC wins by
+    # elimination -- PC is genuinely slower and more energy-hungry per token
+    # than phone on the real calibrated constants (see scenarios.py), so it
+    # no longer wins latency/energy tradeoffs naturally the way the old
+    # illustrative dummy numbers made it appear to.
+    scenarios = dict(built_in_scenarios())
+    healthy = dict(scenarios["healthy"])
+    healthy[Device.PHONE] = replace(healthy[Device.PHONE], available=False)
+    healthy[Device.CLOUD] = replace(healthy[Device.CLOUD], available=False)
+    scenarios["healthy"] = healthy
+    return scenarios
 
 
 class LiveCloudStub:
@@ -44,6 +70,28 @@ class LivePcStub:
         )
 
 
+class LiveMeasuredPcStub:
+    def execute(self, prompt, decision):
+        return "live pc response"
+
+    def execute_observed(self, prompt, decision):
+        return ExecutionObservation(
+            response="live pc response",
+            api_turnaround_latency_ms=1500.0,
+            model_id=decision.model_id,
+            prompt_tokens=26,
+            completion_tokens=153,
+            total_tokens=179,
+            ttft_ms=45.3,
+            prefill_speed_tokens_per_second=900.0,
+            decode_speed_tokens_per_second=21.0,
+            measured_energy_joules=9.1467,
+            tokens_per_joule=2.4,
+            compute_unit="npu",
+            backend="geniex",
+        )
+
+
 class LivePhoneStub:
     def execute(self, prompt, decision):
         return "live phone response"
@@ -66,6 +114,18 @@ class LivePhoneStub:
 
 
 class CliTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # Isolate ordinary router-mechanics tests from the real calibrated
+        # estimator (heavy, and would change which device several fixture
+        # prompts route to). Tests that specifically exercise the estimator
+        # wiring override this patch themselves.
+        patcher = patch(
+            "ecorouter.cli.CalibratedEstimator",
+            side_effect=EstimatorUnavailableError("stub: no estimator in unit tests"),
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_route_emits_machine_readable_json(self) -> None:
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
@@ -126,7 +186,7 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(code, 5)
         self.assertEqual(
-            stderr.getvalue().strip(),
+            stderr.getvalue().strip().splitlines()[-1],
             "privacy error: privacy runtime unavailable",
         )
 
@@ -195,7 +255,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["metrics"]["api_turnaround_latency_ms"], 321.988)
         self.assertEqual(payload["metrics"]["total_tokens"], 15)
         self.assertIsNone(payload["metrics"]["measured_energy_joules"])
-        self.assertEqual(payload["metrics"]["estimated_energy_joules"], 0.6)
+        self.assertEqual(payload["metrics"]["estimated_energy_joules"], 33.712916)
         self.assertEqual(payload["metrics"]["confidence"], "uncalibrated")
         factory.assert_called_once_with(live_phone=False, live_pc=False, live_cloud=True)
 
@@ -224,7 +284,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("API turnaround latency: 321.988 ms", output)
         self.assertIn("Measured energy: unavailable", output)
-        self.assertIn("Estimated energy: 0.600000 J", output)
+        self.assertIn("Estimated energy: 33.712916 J", output)
         self.assertIn("uncalibrated", output)
 
     def test_live_cloud_flag_keeps_local_route_simulated(self) -> None:
@@ -258,6 +318,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch("ecorouter.cli.build_executors", return_value=executors) as factory,
+            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -288,6 +349,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -297,6 +359,8 @@ class CliTests(unittest.TestCase):
                     "phone",
                     "--prompt",
                     "What's the weather?",
+                    "--config",
+                    "unused",
                     "--live-pc",
                     "--json",
                 ]
@@ -307,6 +371,71 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["decision"]["selected_device"], "phone")
         self.assertIn("Simulated", payload["response"])
 
+    def test_live_pc_flag_dispatches_pc_route_with_full_stats(self) -> None:
+        executors = default_simulated_executors()
+        executors[Device.PC] = LiveMeasuredPcStub()
+        stdout = io.StringIO()
+        with (
+            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
+            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(
+                [
+                    "run",
+                    "--origin",
+                    "pc",
+                    "--prompt",
+                    "What model are you?",
+                    "--profile",
+                    "low-latency",
+                    "--live-pc",
+                    "--json",
+                ]
+            )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["decision"]["selected_device"], "pc")
+        self.assertEqual(payload["response"], "live pc response")
+        metrics = payload["metrics"]
+        self.assertAlmostEqual(metrics["measured_energy_joules"], 9.1467)
+        self.assertEqual(metrics["confidence"], "measured")
+        self.assertIn("measured whole-laptop battery discharge", metrics["energy_scope"])
+        self.assertEqual(metrics["ttft_ms"], 45.3)
+        self.assertEqual(metrics["prefill_speed_tokens_per_second"], 900.0)
+        self.assertEqual(metrics["decode_speed_tokens_per_second"], 21.0)
+        self.assertEqual(metrics["tokens_per_joule"], 2.4)
+        self.assertEqual(metrics["compute_unit"], "npu")
+        factory.assert_called_once_with(live_phone=False, live_pc=True, live_cloud=False)
+
+    def test_live_pc_human_output_shows_measured_energy_and_throughput(self) -> None:
+        executors = default_simulated_executors()
+        executors[Device.PC] = LiveMeasuredPcStub()
+        stdout = io.StringIO()
+        with (
+            patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(
+                [
+                    "run",
+                    "--origin",
+                    "pc",
+                    "--prompt",
+                    "What model are you?",
+                    "--profile",
+                    "low-latency",
+                    "--live-pc",
+                ]
+            )
+
+        output = stdout.getvalue()
+        self.assertEqual(code, 0)
+        self.assertIn("Measured energy: 9.146700 J", output)
+        self.assertIn("TTFT: 45.30 ms", output)
+
     def test_live_cloud_and_live_pc_together_pass_both_flags(self) -> None:
         executors = default_simulated_executors()
         executors[Device.CLOUD] = LiveCloudStub()
@@ -314,6 +443,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch("ecorouter.cli.build_executors", return_value=executors) as factory,
+            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -343,6 +473,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch("ecorouter.cli.build_executors", return_value=executors) as factory,
+            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -354,6 +485,8 @@ class CliTests(unittest.TestCase):
                     "What model are you?",
                     "--profile",
                     "energy-saver",
+                    "--config",
+                    "unused",
                     "--live-phone",
                     "--json",
                 ]
@@ -380,6 +513,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -389,6 +523,8 @@ class CliTests(unittest.TestCase):
                     "phone",
                     "--prompt",
                     "What model are you?",
+                    "--config",
+                    "unused",
                     "--live-phone",
                 ]
             )
@@ -465,6 +601,50 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(code, 4)
         self.assertIn("PHONE_SERVER_ENDPOINT", stderr.getvalue())
+
+    def test_no_estimator_flag_skips_estimator_construction(self) -> None:
+        with patch("ecorouter.cli.CalibratedEstimator") as estimator_cls:
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["route", "--origin", "phone", "--prompt", "Hello", "--no-estimator"])
+
+        self.assertEqual(code, 0)
+        estimator_cls.assert_not_called()
+
+    def test_estimator_construction_failure_falls_back_with_a_stderr_notice(self) -> None:
+        stderr = io.StringIO()
+        stdout = io.StringIO()
+        with (
+            patch(
+                "ecorouter.cli.CalibratedEstimator",
+                side_effect=EstimatorUnavailableError("heads not cached"),
+            ),
+            contextlib.redirect_stderr(stderr),
+            contextlib.redirect_stdout(stdout),
+        ):
+            code = main(["route", "--origin", "phone", "--prompt", "Hello"])
+
+        self.assertEqual(code, 0)
+        self.assertIn(
+            "routing without the calibrated estimator: heads not cached", stderr.getvalue()
+        )
+        self.assertIn("Selected:", stdout.getvalue())
+
+    def test_calibrated_estimator_is_wired_into_the_router(self) -> None:
+        sentinel_estimator = object()
+        with (
+            patch(
+                "ecorouter.cli.CalibratedEstimator", return_value=sentinel_estimator
+            ) as estimator_cls,
+            patch(
+                "ecorouter.cli.EcoRouter", side_effect=RuntimeError("stop after construction")
+            ) as router_cls,
+        ):
+            with self.assertRaises(RuntimeError):
+                main(["route", "--origin", "phone", "--prompt", "Hello"])
+
+        estimator_cls.assert_called_once_with(HEADS_DIR)
+        router_cls.assert_called_once_with(None, estimator=sentinel_estimator)
 
 
 if __name__ == "__main__":

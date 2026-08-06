@@ -11,6 +11,7 @@ from ecorouter import (
     CloudConfigurationError,
     CloudExecutionError,
     Device,
+    DeviceConfig,
     EcoRouter,
     GenieXPhoneExecutor,
     HeuristicPromptAnalyzer,
@@ -31,7 +32,7 @@ from ecorouter.scenarios import built_in_scenarios
 
 
 class FakeResponse:
-    def __init__(self, content="cloud response", *, model="Llama-3.1-8B", usage=None) -> None:
+    def __init__(self, content="cloud response", *, model="Llama-3.3-70B", usage=None) -> None:
         self.first_content = content
         self.model = model
         self.usage = usage
@@ -39,7 +40,7 @@ class FakeResponse:
 
 class FakeClient:
     def __init__(self, models=None, content="cloud response", error=None, usage=None) -> None:
-        self.models = models if models is not None else ["Llama-3.1-8B"]
+        self.models = models if models is not None else ["Llama-3.3-70B"]
         self.content = content
         self.error = error
         self.usage = usage
@@ -61,46 +62,34 @@ class FakeClient:
         return FakeResponse(self.content, usage=self.usage)
 
 
-def cloud_decision():
+def _force_device(device: Device) -> "RouteDecision":
+    # Make the other two devices unavailable rather than relying on scoring
+    # to naturally favor `device` -- these fixtures only need *a* decision
+    # routed to a specific device to exercise an executor in isolation, and
+    # coupling them to the router's scoring weights/constants makes them
+    # break every time those are recalibrated for unrelated reasons.
+    telemetry = dict(built_in_scenarios()["healthy"])
+    for other in Device:
+        if other is not device:
+            telemetry[other] = replace(telemetry[other], available=False)
     router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
-    request = RouteRequest(
-        "What model are you?",
-        Device.PC,
-        built_in_scenarios()["healthy"],
-        OptimizationProfile.HIGH_QUALITY,
-    )
+    request = RouteRequest("What model are you?", Device.PC, telemetry, OptimizationProfile.BALANCED)
     decision = router.route(request)
-    if decision.selected_device != Device.CLOUD:
-        raise AssertionError("test fixture must route to cloud")
+    if decision.selected_device != device:
+        raise AssertionError(f"test fixture must route to {device.value}")
     return decision
+
+
+def cloud_decision():
+    return _force_device(Device.CLOUD)
 
 
 def pc_decision():
-    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
-    request = RouteRequest(
-        "What model are you?",
-        Device.PC,
-        built_in_scenarios()["healthy"],
-        OptimizationProfile.LOW_LATENCY,
-    )
-    decision = router.route(request)
-    if decision.selected_device != Device.PC:
-        raise AssertionError("test fixture must route to pc")
-    return decision
+    return _force_device(Device.PC)
 
 
 def phone_decision():
-    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
-    request = RouteRequest(
-        "What model are you?",
-        Device.PHONE,
-        built_in_scenarios()["healthy"],
-        OptimizationProfile.ENERGY_SAVER,
-    )
-    decision = router.route(request)
-    if decision.selected_device != Device.PHONE:
-        raise AssertionError("test fixture must route to phone")
-    return decision
+    return _force_device(Device.PHONE)
 
 
 class CirrascaleExecutorTests(unittest.TestCase):
@@ -119,12 +108,26 @@ class CirrascaleExecutorTests(unittest.TestCase):
 
         self.assertEqual(observation.response, "cloud response")
         self.assertEqual(observation.api_turnaround_latency_ms, 1234.567)
-        self.assertEqual(observation.model_id, "Llama-3.1-8B")
+        self.assertEqual(observation.model_id, "Llama-3.3-70B")
         self.assertEqual(observation.prompt_tokens, 7)
         self.assertEqual(observation.completion_tokens, 11)
         self.assertEqual(observation.total_tokens, 18)
+        self.assertAlmostEqual(observation.measured_energy_joules, 92.592525)
         self.assertEqual(client.catalog_calls, 1)
         self.assertEqual(len(client.chat_calls), 1)
+
+    def test_measured_energy_is_cloud_accelerator_tdp_times_latency(self) -> None:
+        ticks = iter((0, 2_000_000_000))
+        executor = CirrascaleExecutor(
+            client=FakeClient(),
+            message_factory=lambda **kwargs: kwargs,
+            clock_ns=lambda: next(ticks),
+        )
+
+        observation = executor.execute_observed("What model are you?", cloud_decision())
+
+        self.assertEqual(observation.api_turnaround_latency_ms, 2000.0)
+        self.assertEqual(observation.measured_energy_joules, 150.0)
 
     def test_missing_or_malformed_usage_does_not_discard_response(self) -> None:
         malformed = SimpleNamespace(
@@ -157,7 +160,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
         self.assertEqual(observation.total_tokens, 8)
 
     def test_execute_forwards_exact_request_and_caches_catalog(self) -> None:
-        client = FakeClient(models=["z-model", "Llama-3.1-8B", "Llama-3.1-8B"])
+        client = FakeClient(models=["z-model", "Llama-3.3-70B", "Llama-3.3-70B"])
         messages = []
 
         def message_factory(**kwargs):
@@ -175,7 +178,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
         models = executor.list_models()
 
         self.assertEqual(response, "cloud response")
-        self.assertEqual(models, ("Llama-3.1-8B", "z-model"))
+        self.assertEqual(models, ("Llama-3.3-70B", "z-model"))
         self.assertEqual(client.catalog_calls, 1)
         self.assertEqual(client.model_type, "llm")
         self.assertEqual(messages, [{"role": "user", "content": "What model are you?"}])
@@ -184,7 +187,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
             [
                 {
                     "messages": [{"role": "user", "content": "What model are you?"}],
-                    "model": "Llama-3.1-8B",
+                    "model": "Llama-3.3-70B",
                     "max_tokens": decision.analysis.estimated_output_tokens,
                     "temperature": 0,
                 }
@@ -208,7 +211,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
         )
 
         with patch("ecorouter.executors._load_imagine_bindings", return_value=bindings):
-            self.assertEqual(executor.list_models(), ("Llama-3.1-8B",))
+            self.assertEqual(executor.list_models(), ("Llama-3.3-70B",))
 
         self.assertEqual(
             captured,
@@ -435,6 +438,66 @@ class XEliteExecutorTests(unittest.TestCase):
                 executor = XEliteExecutor(http_post=lambda url, payload, body=body: body)
                 with self.assertRaisesRegex(PcExecutionError, expected):
                     executor.execute("What model are you?", pc_decision())
+
+    def test_execute_observed_parses_quad_profile_energy_fields(self) -> None:
+        def http_post(url, payload):
+            return {
+                "choices": [{"message": {"content": "I am Qwen3-VL-4B-Instruct."}}],
+                "model": "ai-hub-models/Qwen3-VL-4B-Instruct",
+                "usage": {"prompt_tokens": 30, "completion_tokens": 22, "total_tokens": 52},
+                "quad_profile": {
+                    "ttft_ms": 45.3,
+                    "prefill_speed_tok_s": 900.0,
+                    "decode_speed_tok_s": 21.0,
+                    "device": "npu",
+                    "backend": "geniex",
+                    "measured_energy_mj": 9146.7,
+                    "tokens_per_joule": 2.4,
+                    "energy_available": True,
+                },
+            }
+
+        executor = XEliteExecutor(endpoint="http://localhost:8000", http_post=http_post)
+
+        observation = executor.execute_observed("What model are you?", pc_decision())
+
+        self.assertEqual(observation.ttft_ms, 45.3)
+        self.assertEqual(observation.prefill_speed_tokens_per_second, 900.0)
+        self.assertEqual(observation.decode_speed_tokens_per_second, 21.0)
+        self.assertEqual(observation.compute_unit, "npu")
+        self.assertEqual(observation.backend, "geniex")
+        self.assertAlmostEqual(observation.measured_energy_joules, 9.1467)
+        self.assertEqual(observation.tokens_per_joule, 2.4)
+
+    def test_energy_is_only_trusted_when_server_reports_it_available(self) -> None:
+        def http_post(url, payload):
+            return {
+                "choices": [{"message": {"content": "hi"}}],
+                "quad_profile": {
+                    "measured_energy_mj": 9146.7,
+                    # e.g. CPU/GPU fallback rather than NPU, or an uncalibrated model.
+                    "energy_available": False,
+                },
+            }
+
+        executor = XEliteExecutor(http_post=http_post)
+
+        observation = executor.execute_observed("What model are you?", pc_decision())
+
+        self.assertIsNone(observation.measured_energy_joules)
+
+    def test_missing_quad_profile_leaves_stats_none(self) -> None:
+        executor = XEliteExecutor(
+            http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]}
+        )
+
+        observation = executor.execute_observed("What model are you?", pc_decision())
+
+        self.assertEqual(observation.response, "hi")
+        self.assertIsNone(observation.ttft_ms)
+        self.assertIsNone(observation.measured_energy_joules)
+        self.assertIsNone(observation.compute_unit)
+        self.assertIsNone(observation.backend)
 
     def test_x_elite_executors_keeps_phone_and_cloud_simulated(self) -> None:
         pc = XEliteExecutor(http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]})

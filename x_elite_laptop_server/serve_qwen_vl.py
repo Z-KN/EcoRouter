@@ -28,6 +28,14 @@ from geniex import AutoModelForCausalLM
 
 MODEL_ID = "ai-hub-models/Qwen3-VL-4B-Instruct"
 
+# Measured incremental NPU-serving power (mW), per model -- whole-laptop battery
+# discharge during sustained back-to-back inference minus an idle baseline,
+# both sampled from `root\WMI BatteryStatus.DischargeRate` while unplugged.
+# See the Android app's `measuredNpuPowerMw()` for the equivalent phone-side table.
+_MEASURED_NPU_POWER_MW: dict[str, float] = {
+    "ai-hub-models/Qwen3-VL-4B-Instruct": 8774.1,
+}
+
 state: dict[str, Any] = {
     "model": None,
     "lock": None,
@@ -163,6 +171,17 @@ async def chat_completions(req: ChatCompletionRequest):
         state["request_count"] += 1
         state["total_decode_tokens"] += out.profile.generated_tokens
         state["total_decode_time_s"] += out.profile.decode_time / 1_000_000
+
+        ttft_ms = out.profile.ttft / 1000
+        latency_ms = ttft_ms + out.profile.decode_time / 1000
+        power_mw = _MEASURED_NPU_POWER_MW.get(MODEL_ID)
+        energy_mj = None
+        tokens_per_joule = None
+        if power_mw is not None and str(out.profile.device).lower() == "npu" and latency_ms > 0:
+            energy_mj = power_mw * (latency_ms / 1000.0)
+            if energy_mj > 0:
+                tokens_per_joule = out.profile.generated_tokens / (energy_mj / 1000.0)
+
         return {
             "id": completion_id,
             "object": "chat.completion",
@@ -181,11 +200,14 @@ async def chat_completions(req: ChatCompletionRequest):
                 "total_tokens": out.profile.prompt_tokens + out.profile.generated_tokens,
             },
             "quad_profile": {
-                "ttft_ms": out.profile.ttft / 1000,
+                "ttft_ms": ttft_ms,
                 "prefill_speed_tok_s": out.profile.prefill_speed,
                 "decode_speed_tok_s": out.profile.decode_speed,
                 "device": out.profile.device,
                 "backend": out.profile.backend,
+                "measured_energy_mj": energy_mj,
+                "energy_available": energy_mj is not None,
+                "tokens_per_joule": tokens_per_joule,
             },
         }
 

@@ -20,9 +20,7 @@ from ecorouter import (
     Device,
     EcoRouter,
     ExecutionError,
-    HeuristicPromptAnalyzer,
     OptimizationProfile,
-    PrivacyError,
     RouteRequest,
     build_executors,
     phone_health,
@@ -41,11 +39,7 @@ def record(name: str, status: str, detail: str) -> None:
 
 
 def make_router() -> EcoRouter:
-    try:
-        return EcoRouter()
-    except PrivacyError:
-        print("  (Presidio unavailable in this environment; falling back to HeuristicPromptAnalyzer)")
-        return EcoRouter(analyzer=HeuristicPromptAnalyzer())
+    return EcoRouter()
 
 
 def check_phone_health() -> None:

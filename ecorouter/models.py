@@ -52,11 +52,11 @@ class PrivacyError(EcoRouterError):
 
 
 class PrivacyInitializationError(PrivacyError):
-    """Raised when Presidio or its NLP model cannot initialize."""
+    """Raised when the configured privacy analyzer cannot initialize."""
 
 
 class PrivacyAnalysisError(PrivacyError):
-    """Raised when Presidio cannot safely analyze a prompt."""
+    """Raised when the configured privacy analyzer cannot safely analyze a prompt."""
 
 
 class Device(str, Enum):
@@ -143,8 +143,23 @@ def default_device_configs() -> dict[Device, DeviceConfig]:
     return {
         Device.PHONE: DeviceConfig("phone-model", 0.60),
         Device.PC: DeviceConfig("pc-model", 0.80),
-        Device.CLOUD: DeviceConfig("Llama-3.1-8B", 0.95),
+        Device.CLOUD: DeviceConfig("Llama-3.3-70B", 0.95),
     }
+
+
+# Qualcomm Cloud AI 100 accelerator rated TDP, per the QuIC Cloud AI SDK docs
+# (https://quic.github.io/cloud-ai-sdk-pages/latest/Getting-Started/Architecture/).
+# Cloud has no dedicated per-token energy constant the way phone/PC do -- it's
+# a shared accelerator running at roughly this fixed draw for however long a
+# request takes, not proportional token-by-token work. Both the router's
+# *predicted* cloud energy (router.py, scored before dispatch) and
+# CirrascaleExecutor's *measured* cloud energy (executors.py, computed after
+# dispatch from the real observed latency) multiply this by a latency instead
+# of using a synthetic J/token rate. It's a card TDP spec, not something
+# measured on our own hardware, and the latency it's multiplied against is
+# wall-clock (network + queueing + compute, not compute-only) -- so treat
+# results as a rougher upper-bound estimate, not a calibrated measurement.
+CLOUD_AI_100_TDP_WATTS = 75.0
 
 
 @dataclass(frozen=True)

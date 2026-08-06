@@ -128,7 +128,15 @@ class MainActivity : FragmentActivity() {
                 name: ComponentName?,
                 binder: IBinder?,
             ) {
-                inferenceService = (binder as InferenceService.LocalBinder).getService()
+                val service = (binder as InferenceService.LocalBinder).getService()
+                inferenceService = service
+                // Auto-start the LAN server on launch so EcoRouter can route to this
+                // phone without a manual toggle tap every time the app is (re)opened.
+                if (!service.isServerRunning()) {
+                    service.startHttpServer().onFailure { error ->
+                        Toast.makeText(this@MainActivity, "could not start server: ${error.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
                 refreshServerStatusUi()
             }
 

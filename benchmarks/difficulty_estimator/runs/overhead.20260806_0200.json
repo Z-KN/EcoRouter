@@ -1,0 +1,212 @@
+[
+  {
+    "backend": "routellm_bert",
+    "load_ms": 193997.6,
+    "rss_before_load_mb": 292.9,
+    "rss_after_load_mb": 626.3,
+    "rss_after_inference_mb": 951.4,
+    "model_rss_delta_mb": 333.4,
+    "per_prompt": [
+      {
+        "id": "short_1",
+        "length_bucket": "short",
+        "char_len": 18,
+        "last_score": 0.2914,
+        "mean_ms": 81.153,
+        "p50_ms": 79.948,
+        "p95_ms": 84.47,
+        "min_ms": 78.299,
+        "max_ms": 86.679
+      },
+      {
+        "id": "short_2",
+        "length_bucket": "short",
+        "char_len": 15,
+        "last_score": 0.3257,
+        "mean_ms": 59.979,
+        "p50_ms": 59.625,
+        "p95_ms": 63.314,
+        "min_ms": 58.163,
+        "max_ms": 65.248
+      },
+      {
+        "id": "short_3",
+        "length_bucket": "short",
+        "char_len": 33,
+        "last_score": 0.2982,
+        "mean_ms": 84.6,
+        "p50_ms": 83.749,
+        "p95_ms": 87.914,
+        "min_ms": 81.12,
+        "max_ms": 91.144
+      },
+      {
+        "id": "medium_1",
+        "length_bucket": "medium",
+        "char_len": 175,
+        "last_score": 0.254,
+        "mean_ms": 208.154,
+        "p50_ms": 208.578,
+        "p95_ms": 214.849,
+        "min_ms": 199.833,
+        "max_ms": 215.917
+      },
+      {
+        "id": "medium_2",
+        "length_bucket": "medium",
+        "char_len": 171,
+        "last_score": 0.2161,
+        "mean_ms": 159.105,
+        "p50_ms": 158.45,
+        "p95_ms": 166.106,
+        "min_ms": 153.609,
+        "max_ms": 168.971
+      },
+      {
+        "id": "medium_3",
+        "length_bucket": "medium",
+        "char_len": 160,
+        "last_score": 0.3958,
+        "mean_ms": 160.747,
+        "p50_ms": 160.01,
+        "p95_ms": 167.638,
+        "min_ms": 154.274,
+        "max_ms": 168.048
+      },
+      {
+        "id": "long_1",
+        "length_bucket": "long",
+        "char_len": 708,
+        "last_score": 0.1745,
+        "mean_ms": 604.052,
+        "p50_ms": 604.85,
+        "p95_ms": 617.6,
+        "min_ms": 584.453,
+        "max_ms": 627.115
+      },
+      {
+        "id": "long_2",
+        "length_bucket": "long",
+        "char_len": 512,
+        "last_score": 0.2974,
+        "mean_ms": 395.039,
+        "p50_ms": 394.779,
+        "p95_ms": 405.197,
+        "min_ms": 383.33,
+        "max_ms": 405.367
+      }
+    ],
+    "overall": {
+      "mean_ms": 219.104,
+      "p50_ms": 159.31,
+      "p95_ms": 605.632,
+      "min_ms": 58.163,
+      "max_ms": 627.115
+    }
+  },
+  {
+    "backend": "minilm_l6_placeholder",
+    "load_ms": 15859.9,
+    "rss_before_load_mb": 551.0,
+    "rss_after_load_mb": 350.5,
+    "rss_after_inference_mb": 380.0,
+    "model_rss_delta_mb": -200.5,
+    "per_prompt": [
+      {
+        "id": "short_1",
+        "length_bucket": "short",
+        "char_len": 18,
+        "last_score": 0.5389,
+        "mean_ms": 12.238,
+        "p50_ms": 11.942,
+        "p95_ms": 13.795,
+        "min_ms": 11.507,
+        "max_ms": 14.955
+      },
+      {
+        "id": "short_2",
+        "length_bucket": "short",
+        "char_len": 15,
+        "last_score": 0.502,
+        "mean_ms": 8.881,
+        "p50_ms": 8.856,
+        "p95_ms": 9.655,
+        "min_ms": 8.284,
+        "max_ms": 10.624
+      },
+      {
+        "id": "short_3",
+        "length_bucket": "short",
+        "char_len": 33,
+        "last_score": 0.5041,
+        "mean_ms": 12.991,
+        "p50_ms": 12.363,
+        "p95_ms": 14.82,
+        "min_ms": 11.898,
+        "max_ms": 15.2
+      },
+      {
+        "id": "medium_1",
+        "length_bucket": "medium",
+        "char_len": 175,
+        "last_score": 0.5233,
+        "mean_ms": 29.541,
+        "p50_ms": 28.555,
+        "p95_ms": 32.972,
+        "min_ms": 27.537,
+        "max_ms": 33.223
+      },
+      {
+        "id": "medium_2",
+        "length_bucket": "medium",
+        "char_len": 171,
+        "last_score": 0.532,
+        "mean_ms": 23.832,
+        "p50_ms": 23.607,
+        "p95_ms": 25.172,
+        "min_ms": 22.821,
+        "max_ms": 26.839
+      },
+      {
+        "id": "medium_3",
+        "length_bucket": "medium",
+        "char_len": 160,
+        "last_score": 0.5209,
+        "mean_ms": 20.254,
+        "p50_ms": 20.244,
+        "p95_ms": 21.356,
+        "min_ms": 19.537,
+        "max_ms": 21.661
+      },
+      {
+        "id": "long_1",
+        "length_bucket": "long",
+        "char_len": 708,
+        "last_score": 0.5385,
+        "mean_ms": 92.917,
+        "p50_ms": 92.56,
+        "p95_ms": 98.62,
+        "min_ms": 89.071,
+        "max_ms": 101.846
+      },
+      {
+        "id": "long_2",
+        "length_bucket": "long",
+        "char_len": 512,
+        "last_score": 0.4604,
+        "mean_ms": 58.043,
+        "p50_ms": 57.604,
+        "p95_ms": 61.698,
+        "min_ms": 54.797,
+        "max_ms": 62.398
+      }
+    ],
+    "overall": {
+      "mean_ms": 32.337,
+      "p50_ms": 22.241,
+      "p95_ms": 92.72,
+      "min_ms": 8.284,
+      "max_ms": 101.846
+    }
+  }
+]

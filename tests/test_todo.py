@@ -16,7 +16,7 @@ class TodoCoverageTests(unittest.TestCase):
             "mlp or gbdt",
             "real-time pc dashboard",
             "production security",
-            "evaluate and calibrate presidio",
+            "evaluate and calibrate the regex privacy heuristic",
             "multilingual nlp models",
             "cirrascale streaming",
             "provider-side energy telemetry",
