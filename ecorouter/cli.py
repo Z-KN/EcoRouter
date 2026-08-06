@@ -10,10 +10,6 @@ from typing import Sequence
 
 from .executors import (
     CirrascaleExecutor,
-    cirrascale_executors,
-    default_simulated_executors,
-    hybrid_executors,
-    x_elite_executors,
 )
 from .models import (
     Device,
@@ -26,7 +22,7 @@ from .models import (
     RouteRequest,
     ValidationError,
 )
-from .router import EcoRouter
+from .router import EcoRouter, default_executor_map
 from .scenarios import built_in_scenarios, load_device_configs, load_telemetry
 
 
@@ -177,15 +173,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         router = EcoRouter(configs)
         if args.command == "run":
-            if args.live_cloud and args.live_pc:
-                executors = hybrid_executors()
-            elif args.live_cloud:
-                executors = cirrascale_executors()
-            elif args.live_pc:
-                executors = x_elite_executors()
-            else:
-                executors = default_simulated_executors()
-            result = router.run(request, executors)
+            result = router.run(request, default_executor_map(live_cloud=args.live_cloud, live_pc=args.live_pc))
             if args.json:
                 print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
             else:

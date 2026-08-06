@@ -5,7 +5,14 @@ from __future__ import annotations
 from typing import Mapping
 
 from .analyzer import PresidioPromptAnalyzer, PromptAnalyzer
-from .executors import Executor, ObservedExecutor
+from .executors import (
+    Executor,
+    ObservedExecutor,
+    cirrascale_executors,
+    default_simulated_executors,
+    hybrid_executors,
+    x_elite_executors,
+)
 from .models import (
     CandidateEvaluation,
     Device,
@@ -214,3 +221,19 @@ class EcoRouter:
             item.predicted_latency_ms if item.predicted_latency_ms is not None else float("inf"),
             _DEVICE_ORDER[item.device],
         )
+
+
+def default_executor_map(
+    *,
+    live_cloud: bool = False,
+    live_pc: bool = False,
+) -> dict[Device, Executor]:
+    """Build the three-device executor map used by router.run()."""
+
+    if live_cloud and live_pc:
+        return hybrid_executors()
+    if live_cloud:
+        return cirrascale_executors()
+    if live_pc:
+        return x_elite_executors()
+    return default_simulated_executors()
