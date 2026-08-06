@@ -64,8 +64,107 @@ class EcoRouterTests(unittest.TestCase):
         self.assertIsNone(result.metrics.measured_energy_joules)
         self.assertEqual(result.metrics.energy_joules_per_token, 0.04)
         self.assertEqual(result.metrics.confidence, "uncalibrated")
+        self.assertIn("cloud", result.metrics.energy_scope)
         self.assertEqual(result.to_dict()["metrics"]["api_turnaround_latency_ms"], 125.124)
         self.assertEqual(result.to_dict()["metrics"]["estimated_energy_joules"], 1.2)
+
+    def test_uncalibrated_pc_estimate_is_labeled_pc_not_cloud(self) -> None:
+        class ObservedPcExecutor:
+            def execute(self, prompt, decision):
+                raise AssertionError("legacy execute must not be called")
+
+            def execute_observed(self, prompt, decision):
+                return ExecutionObservation(
+                    response="pc response",
+                    api_turnaround_latency_ms=93.0,
+                    model_id=decision.model_id,
+                    prompt_tokens=30,
+                    completion_tokens=22,
+                    total_tokens=52,
+                )
+
+        executors = default_simulated_executors()
+        executors[Device.PC] = ObservedPcExecutor()
+        result = heuristic_router().run(
+            request_for("What model are you?", origin=Device.PC, profile=OptimizationProfile.LOW_LATENCY),
+            executors,
+        )
+
+        self.assertEqual(result.decision.selected_device, Device.PC)
+        self.assertEqual(result.metrics.confidence, "uncalibrated")
+        self.assertIn("PC (X-Elite NPU)", result.metrics.energy_scope)
+        self.assertNotIn("cloud", result.metrics.energy_scope)
+
+    def test_measured_phone_energy_is_passed_through_with_full_stats(self) -> None:
+        class ObservedPhoneExecutor:
+            def execute(self, prompt, decision):
+                raise AssertionError("legacy execute must not be called")
+
+            def execute_observed(self, prompt, decision):
+                return ExecutionObservation(
+                    response="phone response",
+                    api_turnaround_latency_ms=410.0,
+                    model_id=decision.model_id,
+                    prompt_tokens=12,
+                    completion_tokens=40,
+                    total_tokens=52,
+                    ttft_ms=88.5,
+                    prefill_speed_tokens_per_second=140.2,
+                    decode_speed_tokens_per_second=18.6,
+                    measured_energy_joules=0.512,
+                    tokens_per_joule=78.1,
+                    compute_unit="npu",
+                )
+
+        executors = default_simulated_executors()
+        executors[Device.PHONE] = ObservedPhoneExecutor()
+        result = heuristic_router().run(
+            request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
+            executors,
+        )
+
+        self.assertEqual(result.decision.selected_device, Device.PHONE)
+        self.assertEqual(result.metrics.measured_energy_joules, 0.512)
+        self.assertEqual(result.metrics.confidence, "measured")
+        self.assertIn("measured whole-device battery discharge", result.metrics.energy_scope)
+        self.assertEqual(result.metrics.ttft_ms, 88.5)
+        self.assertEqual(result.metrics.prefill_speed_tokens_per_second, 140.2)
+        self.assertEqual(result.metrics.decode_speed_tokens_per_second, 18.6)
+        self.assertEqual(result.metrics.tokens_per_joule, 78.1)
+        self.assertEqual(result.metrics.compute_unit, "npu")
+        # Estimated (telemetry-table) energy is still computed alongside the
+        # measured figure -- useful as a comparison point, not a replacement.
+        self.assertIsNotNone(result.metrics.estimated_energy_joules)
+
+    def test_phone_energy_falls_back_to_uncalibrated_when_unmeasured(self) -> None:
+        """A phone observation without measured energy (e.g. non-NPU compute unit,
+        or the model isn't in the power table) must not be mislabeled as measured."""
+
+        class ObservedPhoneExecutor:
+            def execute(self, prompt, decision):
+                raise AssertionError("legacy execute must not be called")
+
+            def execute_observed(self, prompt, decision):
+                return ExecutionObservation(
+                    response="phone response",
+                    api_turnaround_latency_ms=410.0,
+                    model_id=decision.model_id,
+                    prompt_tokens=12,
+                    completion_tokens=40,
+                    total_tokens=52,
+                    compute_unit="cpu",
+                )
+
+        executors = default_simulated_executors()
+        executors[Device.PHONE] = ObservedPhoneExecutor()
+        result = heuristic_router().run(
+            request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
+            executors,
+        )
+
+        self.assertIsNone(result.metrics.measured_energy_joules)
+        self.assertEqual(result.metrics.confidence, "uncalibrated")
+        self.assertIn("phone", result.metrics.energy_scope)
 
     def test_short_lookup_uses_efficient_phone_in_healthy_scenario(self) -> None:
         decision = heuristic_router().route(request_for("What's the weather tomorrow?"))

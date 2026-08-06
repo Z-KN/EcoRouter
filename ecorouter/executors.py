@@ -19,6 +19,8 @@ from .models import (
     ExecutionObservation,
     PcConfigurationError,
     PcExecutionError,
+    PhoneConfigurationError,
+    PhoneExecutionError,
     RouteDecision,
 )
 
@@ -28,6 +30,9 @@ _ENDPOINT_ENV = "INFERENCE_CLOUD_ENDPOINT"
 
 _XELITE_ENDPOINT_ENV = "XELITE_SERVER_ENDPOINT"
 _DEFAULT_XELITE_ENDPOINT = "http://localhost:8000"
+
+_PHONE_ENDPOINT_ENV = "PHONE_SERVER_ENDPOINT"
+_PHONE_TOKEN_ENV = "PHONE_SERVER_TOKEN"
 
 
 @dataclass(frozen=True)
@@ -229,15 +234,60 @@ def _optional_nonnegative_int(value: Any) -> int | None:
     return value
 
 
-def _default_http_post(url: str, payload: Mapping[str, Any], *, timeout_seconds: float) -> dict:
+def _default_http_post(
+    url: str,
+    payload: Mapping[str, Any],
+    *,
+    timeout_seconds: float,
+    headers: Mapping[str, str] | None = None,
+) -> dict:
+    request_headers = {"Content-Type": "application/json"}
+    if headers:
+        request_headers.update(headers)
     request = urllib.request.Request(
         url,
         data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json"},
+        headers=request_headers,
         method="POST",
     )
     with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
         return json.loads(response.read())
+
+
+def _optional_float(value: Any) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _default_http_get(url: str, *, timeout_seconds: float) -> dict:
+    with urllib.request.urlopen(url, timeout=timeout_seconds) as response:
+        return json.loads(response.read())
+
+
+def phone_health(
+    *,
+    endpoint: str | None = None,
+    environ: Mapping[str, str] | None = None,
+    timeout_seconds: float = 10,
+    http_get: Callable[[str], dict] | None = None,
+) -> dict:
+    """Query the phone server's unauthenticated ``/health`` endpoint."""
+
+    environ = environ if environ is not None else os.environ
+    resolved_endpoint = (endpoint or environ.get(_PHONE_ENDPOINT_ENV) or "").rstrip("/")
+    if not resolved_endpoint:
+        raise PhoneConfigurationError(f"missing required environment variable {_PHONE_ENDPOINT_ENV}.")
+
+    get = http_get or (lambda url: _default_http_get(url, timeout_seconds=timeout_seconds))
+    try:
+        return get(f"{resolved_endpoint}/health")
+    except urllib.error.URLError as error:
+        raise PhoneConfigurationError(
+            f"could not reach the phone server at {resolved_endpoint}: {error.reason}"
+        ) from None
+    except (TimeoutError, OSError) as error:
+        raise PhoneConfigurationError(f"phone server request failed: {error}") from None
 
 
 class XEliteExecutor:
@@ -311,8 +361,133 @@ class XEliteExecutor:
         )
 
 
+class GenieXPhoneExecutor:
+    """Invoke the phone's in-app GenieX inference server for phone execution.
+
+    Talks to the OpenAI-compatible ``/v1/chat/completions`` endpoint exposed
+    by the Android app's ``InferenceService`` (see ``s25_android_app``) over
+    the LAN -- wireless, not USB, so the phone stays unplugged and its
+    on-device energy measurements (see the app's ``measuredNpuPowerMw``)
+    stay valid. Requires a bearer token issued by the app (shown in its
+    server toggle) since nothing else protects the port.
+    """
+
+    def __init__(
+        self,
+        *,
+        endpoint: str | None = None,
+        token: str | None = None,
+        environ: Mapping[str, str] | None = None,
+        timeout_seconds: float = 120,
+        clock_ns: Callable[[], int] = perf_counter_ns,
+        http_post: Callable[[str, Mapping[str, Any]], dict] | None = None,
+    ) -> None:
+        environ = environ if environ is not None else os.environ
+        self._endpoint = (endpoint or environ.get(_PHONE_ENDPOINT_ENV) or "").rstrip("/")
+        self._token = token or environ.get(_PHONE_TOKEN_ENV) or ""
+        self._timeout_seconds = timeout_seconds
+        self._clock_ns = clock_ns
+        self._http_post = http_post or self._live_http_post
+
+    def _live_http_post(self, url: str, payload: Mapping[str, Any]) -> dict:
+        return _default_http_post(
+            url,
+            payload,
+            timeout_seconds=self._timeout_seconds,
+            headers={"Authorization": f"Bearer {self._token}"},
+        )
+
+    def execute(self, prompt: str, decision: RouteDecision) -> str:
+        return self.execute_observed(prompt, decision).response
+
+    def execute_observed(self, prompt: str, decision: RouteDecision) -> ExecutionObservation:
+        if decision.selected_device != Device.PHONE:
+            raise PhoneExecutionError("phone executor requires a phone routing decision.")
+        if not self._endpoint:
+            raise PhoneConfigurationError(f"missing required environment variable {_PHONE_ENDPOINT_ENV}.")
+        if not self._token:
+            raise PhoneConfigurationError(f"missing required environment variable {_PHONE_TOKEN_ENV}.")
+
+        payload = {
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": decision.analysis.estimated_output_tokens,
+            "stream": False,
+        }
+
+        try:
+            started_ns = self._clock_ns()
+            body = self._http_post(f"{self._endpoint}/v1/chat/completions", payload)
+            finished_ns = self._clock_ns()
+        except urllib.error.URLError as error:
+            raise PhoneConfigurationError(
+                f"could not reach the phone server at {self._endpoint}: {error.reason}"
+            ) from None
+        except (TimeoutError, OSError) as error:
+            raise PhoneConfigurationError(f"phone server request failed: {error}") from None
+
+        try:
+            content = body["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            raise PhoneExecutionError("phone server returned an unexpected response shape.") from None
+        if not isinstance(content, str) or not content.strip():
+            raise PhoneExecutionError("phone server returned an empty response.")
+
+        usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
+        response_model = body.get("model")
+        model_id = response_model if isinstance(response_model, str) and response_model else decision.model_id
+
+        profile = body.get("phone_profile") if isinstance(body.get("phone_profile"), dict) else {}
+        measured_energy_joules = None
+        energy_mj = _optional_float(profile.get("measured_energy_mj"))
+        if profile.get("energy_available") is True and energy_mj is not None:
+            measured_energy_joules = energy_mj / 1000.0
+        compute_unit = profile.get("compute_unit")
+
+        return ExecutionObservation(
+            response=content,
+            api_turnaround_latency_ms=(finished_ns - started_ns) / 1_000_000,
+            model_id=model_id,
+            prompt_tokens=_optional_nonnegative_int(usage.get("prompt_tokens")),
+            completion_tokens=_optional_nonnegative_int(usage.get("completion_tokens")),
+            total_tokens=_optional_nonnegative_int(usage.get("total_tokens")),
+            ttft_ms=_optional_float(profile.get("ttft_ms")),
+            prefill_speed_tokens_per_second=_optional_float(profile.get("prefill_speed_tok_s")),
+            decode_speed_tokens_per_second=_optional_float(profile.get("decode_speed_tok_s")),
+            measured_energy_joules=measured_energy_joules,
+            tokens_per_joule=_optional_float(profile.get("tokens_per_joule")),
+            compute_unit=compute_unit if isinstance(compute_unit, str) else None,
+        )
+
+
 def default_simulated_executors() -> dict[Device, SimulatedExecutor]:
     return {device: SimulatedExecutor(device) for device in Device}
+
+
+def build_executors(
+    *,
+    live_phone: bool = False,
+    live_pc: bool = False,
+    live_cloud: bool = False,
+    phone_executor: GenieXPhoneExecutor | None = None,
+    pc_executor: XEliteExecutor | None = None,
+    cloud_executor: CirrascaleExecutor | None = None,
+) -> dict[Device, Executor]:
+    """Combine simulated execution with any opt-in live executors.
+
+    Destinations without a ``live_*`` flag set stay simulated -- this is the
+    single entry point behind ``cirrascale_executors``/``x_elite_executors``/
+    ``hybrid_executors`` and the CLI's ``--live-phone``/``--live-pc``/
+    ``--live-cloud`` flags.
+    """
+
+    executors: dict[Device, Executor] = dict(default_simulated_executors())
+    if live_phone:
+        executors[Device.PHONE] = phone_executor or GenieXPhoneExecutor()
+    if live_pc:
+        executors[Device.PC] = pc_executor or XEliteExecutor()
+    if live_cloud:
+        executors[Device.CLOUD] = cloud_executor or CirrascaleExecutor()
+    return executors
 
 
 def cirrascale_executors(
@@ -320,9 +495,7 @@ def cirrascale_executors(
 ) -> dict[Device, Executor]:
     """Combine simulated local execution with an opt-in live cloud executor."""
 
-    executors: dict[Device, Executor] = dict(default_simulated_executors())
-    executors[Device.CLOUD] = cloud_executor or CirrascaleExecutor()
-    return executors
+    return build_executors(live_cloud=True, cloud_executor=cloud_executor)
 
 
 def x_elite_executors(
@@ -330,9 +503,7 @@ def x_elite_executors(
 ) -> dict[Device, Executor]:
     """Combine simulated phone/cloud execution with a live local X-Elite PC executor."""
 
-    executors: dict[Device, Executor] = dict(default_simulated_executors())
-    executors[Device.PC] = pc_executor or XEliteExecutor()
-    return executors
+    return build_executors(live_pc=True, pc_executor=pc_executor)
 
 
 def hybrid_executors(
@@ -342,7 +513,4 @@ def hybrid_executors(
 ) -> dict[Device, Executor]:
     """Combine a live cloud executor and a live local X-Elite PC executor; phone stays simulated."""
 
-    executors: dict[Device, Executor] = dict(default_simulated_executors())
-    executors[Device.CLOUD] = cloud_executor or CirrascaleExecutor()
-    executors[Device.PC] = pc_executor or XEliteExecutor()
-    return executors
+    return build_executors(live_cloud=True, live_pc=True, cloud_executor=cloud_executor, pc_executor=pc_executor)

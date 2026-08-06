@@ -17,9 +17,6 @@ in the current implementation are documented in the README instead of duplicated
 - [ ] **P1 | v1.5 | Replace approximate token, latency, energy, and cost predictions.**
   Dependency: runtime observations. Complete when predictions are validated against held-out
   measurements and error metrics are reported.
-- [ ] **P0 | v1.4 | Replace phone and PC simulated execution.** Dependency: selected local model
-  runtimes. Complete when both local destinations execute routed prompts with timeouts,
-  cancellation, and sanitized errors while preserving the executor contract.
 
 ## Next version
 

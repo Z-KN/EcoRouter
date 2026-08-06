@@ -5,14 +5,7 @@ from __future__ import annotations
 from typing import Mapping
 
 from .analyzer import PresidioPromptAnalyzer, PromptAnalyzer
-from .executors import (
-    Executor,
-    ObservedExecutor,
-    cirrascale_executors,
-    default_simulated_executors,
-    hybrid_executors,
-    x_elite_executors,
-)
+from .executors import Executor, ObservedExecutor
 from .models import (
     CandidateEvaluation,
     Device,
@@ -69,6 +62,12 @@ _PROFILE_WEIGHTS: dict[OptimizationProfile, dict[str, float]] = {
 }
 
 _DEVICE_ORDER = {Device.PHONE: 0, Device.PC: 1, Device.CLOUD: 2}
+
+_UNCALIBRATED_DEVICE_LABELS = {
+    Device.PHONE: "phone",
+    Device.PC: "PC (X-Elite NPU)",
+    Device.CLOUD: "cloud",
+}
 
 
 def _clamp(value: float) -> float:
@@ -143,17 +142,36 @@ class EcoRouter:
                 if observation.total_tokens is not None
                 else None
             )
+            if observation.measured_energy_joules is not None:
+                energy_estimate_method = "measured_npu_power_x_latency_minus_idle_baseline"
+                energy_scope = (
+                    "measured whole-device battery discharge during decode, NPU-only, "
+                    "per-model calibration; excludes Wi-Fi radio energy for the request "
+                    "itself; only valid while the phone is unplugged"
+                )
+                confidence = "measured"
+            else:
+                device_label = _UNCALIBRATED_DEVICE_LABELS[decision.selected_device]
+                energy_estimate_method = "actual_total_tokens_x_configured_joules_per_token"
+                energy_scope = f"uncalibrated {device_label} inference estimate"
+                confidence = "uncalibrated"
             metrics = ExecutionMetrics(
                 api_turnaround_latency_ms=observation.api_turnaround_latency_ms,
                 prompt_tokens=observation.prompt_tokens,
                 completion_tokens=observation.completion_tokens,
                 total_tokens=observation.total_tokens,
-                measured_energy_joules=None,
+                measured_energy_joules=observation.measured_energy_joules,
                 estimated_energy_joules=estimated_energy,
                 energy_joules_per_token=telemetry.energy_joules_per_token,
-                energy_estimate_method="actual_total_tokens_x_configured_joules_per_token",
-                energy_scope="uncalibrated cloud inference estimate",
-                confidence="uncalibrated",
+                energy_estimate_method=energy_estimate_method,
+                energy_scope=energy_scope,
+                confidence=confidence,
+                ttft_ms=observation.ttft_ms,
+                prefill_speed_tokens_per_second=observation.prefill_speed_tokens_per_second,
+                decode_speed_tokens_per_second=observation.decode_speed_tokens_per_second,
+                tokens_per_joule=observation.tokens_per_joule,
+                compute_unit=observation.compute_unit,
+                backend=observation.backend,
             )
             response = observation.response
         else:
@@ -221,19 +239,3 @@ class EcoRouter:
             item.predicted_latency_ms if item.predicted_latency_ms is not None else float("inf"),
             _DEVICE_ORDER[item.device],
         )
-
-
-def default_executor_map(
-    *,
-    live_cloud: bool = False,
-    live_pc: bool = False,
-) -> dict[Device, Executor]:
-    """Build the three-device executor map used by router.run()."""
-
-    if live_cloud and live_pc:
-        return hybrid_executors()
-    if live_cloud:
-        return cirrascale_executors()
-    if live_pc:
-        return x_elite_executors()
-    return default_simulated_executors()

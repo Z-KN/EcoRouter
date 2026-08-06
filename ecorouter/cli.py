@@ -8,8 +8,11 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+from .analyzer import HeuristicPromptAnalyzer
 from .executors import (
     CirrascaleExecutor,
+    build_executors,
+    phone_health,
 )
 from .models import (
     Device,
@@ -22,7 +25,7 @@ from .models import (
     RouteRequest,
     ValidationError,
 )
-from .router import EcoRouter, default_executor_map
+from .router import EcoRouter
 from .scenarios import built_in_scenarios, load_device_configs, load_telemetry
 
 
@@ -56,6 +59,16 @@ def build_parser() -> argparse.ArgumentParser:
             default=OptimizationProfile.BALANCED.value,
         )
         subparser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+        subparser.add_argument(
+            "--no-presidio",
+            action="store_true",
+            help=(
+                "Use the dependency-free regex-based HeuristicPromptAnalyzer instead of "
+                "Presidio/spaCy. Detects fewer PII categories (no NER-based PERSON/NRP "
+                "detection) -- for environments where Presidio cannot be installed, not "
+                "for production use."
+            ),
+        )
         if command == "run":
             subparser.add_argument(
                 "--live-cloud",
@@ -70,10 +83,22 @@ def build_parser() -> argparse.ArgumentParser:
                     "http://localhost:8000) when PC is selected; phone and cloud remain as configured."
                 ),
             )
+            subparser.add_argument(
+                "--live-phone",
+                action="store_true",
+                help=(
+                    "Invoke the phone's in-app inference server (PHONE_SERVER_ENDPOINT, "
+                    "PHONE_SERVER_TOKEN) when phone is selected; PC and cloud remain as configured."
+                ),
+            )
     cloud_models = subparsers.add_parser(
         "cloud-models", help="List LLMs available from the configured Cirrascale account."
     )
     cloud_models.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    phone_health_parser = subparsers.add_parser(
+        "phone-health", help="Check the phone's in-app inference server (PHONE_SERVER_ENDPOINT)."
+    )
+    phone_health_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     return parser
 
 
@@ -127,23 +152,35 @@ def _human_metrics(metrics: ExecutionMetrics) -> str:
         if metrics.estimated_energy_joules is not None
         else "unavailable"
     )
-    return "\n".join(
-        [
-            "Live observations:",
-            f"  API turnaround latency: {latency}",
-            (
-                "  SDK tokens: "
-                f"prompt={metrics.prompt_tokens}, completion={metrics.completion_tokens}, "
-                f"total={metrics.total_tokens}"
-            ),
-            "  Measured energy: unavailable (provider energy telemetry is not exposed)",
-            (
-                f"  Estimated energy: {estimated_energy} "
-                f"({metrics.energy_joules_per_token:.6f} J/token; {metrics.confidence})"
-            ),
-            f"  Estimate scope: {metrics.energy_scope}",
-        ]
+    measured_energy = (
+        f"{metrics.measured_energy_joules:.6f} J" if metrics.measured_energy_joules is not None else "unavailable"
     )
+    lines = [
+        "Live observations:",
+        f"  API turnaround latency: {latency}",
+        (
+            "  SDK tokens: "
+            f"prompt={metrics.prompt_tokens}, completion={metrics.completion_tokens}, "
+            f"total={metrics.total_tokens}"
+        ),
+        f"  Measured energy: {measured_energy}",
+        (
+            f"  Estimated energy: {estimated_energy} "
+            f"({metrics.energy_joules_per_token:.6f} J/token; {metrics.confidence})"
+        ),
+        f"  Estimate scope: {metrics.energy_scope}",
+    ]
+    if metrics.ttft_ms is not None:
+        lines.append(f"  TTFT: {metrics.ttft_ms:.2f} ms")
+    if metrics.prefill_speed_tokens_per_second is not None:
+        lines.append(f"  Prefill speed: {metrics.prefill_speed_tokens_per_second:.2f} tok/s")
+    if metrics.decode_speed_tokens_per_second is not None:
+        lines.append(f"  Decode speed: {metrics.decode_speed_tokens_per_second:.2f} tok/s")
+    if metrics.tokens_per_joule is not None:
+        lines.append(f"  Efficiency: {metrics.tokens_per_joule:.2f} tok/J")
+    if metrics.compute_unit is not None:
+        lines.append(f"  Compute unit: {metrics.compute_unit}")
+    return "\n".join(lines)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -161,6 +198,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                     print(f"  - {model}")
             return 0
 
+        if args.command == "phone-health":
+            health = phone_health()
+            if args.json:
+                print(json.dumps(health, indent=2, sort_keys=True))
+            else:
+                print(f"Phone server status: {health.get('status')}")
+                print(f"  Model: {health.get('model')}")
+                print(f"  Uptime: {health.get('uptime_s')}s")
+                print(f"  Requests served: {health.get('requests_served')}")
+            return 0
+
         prompt = _read_prompt(args)
         scenarios = built_in_scenarios()
         telemetry = load_telemetry(args.telemetry) if args.telemetry else scenarios[args.scenario]
@@ -171,9 +219,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             telemetry=telemetry,
             profile=OptimizationProfile(args.profile),
         )
-        router = EcoRouter(configs)
+        analyzer = HeuristicPromptAnalyzer() if args.no_presidio else None
+        router = EcoRouter(configs, analyzer=analyzer)
         if args.command == "run":
-            result = router.run(request, default_executor_map(live_cloud=args.live_cloud, live_pc=args.live_pc))
+            executors = build_executors(
+                live_phone=args.live_phone,
+                live_pc=args.live_pc,
+                live_cloud=args.live_cloud,
+            )
+            result = router.run(request, executors)
             if args.json:
                 print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
             else:

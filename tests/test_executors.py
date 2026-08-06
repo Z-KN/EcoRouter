@@ -12,17 +12,21 @@ from ecorouter import (
     CloudExecutionError,
     Device,
     EcoRouter,
+    GenieXPhoneExecutor,
     HeuristicPromptAnalyzer,
     XEliteExecutor,
     OptimizationProfile,
     PcConfigurationError,
     PcExecutionError,
+    PhoneConfigurationError,
+    PhoneExecutionError,
     RouteRequest,
+    build_executors,
     cirrascale_executors,
     hybrid_executors,
     x_elite_executors,
 )
-from ecorouter.executors import _ImagineBindings
+from ecorouter.executors import _ImagineBindings, phone_health
 from ecorouter.scenarios import built_in_scenarios
 
 
@@ -82,6 +86,20 @@ def pc_decision():
     decision = router.route(request)
     if decision.selected_device != Device.PC:
         raise AssertionError("test fixture must route to pc")
+    return decision
+
+
+def phone_decision():
+    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
+    request = RouteRequest(
+        "What model are you?",
+        Device.PHONE,
+        built_in_scenarios()["healthy"],
+        OptimizationProfile.ENERGY_SAVER,
+    )
+    decision = router.route(request)
+    if decision.selected_device != Device.PHONE:
+        raise AssertionError("test fixture must route to phone")
     return decision
 
 
@@ -435,6 +453,245 @@ class XEliteExecutorTests(unittest.TestCase):
         self.assertIs(executors[Device.PC], pc)
         self.assertIs(executors[Device.CLOUD], cloud)
         self.assertEqual(executors[Device.PHONE].device, Device.PHONE)
+
+
+class GenieXPhoneExecutorTests(unittest.TestCase):
+    def test_execute_observed_posts_prompt_and_parses_phone_profile(self) -> None:
+        captured = {}
+
+        def http_post(url, payload):
+            captured["url"] = url
+            captured["payload"] = payload
+            return {
+                "choices": [{"message": {"content": "I am Qwen3-0.6B-GGUF."}}],
+                "model": "Qwen3-0.6B-GGUF",
+                "usage": {"prompt_tokens": 12, "completion_tokens": 40, "total_tokens": 52},
+                "phone_profile": {
+                    "ttft_ms": 88.5,
+                    "prefill_speed_tok_s": 140.2,
+                    "decode_speed_tok_s": 18.6,
+                    "compute_unit": "npu",
+                    "measured_energy_mj": 512.0,
+                    "tokens_per_joule": 78.1,
+                    "energy_available": True,
+                    "charging": False,
+                },
+            }
+
+        ticks = iter((1_000_000_000, 1_410_000_000))
+        executor = GenieXPhoneExecutor(
+            endpoint="http://192.168.1.50:8080",
+            token="secret-token",
+            http_post=http_post,
+            clock_ns=lambda: next(ticks),
+        )
+        decision = phone_decision()
+
+        observation = executor.execute_observed("What model are you?", decision)
+
+        self.assertEqual(captured["url"], "http://192.168.1.50:8080/v1/chat/completions")
+        self.assertEqual(
+            captured["payload"]["messages"], [{"role": "user", "content": "What model are you?"}]
+        )
+        self.assertEqual(
+            captured["payload"]["max_tokens"], decision.analysis.estimated_output_tokens
+        )
+        self.assertEqual(observation.response, "I am Qwen3-0.6B-GGUF.")
+        self.assertEqual(observation.api_turnaround_latency_ms, 410.0)
+        self.assertEqual(observation.model_id, "Qwen3-0.6B-GGUF")
+        self.assertEqual(observation.prompt_tokens, 12)
+        self.assertEqual(observation.completion_tokens, 40)
+        self.assertEqual(observation.total_tokens, 52)
+        self.assertEqual(observation.ttft_ms, 88.5)
+        self.assertEqual(observation.prefill_speed_tokens_per_second, 140.2)
+        self.assertEqual(observation.decode_speed_tokens_per_second, 18.6)
+        self.assertEqual(observation.compute_unit, "npu")
+        self.assertEqual(observation.measured_energy_joules, 0.512)
+        self.assertEqual(observation.tokens_per_joule, 78.1)
+
+    def test_energy_is_only_trusted_when_phone_reports_it_available(self) -> None:
+        def http_post(url, payload):
+            return {
+                "choices": [{"message": {"content": "hi"}}],
+                "phone_profile": {
+                    "measured_energy_mj": 512.0,
+                    # e.g. charging, or a non-NPU / uncalibrated compute unit.
+                    "energy_available": False,
+                },
+            }
+
+        executor = GenieXPhoneExecutor(endpoint="http://phone:8080", token="t", http_post=http_post)
+
+        observation = executor.execute_observed("What model are you?", phone_decision())
+
+        self.assertIsNone(observation.measured_energy_joules)
+
+    def test_missing_phone_profile_leaves_stats_none(self) -> None:
+        executor = GenieXPhoneExecutor(
+            endpoint="http://phone:8080",
+            token="t",
+            http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]},
+        )
+
+        observation = executor.execute_observed("What model are you?", phone_decision())
+
+        self.assertEqual(observation.response, "hi")
+        self.assertIsNone(observation.ttft_ms)
+        self.assertIsNone(observation.measured_energy_joules)
+        self.assertIsNone(observation.compute_unit)
+
+    def test_execute_forwards_exact_prompt(self) -> None:
+        executor = GenieXPhoneExecutor(
+            endpoint="http://phone:8080",
+            token="t",
+            http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]},
+        )
+
+        self.assertEqual(executor.execute("What model are you?", phone_decision()), "hi")
+
+    def test_endpoint_and_token_read_from_environment(self) -> None:
+        captured = {}
+
+        def http_post(url, payload):
+            captured["url"] = url
+            return {"choices": [{"message": {"content": "hi"}}]}
+
+        executor = GenieXPhoneExecutor(
+            environ={
+                "PHONE_SERVER_ENDPOINT": "http://192.168.1.77:8080/",
+                "PHONE_SERVER_TOKEN": "env-token",
+            },
+            http_post=http_post,
+        )
+
+        executor.execute_observed("What model are you?", phone_decision())
+
+        self.assertEqual(captured["url"], "http://192.168.1.77:8080/v1/chat/completions")
+
+    def test_missing_endpoint_or_token_raise_configuration_error_before_any_request(self) -> None:
+        calls = []
+        no_endpoint = GenieXPhoneExecutor(
+            token="t", environ={}, http_post=lambda url, payload: calls.append(1)
+        )
+        with self.assertRaisesRegex(PhoneConfigurationError, "PHONE_SERVER_ENDPOINT"):
+            no_endpoint.execute("hi", phone_decision())
+
+        no_token = GenieXPhoneExecutor(
+            endpoint="http://phone:8080", environ={}, http_post=lambda url, payload: calls.append(1)
+        )
+        with self.assertRaisesRegex(PhoneConfigurationError, "PHONE_SERVER_TOKEN"):
+            no_token.execute("hi", phone_decision())
+
+        self.assertEqual(calls, [])
+
+    def test_non_phone_decision_is_rejected_before_any_request(self) -> None:
+        calls = []
+        executor = GenieXPhoneExecutor(
+            endpoint="http://phone:8080",
+            token="t",
+            http_post=lambda url, payload: calls.append(1)
+            or {"choices": [{"message": {"content": "hi"}}]},
+        )
+
+        with self.assertRaisesRegex(PhoneExecutionError, "phone routing decision"):
+            executor.execute("What model are you?", cloud_decision())
+
+        self.assertEqual(calls, [])
+
+    def test_unreachable_server_raises_configuration_error(self) -> None:
+        def http_post(url, payload):
+            raise urllib.error.URLError("connection refused")
+
+        executor = GenieXPhoneExecutor(endpoint="http://phone:8080", token="t", http_post=http_post)
+
+        with self.assertRaisesRegex(PhoneConfigurationError, "could not reach"):
+            executor.execute("What model are you?", phone_decision())
+
+    def test_malformed_and_empty_responses_raise_execution_error(self) -> None:
+        for body, expected in (
+            ({"unexpected": "shape"}, "unexpected response shape"),
+            ({"choices": []}, "unexpected response shape"),
+            ({"choices": [{"message": {"content": "   "}}]}, "empty response"),
+        ):
+            with self.subTest(expected=expected):
+                executor = GenieXPhoneExecutor(
+                    endpoint="http://phone:8080", token="t", http_post=lambda url, payload, body=body: body
+                )
+                with self.assertRaisesRegex(PhoneExecutionError, expected):
+                    executor.execute("What model are you?", phone_decision())
+
+    def test_live_http_post_sends_bearer_token(self) -> None:
+        captured = {}
+
+        def fake_default_http_post(url, payload, *, timeout_seconds, headers=None):
+            captured["url"] = url
+            captured["headers"] = headers
+            return {"choices": [{"message": {"content": "hi"}}]}
+
+        executor = GenieXPhoneExecutor(endpoint="http://phone:8080", token="secret-token")
+        with patch("ecorouter.executors._default_http_post", fake_default_http_post):
+            executor.execute_observed("What model are you?", phone_decision())
+
+        self.assertEqual(captured["headers"], {"Authorization": "Bearer secret-token"})
+
+
+class BuildExecutorsTests(unittest.TestCase):
+    def test_no_flags_keeps_everything_simulated(self) -> None:
+        executors = build_executors()
+
+        self.assertEqual(set(executors), set(Device))
+        for device in Device:
+            self.assertEqual(executors[device].device, device)
+
+    def test_live_phone_only(self) -> None:
+        phone = GenieXPhoneExecutor(endpoint="http://phone:8080", token="t")
+        executors = build_executors(live_phone=True, phone_executor=phone)
+
+        self.assertIs(executors[Device.PHONE], phone)
+        self.assertEqual(executors[Device.PC].device, Device.PC)
+        self.assertEqual(executors[Device.CLOUD].device, Device.CLOUD)
+
+    def test_all_three_live(self) -> None:
+        phone = GenieXPhoneExecutor(endpoint="http://phone:8080", token="t")
+        pc = XEliteExecutor(http_post=lambda url, payload: {"choices": [{"message": {"content": "hi"}}]})
+        cloud = CirrascaleExecutor(client=FakeClient(), message_factory=lambda **kwargs: kwargs)
+        executors = build_executors(
+            live_phone=True,
+            live_pc=True,
+            live_cloud=True,
+            phone_executor=phone,
+            pc_executor=pc,
+            cloud_executor=cloud,
+        )
+
+        self.assertIs(executors[Device.PHONE], phone)
+        self.assertIs(executors[Device.PC], pc)
+        self.assertIs(executors[Device.CLOUD], cloud)
+
+
+class PhoneHealthTests(unittest.TestCase):
+    def test_returns_parsed_json_from_health_endpoint(self) -> None:
+        captured = {}
+
+        def http_get(url):
+            captured["url"] = url
+            return {"status": "healthy", "model": "Qwen3-0.6B-GGUF"}
+
+        result = phone_health(endpoint="http://192.168.1.50:8080", http_get=http_get)
+
+        self.assertEqual(captured["url"], "http://192.168.1.50:8080/health")
+        self.assertEqual(result["status"], "healthy")
+
+    def test_missing_endpoint_raises_configuration_error(self) -> None:
+        with self.assertRaisesRegex(PhoneConfigurationError, "PHONE_SERVER_ENDPOINT"):
+            phone_health(environ={})
+
+    def test_unreachable_server_raises_configuration_error(self) -> None:
+        def http_get(url):
+            raise urllib.error.URLError("connection refused")
+
+        with self.assertRaisesRegex(PhoneConfigurationError, "could not reach"):
+            phone_health(endpoint="http://phone:8080", http_get=http_get)
 
 
 if __name__ == "__main__":

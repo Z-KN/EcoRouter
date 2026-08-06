@@ -39,6 +39,14 @@ class PcExecutionError(ExecutionError):
     """Raised when the local NPU inference server cannot complete a request."""
 
 
+class PhoneConfigurationError(ExecutionError):
+    """Raised when the phone's in-app inference server is unreachable or misconfigured."""
+
+
+class PhoneExecutionError(ExecutionError):
+    """Raised when the phone's in-app inference server cannot complete a request."""
+
+
 class PrivacyError(EcoRouterError):
     """Base class for fail-closed privacy analyzer failures."""
 
@@ -257,7 +265,13 @@ class RouteDecision:
 
 @dataclass(frozen=True)
 class ExecutionObservation:
-    """Provider observations captured around a single executor call."""
+    """Provider observations captured around a single executor call.
+
+    ``ttft_ms`` through ``backend`` are optional performance/energy stats a
+    provider may expose alongside the response -- populated for the phone
+    (measured) and PC (device/backend only; no on-device energy telemetry)
+    executors, left ``None`` for cloud.
+    """
 
     response: str
     api_turnaround_latency_ms: float | None = None
@@ -265,6 +279,13 @@ class ExecutionObservation:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
+    ttft_ms: float | None = None
+    prefill_speed_tokens_per_second: float | None = None
+    decode_speed_tokens_per_second: float | None = None
+    measured_energy_joules: float | None = None
+    tokens_per_joule: float | None = None
+    compute_unit: str | None = None
+    backend: str | None = None
 
 
 @dataclass(frozen=True)
@@ -281,6 +302,12 @@ class ExecutionMetrics:
     energy_estimate_method: str
     energy_scope: str
     confidence: str
+    ttft_ms: float | None = None
+    prefill_speed_tokens_per_second: float | None = None
+    decode_speed_tokens_per_second: float | None = None
+    tokens_per_joule: float | None = None
+    compute_unit: str | None = None
+    backend: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -294,6 +321,12 @@ class ExecutionMetrics:
             "energy_estimate_method": self.energy_estimate_method,
             "energy_scope": self.energy_scope,
             "confidence": self.confidence,
+            "ttft_ms": _rounded(self.ttft_ms, 3),
+            "prefill_speed_tokens_per_second": _rounded(self.prefill_speed_tokens_per_second),
+            "decode_speed_tokens_per_second": _rounded(self.decode_speed_tokens_per_second),
+            "tokens_per_joule": _rounded(self.tokens_per_joule),
+            "compute_unit": self.compute_unit,
+            "backend": self.backend,
         }
 
 
