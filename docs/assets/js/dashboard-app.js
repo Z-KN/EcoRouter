@@ -311,8 +311,29 @@ function setupLiveInput() {
   const button = document.getElementById("liveRouteBtn");
   const originSelect = document.getElementById("liveOrigin");
   const profileSelect = document.getElementById("liveProfile");
-  const note = document.getElementById("liveInputNote");
-  const defaultNote = note.textContent;
+  const badge = document.getElementById("routingLinkStatus");
+
+  function setLinkStatus(linked) {
+    badge.className = `status-badge ${linked ? "status-good" : "status-warning"}`;
+    badge.innerHTML = `<span class="dot"></span>Routing ${linked ? "linked" : "not linked"}`;
+  }
+
+  // Same-path probe as a real route call, but with an empty body so it never
+  // reaches router.run() — the real backend always answers with JSON (a 400
+  // here), while a static host (e.g. GitHub Pages) 404s with an HTML page.
+  async function checkLink() {
+    try {
+      const response = await fetch("/api/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const contentType = response.headers.get("content-type") || "";
+      setLinkStatus(contentType.includes("application/json"));
+    } catch (error) {
+      setLinkStatus(false);
+    }
+  }
 
   async function submit() {
     const prompt = input.value.trim();
@@ -321,8 +342,6 @@ function setupLiveInput() {
     input.disabled = true;
     button.disabled = true;
     button.textContent = "Routing…";
-    note.classList.remove("is-error");
-    note.textContent = "Routing live…";
 
     const origin = originSelect.value;
     const profile = profileSelect.value;
@@ -337,13 +356,12 @@ function setupLiveInput() {
       if (!response.ok) {
         throw new Error((body && body.error) || `HTTP ${response.status}`);
       }
+      setLinkStatus(true);
       activeIndex = -1;
       renderScenarioTabs();
       renderScenario({ prompt, origin, result: body });
-      note.textContent = defaultNote;
     } catch (error) {
-      note.classList.add("is-error");
-      note.textContent = `Live routing failed: ${error.message}. Run "python docs/server.py" locally to enable this.`;
+      setLinkStatus(false);
     } finally {
       input.disabled = false;
       button.disabled = false;
@@ -355,6 +373,8 @@ function setupLiveInput() {
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") submit();
   });
+
+  checkLink();
 }
 
 renderScenarioTabs();
