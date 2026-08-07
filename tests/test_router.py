@@ -2,11 +2,11 @@ import json
 import unittest
 from dataclasses import replace
 
-from ecorouter import (
+from peqrouter import (
     Device,
     DeviceConfig,
     DeviceTelemetry,
-    EcoRouter,
+    PEQRouter,
     ExecutionObservation,
     HeuristicPromptAnalyzer,
     NoRouteError,
@@ -15,8 +15,8 @@ from ecorouter import (
     ValidationError,
     default_simulated_executors,
 )
-from ecorouter.estimator import EstimatorUnavailableError, PromptEstimate
-from ecorouter.scenarios import built_in_scenarios
+from peqrouter.estimator import EstimatorUnavailableError, PromptEstimate
+from peqrouter.scenarios import built_in_scenarios
 
 
 def request_for(
@@ -29,8 +29,8 @@ def request_for(
     return RouteRequest(prompt, origin, built_in_scenarios()[scenario], profile)
 
 
-def heuristic_router(configs=None, estimator=None) -> EcoRouter:
-    return EcoRouter(configs, analyzer=HeuristicPromptAnalyzer(), estimator=estimator)
+def heuristic_router(configs=None, estimator=None) -> PEQRouter:
+    return PEQRouter(configs, analyzer=HeuristicPromptAnalyzer(), estimator=estimator)
 
 
 def _untrusted_estimate() -> PromptEstimate:
@@ -44,7 +44,7 @@ def _untrusted_estimate() -> PromptEstimate:
     )
 
 
-class EcoRouterTests(unittest.TestCase):
+class PEQRouterTests(unittest.TestCase):
     def test_observed_executor_adds_rounded_live_metrics_and_energy_estimate(self) -> None:
         class ObservedCloudExecutor:
             def execute(self, prompt, decision):

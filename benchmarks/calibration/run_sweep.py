@@ -48,11 +48,11 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from ecorouter.analyzer import HeuristicPromptAnalyzer  # noqa: E402
-from ecorouter.executors import build_executors  # noqa: E402
-from ecorouter.models import Device, OptimizationProfile, RouteRequest  # noqa: E402
-from ecorouter.router import EcoRouter  # noqa: E402
-from ecorouter.scenarios import built_in_scenarios  # noqa: E402
+from peqrouter.analyzer import HeuristicPromptAnalyzer  # noqa: E402
+from peqrouter.executors import build_executors  # noqa: E402
+from peqrouter.models import Device, OptimizationProfile, RouteRequest  # noqa: E402
+from peqrouter.router import PEQRouter  # noqa: E402
+from peqrouter.scenarios import built_in_scenarios  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from graders import ANSWER_HINT, grade  # noqa: E402
@@ -83,7 +83,7 @@ def load_done(path: Path) -> set[tuple[str, str]]:
     return done
 
 
-def build_forced_decision(router: EcoRouter, prompt: str, telemetry, device: Device, *, max_tokens: int):
+def build_forced_decision(router: PEQRouter, prompt: str, telemetry, device: Device, *, max_tokens: int):
     """Produce a RouteDecision targeting ``device`` regardless of routing."""
 
     base = router.route(RouteRequest(prompt, Device.PC, telemetry, OptimizationProfile.BALANCED))
@@ -143,7 +143,7 @@ def main() -> int:
         live_pc=Device.PC in devices,
         live_cloud=Device.CLOUD in devices,
     )
-    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
+    router = PEQRouter(analyzer=HeuristicPromptAnalyzer())
     telemetry = built_in_scenarios()["healthy"]
 
     counts = {device: {"pass": 0, "fail": 0, "error": 0, "skip": 0} for device in devices}

@@ -18,8 +18,8 @@ import com.geniex.demo.databinding.ActivityRouterBinding
 import com.geniex.demo.router.CandidateEvaluation
 import com.geniex.demo.router.CloudDispatchNotSupportedError
 import com.geniex.demo.router.Device
-import com.geniex.demo.router.EcoRouter
-import com.geniex.demo.router.EcoRouterError
+import com.geniex.demo.router.PEQRouter
+import com.geniex.demo.router.PEQRouterError
 import com.geniex.demo.router.OptimizationProfile
 import com.geniex.demo.router.RouteDecision
 import com.geniex.demo.router.RouteRequest
@@ -36,7 +36,7 @@ import java.util.Locale
 /**
  * Accepts a prompt on the phone (the extension discussed in TODO.md: routing
  * with the origin *at* the phone, not just the phone as a dispatch target)
- * and runs [EcoRouter] locally to decide phone/PC/cloud, then dispatches to
+ * and runs [PEQRouter] locally to decide phone/PC/cloud, then dispatches to
  * whichever device wins:
  *  - phone: calls [InferenceService.generateOnce] directly, no network hop.
  *  - PC: POSTs to the X-Elite server address the user supplies (see
@@ -44,8 +44,8 @@ import java.util.Locale
  *    executor's `XELITE_SERVER_ENDPOINT` does).
  *  - cloud: deliberately not wired up yet -- see [CloudDispatchNotSupportedError].
  *
- * There is no on-device calibrated estimator (`ecorouter/estimator.py`'s
- * MiniLM/torch heads), so [EcoRouter] here always runs the static-capability
+ * There is no on-device calibrated estimator (`peqrouter/estimator.py`'s
+ * MiniLM/torch heads), so [PEQRouter] here always runs the static-capability
  * path -- same as the PC CLI's `--no-estimator`. Live telemetry collection
  * isn't implemented either (TODO.md), so telemetry is one of the same
  * built-in scenarios the PC CLI's `--scenario` flag offers.
@@ -117,12 +117,12 @@ class RouterActivity : FragmentActivity() {
 
         try {
             val request = RouteRequest(prompt, Device.PHONE, telemetry, profile)
-            val decision = EcoRouter().route(request)
+            val decision = PEQRouter().route(request)
             lastDecision = decision
             lastPrompt = prompt
             binding.tvDecision.text = renderDecision(decision)
             binding.btnExecute.isEnabled = true
-        } catch (error: EcoRouterError) {
+        } catch (error: PEQRouterError) {
             binding.tvDecision.text = "routing error: ${error.message}"
         }
     }

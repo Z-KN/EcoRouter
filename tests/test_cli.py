@@ -5,17 +5,17 @@ import unittest
 from dataclasses import replace
 from unittest.mock import Mock, patch
 
-from ecorouter.cli import HEADS_DIR, main
-from ecorouter.estimator import EstimatorUnavailableError
-from ecorouter.executors import default_simulated_executors
-from ecorouter.models import (
+from peqrouter.cli import HEADS_DIR, main
+from peqrouter.estimator import EstimatorUnavailableError
+from peqrouter.executors import default_simulated_executors
+from peqrouter.models import (
     CloudConfigurationError,
     Device,
     DeviceConfig,
     ExecutionObservation,
     PrivacyInitializationError,
 )
-from ecorouter.scenarios import built_in_scenarios
+from peqrouter.scenarios import built_in_scenarios
 
 
 def _flat_configs():
@@ -120,7 +120,7 @@ class CliTests(unittest.TestCase):
         # prompts route to). Tests that specifically exercise the estimator
         # wiring override this patch themselves.
         patcher = patch(
-            "ecorouter.cli.CalibratedEstimator",
+            "peqrouter.cli.CalibratedEstimator",
             side_effect=EstimatorUnavailableError("stub: no estimator in unit tests"),
         )
         patcher.start()
@@ -177,7 +177,7 @@ class CliTests(unittest.TestCase):
         stderr = io.StringIO()
         with (
             patch(
-                "ecorouter.cli.EcoRouter",
+                "peqrouter.cli.PEQRouter",
                 side_effect=PrivacyInitializationError("privacy runtime unavailable"),
             ),
             contextlib.redirect_stderr(stderr),
@@ -193,7 +193,7 @@ class CliTests(unittest.TestCase):
     def test_cloud_models_emits_human_and_json_output(self) -> None:
         fake_executor = Mock()
         fake_executor.list_models.return_value = ("Llama-3.1-8B", "other-model")
-        with patch("ecorouter.cli.CirrascaleExecutor", return_value=fake_executor):
+        with patch("peqrouter.cli.CirrascaleExecutor", return_value=fake_executor):
             human = io.StringIO()
             with contextlib.redirect_stdout(human):
                 human_code = main(["cloud-models"])
@@ -213,7 +213,7 @@ class CliTests(unittest.TestCase):
         stderr = io.StringIO()
         with (
             patch(
-                "ecorouter.cli.CirrascaleExecutor",
+                "peqrouter.cli.CirrascaleExecutor",
                 side_effect=CloudConfigurationError("cloud configuration unavailable"),
             ),
             contextlib.redirect_stderr(stderr),
@@ -231,7 +231,7 @@ class CliTests(unittest.TestCase):
         executors[Device.CLOUD] = LiveCloudStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
+            patch("peqrouter.cli.build_executors", return_value=executors) as factory,
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -264,7 +264,7 @@ class CliTests(unittest.TestCase):
         executors[Device.CLOUD] = LiveCloudStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.build_executors", return_value=executors),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -292,7 +292,7 @@ class CliTests(unittest.TestCase):
         executors[Device.CLOUD] = LiveCloudStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.build_executors", return_value=executors),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -317,8 +317,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PC] = LivePcStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
-            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            patch("peqrouter.cli.build_executors", return_value=executors) as factory,
+            patch("peqrouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -348,8 +348,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PC] = LivePcStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
-            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
+            patch("peqrouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -376,8 +376,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PC] = LiveMeasuredPcStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
-            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            patch("peqrouter.cli.build_executors", return_value=executors) as factory,
+            patch("peqrouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -414,8 +414,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PC] = LiveMeasuredPcStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
-            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            patch("peqrouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -442,8 +442,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PC] = LivePcStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
-            patch("ecorouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
+            patch("peqrouter.cli.build_executors", return_value=executors) as factory,
+            patch("peqrouter.cli.built_in_scenarios", return_value=_pc_forced_scenarios()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -472,8 +472,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PHONE] = LivePhoneStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors) as factory,
-            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
+            patch("peqrouter.cli.build_executors", return_value=executors) as factory,
+            patch("peqrouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -512,8 +512,8 @@ class CliTests(unittest.TestCase):
         executors[Device.PHONE] = LivePhoneStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
-            patch("ecorouter.cli.load_device_configs", return_value=_flat_configs()),
+            patch("peqrouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.load_device_configs", return_value=_flat_configs()),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -543,7 +543,7 @@ class CliTests(unittest.TestCase):
         executors[Device.PHONE] = LivePhoneStub()
         stdout = io.StringIO()
         with (
-            patch("ecorouter.cli.build_executors", return_value=executors),
+            patch("peqrouter.cli.build_executors", return_value=executors),
             contextlib.redirect_stdout(stdout),
         ):
             code = main(
@@ -567,7 +567,7 @@ class CliTests(unittest.TestCase):
 
     def test_phone_health_emits_human_and_json_output(self) -> None:
         with patch(
-            "ecorouter.cli.phone_health",
+            "peqrouter.cli.phone_health",
             return_value={"status": "healthy", "model": "Qwen3-0.6B-GGUF", "uptime_s": 12.3, "requests_served": 4},
         ):
             human = io.StringIO()
@@ -587,12 +587,12 @@ class CliTests(unittest.TestCase):
         )
 
     def test_phone_health_configuration_failure_returns_exit_code_four(self) -> None:
-        from ecorouter.models import PhoneConfigurationError
+        from peqrouter.models import PhoneConfigurationError
 
         stderr = io.StringIO()
         with (
             patch(
-                "ecorouter.cli.phone_health",
+                "peqrouter.cli.phone_health",
                 side_effect=PhoneConfigurationError("missing required environment variable PHONE_SERVER_ENDPOINT."),
             ),
             contextlib.redirect_stderr(stderr),
@@ -603,7 +603,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("PHONE_SERVER_ENDPOINT", stderr.getvalue())
 
     def test_no_estimator_flag_skips_estimator_construction(self) -> None:
-        with patch("ecorouter.cli.CalibratedEstimator") as estimator_cls:
+        with patch("peqrouter.cli.CalibratedEstimator") as estimator_cls:
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
                 code = main(["route", "--origin", "phone", "--prompt", "Hello", "--no-estimator"])
@@ -616,7 +616,7 @@ class CliTests(unittest.TestCase):
         stdout = io.StringIO()
         with (
             patch(
-                "ecorouter.cli.CalibratedEstimator",
+                "peqrouter.cli.CalibratedEstimator",
                 side_effect=EstimatorUnavailableError("heads not cached"),
             ),
             contextlib.redirect_stderr(stderr),
@@ -634,10 +634,10 @@ class CliTests(unittest.TestCase):
         sentinel_estimator = object()
         with (
             patch(
-                "ecorouter.cli.CalibratedEstimator", return_value=sentinel_estimator
+                "peqrouter.cli.CalibratedEstimator", return_value=sentinel_estimator
             ) as estimator_cls,
             patch(
-                "ecorouter.cli.EcoRouter", side_effect=RuntimeError("stop after construction")
+                "peqrouter.cli.PEQRouter", side_effect=RuntimeError("stop after construction")
             ) as router_cls,
         ):
             with self.assertRaises(RuntimeError):

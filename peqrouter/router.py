@@ -1,4 +1,4 @@
-"""EcoRouter policy engine."""
+"""PEQRouter policy engine."""
 
 from __future__ import annotations
 
@@ -101,7 +101,7 @@ def _clamp(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
-class EcoRouter:
+class PEQRouter:
     """Choose one predeployed device/model for a request."""
 
     def __init__(

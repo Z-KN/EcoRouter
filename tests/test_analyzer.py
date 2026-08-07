@@ -1,6 +1,6 @@
 import unittest
 
-from ecorouter import HeuristicPromptAnalyzer, Intent
+from peqrouter import HeuristicPromptAnalyzer, Intent
 
 
 class HeuristicPromptAnalyzerTests(unittest.TestCase):

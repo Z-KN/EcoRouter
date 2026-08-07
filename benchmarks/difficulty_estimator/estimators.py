@@ -1,9 +1,9 @@
 """Candidate prompt-difficulty estimators for the overhead benchmark.
 
-Shaped like ``ecorouter.analyzer.PromptAnalyzer`` on purpose: if one of these
+Shaped like ``peqrouter.analyzer.PromptAnalyzer`` on purpose: if one of these
 backends earns its way into the real router later, the interface should
-already fit -- but nothing here imports ``ecorouter``, and nothing in
-``ecorouter`` imports this. See ../README.md for why the two packages stay
+already fit -- but nothing here imports ``peqrouter``, and nothing in
+``peqrouter`` imports this. See ../README.md for why the two packages stay
 isolated.
 """
 from __future__ import annotations

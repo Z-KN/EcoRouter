@@ -130,7 +130,7 @@ class MainActivity : FragmentActivity() {
             ) {
                 val service = (binder as InferenceService.LocalBinder).getService()
                 inferenceService = service
-                // Auto-start the LAN server on launch so EcoRouter can route to this
+                // Auto-start the LAN server on launch so PEQRouter can route to this
                 // phone without a manual toggle tap every time the app is (re)opened.
                 if (!service.isServerRunning()) {
                     service.startHttpServer().onFailure { error ->

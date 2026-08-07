@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.qualcomm.qti:geniex-android:0.3.5'
 
     // Embedded HTTP server: exposes /v1/chat/completions on the LAN so
-    // EcoRouter can route to this phone like it does the PC and cloud.
+    // PEQRouter can route to this phone like it does the PC and cloud.
     // Vendored at src/main/java/fi/iki/elonen/NanoHTTPD.java instead of
     // pulled from Maven -- upstream 2.3.1 does a blocking reverse-DNS
     // lookup on every non-loopback connection before serve() runs; the

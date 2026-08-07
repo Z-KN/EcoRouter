@@ -94,7 +94,7 @@ html, body {
   color: var(--ink);
 }
 
-/* EcoRouter mark: an "E" built from arrows routing outward to several
+/* PEQRouter mark: an "E" built from arrows routing outward to several
    destinations, echoing the phone/PC/cloud fan-out in the figure. */
 .mark {
   display: inline-block;

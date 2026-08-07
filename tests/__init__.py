@@ -1,1 +1,1 @@
-"""EcoRouter test suite."""
+"""PEQRouter test suite."""

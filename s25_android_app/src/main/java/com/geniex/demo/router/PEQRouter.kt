@@ -8,10 +8,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Kotlin port of `ecorouter/router.py`'s [EcoRouter] policy engine, scoped to
+ * Kotlin port of `peqrouter/router.py`'s [PEQRouter] policy engine, scoped to
  * its static-capability path -- equivalent to running the Python CLI with
  * `--no-estimator`. There is no on-device MiniLM/torch calibrated estimator
- * (`ecorouter/estimator.py`) yet; quality is judged purely by comparing each
+ * (`peqrouter/estimator.py`) yet; quality is judged purely by comparing each
  * device's configured `capabilityScore` against the analyzer's
  * `requiredQuality`, and output length is the analyzer's heuristic guess.
  * Everything else -- eligibility gating, latency/energy/cost prediction,
@@ -19,7 +19,7 @@ import kotlin.math.min
  * router.py exactly so a decision made here agrees with one made on the PC
  * for the same prompt, telemetry, and profile.
  */
-class EcoRouter(
+class PEQRouter(
     private val deviceConfigs: Map<Device, DeviceConfig> = defaultDeviceConfigs(),
 ) {
     init {

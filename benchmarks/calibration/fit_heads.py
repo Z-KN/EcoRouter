@@ -283,7 +283,7 @@ def _intent_analyzer():
 
     if str(_REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(_REPO_ROOT))
-    from ecorouter.analyzer import HeuristicPromptAnalyzer
+    from peqrouter.analyzer import HeuristicPromptAnalyzer
 
     analyzer = HeuristicPromptAnalyzer()
     return lambda prompt: analyzer.analyze(prompt).intent.value

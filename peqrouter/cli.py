@@ -1,4 +1,4 @@
-"""Command-line interface for EcoRouter."""
+"""Command-line interface for PEQRouter."""
 
 from __future__ import annotations
 
@@ -25,10 +25,10 @@ from .models import (
     RouteRequest,
     ValidationError,
 )
-from .router import EcoRouter
+from .router import PEQRouter
 from .scenarios import built_in_scenarios, load_device_configs, load_telemetry
 
-# Resolved from this file's location, not the working directory, so `ecorouter
+# Resolved from this file's location, not the working directory, so `peqrouter
 # route ...` finds the fitted heads regardless of where it's invoked from --
 # same convention as demo.py's HEADS_DIR.
 HEADS_DIR = Path(__file__).resolve().parent.parent / "benchmarks" / "calibration" / "heads"
@@ -36,7 +36,7 @@ HEADS_DIR = Path(__file__).resolve().parent.parent / "benchmarks" / "calibration
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ecorouter",
+        prog="peqrouter",
         description="Route a text prompt to a predeployed phone, PC, or cloud model.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -230,7 +230,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             except EstimatorUnavailableError as error:
                 print(f"! routing without the calibrated estimator: {error}", file=sys.stderr)
 
-        router = EcoRouter(configs, estimator=estimator)
+        router = PEQRouter(configs, estimator=estimator)
         if args.command == "run":
             executors = build_executors(
                 live_phone=args.live_phone,

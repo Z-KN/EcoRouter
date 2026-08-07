@@ -2,7 +2,7 @@ Benchmarks
 ==========
 
 This folder contains small, self-contained benchmarking helpers for offline
-experiments. The scripts intentionally avoid importing the live `ecorouter`
+experiments. The scripts intentionally avoid importing the live `peqrouter`
 package so they can run without the Cirrascale SDK.
 
 Files

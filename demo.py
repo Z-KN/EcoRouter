@@ -1,4 +1,4 @@
-"""EcoRouter demo: six routing decisions, one live execution, ~3 minutes.
+"""PEQRouter demo: six routing decisions, one live execution, ~3 minutes.
 
 Routing decisions cost milliseconds; generations cost seconds. So the demo
 shows six decisions instantly and then executes exactly one of them for real,
@@ -20,17 +20,17 @@ import os
 from dataclasses import replace
 from pathlib import Path
 
-from ecorouter.analyzer import HeuristicPromptAnalyzer
-from ecorouter.estimator import CalibratedEstimator, EstimatorUnavailableError
-from ecorouter.executors import build_executors
-from ecorouter.models import (
+from peqrouter.analyzer import HeuristicPromptAnalyzer
+from peqrouter.estimator import CalibratedEstimator, EstimatorUnavailableError
+from peqrouter.executors import build_executors
+from peqrouter.models import (
     Device,
     OptimizationProfile,
     RouteRequest,
     default_device_configs,
 )
-from ecorouter.router import EcoRouter
-from ecorouter.scenarios import built_in_scenarios
+from peqrouter.router import PEQRouter
+from peqrouter.scenarios import built_in_scenarios
 
 HEADS_DIR = Path(__file__).parent / "benchmarks" / "calibration" / "heads"
 
@@ -100,7 +100,7 @@ def preflight(device: Device, *, attempts: int = 3, pause: float = 20.0) -> bool
     return False
 
 
-def show(router: EcoRouter, estimator, telemetry, prompt: str, profile, note: str) -> None:
+def show(router: PEQRouter, estimator, telemetry, prompt: str, profile, note: str) -> None:
     decision = router.route(RouteRequest(prompt, Device.PC, telemetry, profile))
     estimate = (
         estimator.estimate(prompt, intent=router.analyzer.analyze(prompt).intent.value)
@@ -190,7 +190,7 @@ def main() -> int:
             if observed:
                 device_configs[device] = replace(config, model_id=observed)
 
-    router = EcoRouter(
+    router = PEQRouter(
         device_configs=device_configs,
         analyzer=HeuristicPromptAnalyzer(),
         estimator=estimator,

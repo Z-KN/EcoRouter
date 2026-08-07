@@ -11,7 +11,7 @@ recall) rather than open-ended prose. The trade-off is explicit and worth
 stating when reporting results: the fitted heads learn "which tier can do
 verifiable reasoning on this prompt", not "which tier writes better prose".
 
-``ecorouter``'s existing ``benchmarks/score_logs.py`` compares the *entire*
+``peqrouter``'s existing ``benchmarks/score_logs.py`` compares the *entire*
 response to the expected string, which fails on any real model output ("The
 answer is 84." != "84"). These graders extract the answer first.
 """

@@ -1,4 +1,4 @@
-"""EcoRouter's public Python interface."""
+"""PEQRouter's public Python interface."""
 
 from .analyzer import HeuristicPromptAnalyzer, PromptAnalyzer
 from .executors import (
@@ -22,7 +22,7 @@ from .models import (
     Device,
     DeviceConfig,
     DeviceTelemetry,
-    EcoRouterError,
+    PEQRouterError,
     ExecutionError,
     ExecutionMetrics,
     ExecutionObservation,
@@ -42,7 +42,7 @@ from .models import (
     RouteRequest,
     ValidationError,
 )
-from .router import EcoRouter
+from .router import PEQRouter
 
 __all__ = [
     "CandidateEvaluation",
@@ -52,8 +52,8 @@ __all__ = [
     "Device",
     "DeviceConfig",
     "DeviceTelemetry",
-    "EcoRouter",
-    "EcoRouterError",
+    "PEQRouter",
+    "PEQRouterError",
     "ExecutionResult",
     "ExecutionMetrics",
     "ExecutionObservation",

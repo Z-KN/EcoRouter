@@ -1,5 +1,5 @@
 # Isolated deps for the prompt-difficulty-estimator overhead benchmark.
-# Deliberately NOT part of pyproject.toml: the core ecorouter package (and
+# Deliberately NOT part of pyproject.toml: the core peqrouter package (and
 # anything meant to run on the phone/PC as the router) should not gain a
 # multi-hundred-MB ML framework as a hard dependency just to prototype this.
 #

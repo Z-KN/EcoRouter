@@ -1,17 +1,17 @@
 /**
- * Static example data for the EcoRouter dashboard.
+ * Static example data for the PEQRouter dashboard.
  *
- * Each entry has the exact shape EcoRouter's Python API already produces:
- * `ExecutionResult.to_dict()` from ecorouter/models.py (decision + response +
+ * Each entry has the exact shape PEQRouter's Python API already produces:
+ * `ExecutionResult.to_dict()` from peqrouter/models.py (decision + response +
  * metrics). These are hand-authored, not captured from a live run, but every
- * number was derived using the same formulas as ecorouter/router.py against
- * the real "healthy" telemetry constants in ecorouter/scenarios.py (phone
+ * number was derived using the same formulas as peqrouter/router.py against
+ * the real "healthy" telemetry constants in peqrouter/scenarios.py (phone
  * 94.22 tok/s @ 0.0412 J/token, PC 20.19 tok/s @ 0.4447 J/token, cloud
  * 33.37 tok/s @ 2.2475 J/token, $0.03 / 1k cloud tokens) — so the ranking
  * and scores are self-consistent with the router's actual policy.
  *
  * When live routing is wired up, replace SCENARIOS with the parsed JSON body
- * of a POST to whatever endpoint wraps `EcoRouter.run()` (see dashboard/README.md).
+ * of a POST to whatever endpoint wraps `PEQRouter.run()` (see dashboard/README.md).
  */
 
 const SCENARIOS = [

@@ -5,16 +5,16 @@
 package com.geniex.demo.router
 
 /**
- * Kotlin port of `ecorouter/models.py`'s typed contracts, scoped to what the
+ * Kotlin port of `peqrouter/models.py`'s typed contracts, scoped to what the
  * on-device router needs: no calibrated-estimator fields, since
- * [EcoRouter] runs the static-capability path only (see its class doc).
+ * [PEQRouter] runs the static-capability path only (see its class doc).
  */
 
-open class EcoRouterError(message: String) : Exception(message)
+open class PEQRouterError(message: String) : Exception(message)
 
-class ValidationError(message: String) : EcoRouterError(message)
+class ValidationError(message: String) : PEQRouterError(message)
 
-class NoRouteError(message: String) : EcoRouterError(message)
+class NoRouteError(message: String) : PEQRouterError(message)
 
 private fun requireValid(condition: Boolean, message: () -> String) {
     if (!condition) throw ValidationError(message())
@@ -84,7 +84,7 @@ fun defaultDeviceConfigs(): Map<Device, DeviceConfig> = mapOf(
 
 // Qualcomm Cloud AI 100 accelerator rated TDP -- same constant and same
 // "wall-clock upper-bound estimate, not a calibrated measurement" caveat as
-// ecorouter/models.py's CLOUD_AI_100_TDP_WATTS.
+// peqrouter/models.py's CLOUD_AI_100_TDP_WATTS.
 const val CLOUD_AI_100_TDP_WATTS = 75.0
 
 data class RouteRequest(

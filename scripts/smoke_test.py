@@ -16,16 +16,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from ecorouter import (
+from peqrouter import (
     Device,
-    EcoRouter,
+    PEQRouter,
     ExecutionError,
     OptimizationProfile,
     RouteRequest,
     build_executors,
     phone_health,
 )
-from ecorouter.scenarios import load_telemetry
+from peqrouter.scenarios import load_telemetry
 
 PROMPT = "Who are you"
 TELEMETRY_DIR = Path(__file__).resolve().parent.parent / "examples" / "telemetry"
@@ -38,8 +38,8 @@ def record(name: str, status: str, detail: str) -> None:
     print(f"[{status}] {name}: {detail}")
 
 
-def make_router() -> EcoRouter:
-    return EcoRouter()
+def make_router() -> PEQRouter:
+    return PEQRouter()
 
 
 def check_phone_health() -> None:

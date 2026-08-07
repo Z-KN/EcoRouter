@@ -8,9 +8,9 @@
  * instead of overwriting it.
  *
  * Everything here reads from one object shaped like
- * `ExecutionResult.to_dict()` (ecorouter/models.py). To wire up live routing
+ * `ExecutionResult.to_dict()` (peqrouter/models.py). To wire up live routing
  * later: replace `renderScenario(SCENARIOS[i])` calls with
- * `renderScenario(await postToEcoRouter(promptText))`.
+ * `renderScenario(await postToPEQRouter(promptText))`.
  */
 
 const DEVICE_LABELS = { phone: "Phone", pc: "PC", cloud: "Cloud" };
@@ -304,7 +304,7 @@ function renderScenario(scenario) {
 // Wires the "Try your own prompt" box to POST /api/route (see docs/server.py)
 // and render the real response through the same renderScenario() pipeline
 // the canned SCENARIOS use — the shape is identical because both are
-// ExecutionResult.to_dict() (ecorouter/models.py). Fails gracefully when no
+// ExecutionResult.to_dict() (peqrouter/models.py). Fails gracefully when no
 // local server is reachable (e.g. the hosted GitHub Pages copy of this deck).
 function setupLiveInput() {
   const input = document.getElementById("liveInput");

@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ecorouter"
+name = "peqrouter"
 version = "0.4.0"
 description = "Hardware-aware routing across phone, PC, and cloud AI models"
 readme = "README.md"
@@ -18,7 +18,7 @@ cloud = [
 ]
 
 [project.scripts]
-ecorouter = "ecorouter.cli:main"
+peqrouter = "peqrouter.cli:main"
 
 [tool.setuptools]
-packages = ["ecorouter"]
+packages = ["peqrouter"]

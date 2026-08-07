@@ -55,7 +55,7 @@ def _load_imagine_bindings() -> _ImagineBindings:
         from imagine import ChatMessage, ImagineClient, ModelType
     except (ImportError, ModuleNotFoundError):
         raise CloudConfigurationError(
-            "Cirrascale cloud support is not installed; install EcoRouter with the 'cloud' extra."
+            "Cirrascale cloud support is not installed; install PEQRouter with the 'cloud' extra."
         ) from None
     except Exception:
         raise CloudConfigurationError("Cirrascale cloud support could not initialize.") from None

@@ -2,18 +2,18 @@ Difficulty Estimator Overhead Benchmark
 ========================================
 
 Prototyping area for the routing difficulty estimator discussed for the
-EcoRouter policy: given a prompt, predict how much "quality headroom" it
+PEQRouter policy: given a prompt, predict how much "quality headroom" it
 needs before touching any candidate model, so the router can pick phone/PC/
 cloud without guessing blind or running every tier.
 
 This measures one narrow question first: **is the estimator's own overhead
 negligible** next to an actual phone/PC LLM generation? It is not yet wired
-into `ecorouter` -- see "Status" below.
+into `peqrouter` -- see "Status" below.
 
-Why this lives outside `ecorouter/`
+Why this lives outside `peqrouter/`
 ------------------------------------
 
-The core `ecorouter` package is meant to run wherever the router runs today
+The core `peqrouter` package is meant to run wherever the router runs today
 (the PC/X-Elite side, per `RouteRequest.origin` and the CLI) and, per
 `pyproject.toml`, has no external dependencies at all -- the privacy analyzer
 is pure regex. Bringing in `torch`/`transformers` just to *evaluate* candidate
@@ -48,7 +48,7 @@ Files
 -----
 
 - `estimators.py` -- candidate backends behind a shared `estimate(prompt) ->
-  float` interface (shaped like `ecorouter.analyzer.PromptAnalyzer` on
+  float` interface (shaped like `peqrouter.analyzer.PromptAnalyzer` on
   purpose, in case one graduates later):
   - `routellm_bert`: RouteLLM's actual pretrained router
     (`routellm/bert_gpt4_augmented`, fine-tuned `xlm-roberta-base`). Note its
@@ -87,5 +87,5 @@ This only checks overhead. It does not check whether `routellm_bert`'s score
 actually correlates with phone/PC/cloud pass-fail on our prompts (that needs
 the calibration dataset + `benchmarks/run_benchmarks.py`-style scoring
 against ground truth -- see `benchmarks/ground_truth_template.json` for the
-existing convention). Nothing here is imported by `ecorouter`, and nothing
-in `ecorouter` imports this.
+existing convention). Nothing here is imported by `peqrouter`, and nothing
+in `peqrouter` imports this.

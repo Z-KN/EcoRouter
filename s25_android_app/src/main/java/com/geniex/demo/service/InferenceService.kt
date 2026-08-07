@@ -40,7 +40,7 @@ import java.util.UUID
 
 /**
  * Owns the loaded GenieX model and a NanoHTTPD server exposing it on the LAN
- * at an OpenAI-compatible `/v1/chat/completions`, so EcoRouter can route to
+ * at an OpenAI-compatible `/v1/chat/completions`, so PEQRouter can route to
  * this phone the same way it routes to the PC (`x_elite_laptop_server`) and
  * the cloud.
  *
@@ -193,7 +193,7 @@ class InferenceService : Service() {
         return token
     }
 
-    /** First non-loopback IPv4 address -- the LAN address EcoRouter should target. */
+    /** First non-loopback IPv4 address -- the LAN address PEQRouter should target. */
     fun localAddress(): String? =
         try {
             NetworkInterface.getNetworkInterfaces().toList()
@@ -225,14 +225,14 @@ class InferenceService : Service() {
             // See [wakeLock]: without this, the foreground notification alone
             // does not stop the CPU from suspending between requests.
             val lock = (getSystemService(Context.POWER_SERVICE) as PowerManager)
-                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ecorouter:inference_service")
+                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "peqrouter:inference_service")
             lock.acquire()
             wakeLock = lock
             // See [wifiLock]: the CPU wake lock above doesn't touch Wi-Fi
             // radio power-save, which was still adding multi-second latency
             // on its own.
             val wifi = (applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
-                .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "ecorouter:inference_service")
+                .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "peqrouter:inference_service")
             wifi.acquire()
             wifiLock = wifi
             Result.success(server.listeningPort)
@@ -267,7 +267,7 @@ class InferenceService : Service() {
     /**
      * Single-turn, non-streaming generation for a routed request. Deliberately
      * does not touch [MainActivity]'s visible chat history -- a request routed
-     * here from EcoRouter is a one-shot completion, not a UI conversation turn.
+     * here from PEQRouter is a one-shot completion, not a UI conversation turn.
      */
     suspend fun generateOnce(prompt: String, maxTokens: Int): PhoneGenerationResult {
         if (!isModelLoaded()) throw IllegalStateException("no model loaded")
@@ -529,7 +529,7 @@ class InferenceService : Service() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "EcoRouter phone server",
+            "PEQRouter phone server",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
             description = "Keeps the in-app inference server running for routed requests"
@@ -539,7 +539,7 @@ class InferenceService : Service() {
 
     private fun buildNotification(): Notification =
         NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("EcoRouter phone server")
+            .setContentTitle("PEQRouter phone server")
             .setContentText("Ready to serve routed requests on the LAN")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
@@ -547,9 +547,9 @@ class InferenceService : Service() {
 
     companion object {
         private const val TAG = "InferenceService"
-        private const val CHANNEL_ID = "ecorouter_inference_service"
+        private const val CHANNEL_ID = "peqrouter_inference_service"
         private const val NOTIFICATION_ID = 42
-        private const val PREFS_FILE = "ecorouter_server"
+        private const val PREFS_FILE = "peqrouter_server"
         private const val KEY_SERVER_TOKEN = "server_token"
         const val DEFAULT_PORT = 8080
     }

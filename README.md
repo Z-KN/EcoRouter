@@ -1,6 +1,6 @@
-# EcoRouter
+# PEQRouter
 
-EcoRouter is a hardware-aware router for generative AI workloads. Given a text prompt, its
+PEQRouter is a hardware-aware router for generative AI workloads. Given a text prompt, its
 origin, and a telemetry snapshot, it selects one of three destinations:
 
 - a model deployed on a phone;
@@ -20,7 +20,7 @@ longer-term multimodal system is tracked in [TODO.md](TODO.md).
 - Python 3.11 or newer
 - A virtual environment with the project dependencies installed
 
-Create and activate a virtual environment on Windows, then install EcoRouter:
+Create and activate a virtual environment on Windows, then install PEQRouter:
 
 ```powershell
 python -m venv .venv
@@ -38,8 +38,8 @@ python -m pip install -e ".[cloud]"
 The editable install provides both invocation styles:
 
 ```powershell
-python -m ecorouter route --origin phone --prompt "What's the weather tomorrow?"
-ecorouter route --origin phone --prompt "What's the weather tomorrow?"
+python -m peqrouter route --origin phone --prompt "What's the weather tomorrow?"
+peqrouter route --origin phone --prompt "What's the weather tomorrow?"
 ```
 
 The privacy analyzer has no NLP dependency (no Presidio/spaCy), so there is no separate model
@@ -57,7 +57,7 @@ For sensitive prompts, prefer stdin or `--prompt-file` so the text is not retain
 history:
 
 ```powershell
-"Summarize the profile for John Smith" | python -m ecorouter route --origin pc
+"Summarize the profile for John Smith" | python -m peqrouter route --origin pc
 ```
 
 ## CLI
@@ -65,7 +65,7 @@ history:
 Route without execution:
 
 ```powershell
-python -m ecorouter route `
+python -m peqrouter route `
   --origin phone `
   --prompt "Compare three routing strategies step by step" `
   --profile balanced `
@@ -75,7 +75,7 @@ python -m ecorouter route `
 Route and call the selected simulated executor:
 
 ```powershell
-python -m ecorouter run `
+python -m peqrouter run `
   --origin pc `
   --prompt-file request.txt `
   --scenario pc-congested `
@@ -89,7 +89,7 @@ committed `.env` file:
 ```powershell
 $env:INFERENCE_CLOUD_API_KEY = "<rotated key>"
 $env:INFERENCE_CLOUD_ENDPOINT = "https://aisuite-indonesia.cirrascale.com/apis/v2"
-python -m ecorouter cloud-models
+python -m peqrouter cloud-models
 ```
 
 `cloud-models` performs authenticated model discovery but does not send an inference prompt. It
@@ -99,7 +99,7 @@ supports `--json` and reports both the model count and IDs. The current default 
 Route the exact smoke-test prompt and invoke Cirrascale only if cloud wins the policy decision:
 
 ```powershell
-python -m ecorouter run `
+python -m peqrouter run `
   --origin pc `
   --prompt "What model are you?" `
   --profile high-quality `
@@ -150,7 +150,7 @@ OpenAI-compatible server for the Snapdragon X-Elite Hexagon NPU:
 
 ```powershell
 $env:XELITE_SERVER_ENDPOINT = "http://localhost:8000"  # default; set only if different
-python -m ecorouter run --origin pc --prompt "What model are you?" --scenario healthy --live-pc --json
+python -m peqrouter run --origin pc --prompt "What model are you?" --scenario healthy --live-pc --json
 ```
 
 ### Live phone execution
@@ -160,14 +160,14 @@ python -m ecorouter run --origin pc --prompt "What model are you?" --scenario he
 must stay unplugged for its energy measurements to be valid (see [Energy honesty](#energy-honesty)
 below), so this is a deliberate design choice, not an oversight. In the app: load a model, flip
 the "Router server" switch, and it displays its LAN address, port, and a bearer token. Point
-EcoRouter at that address and pass the token through the environment, never on the command line
+PEQRouter at that address and pass the token through the environment, never on the command line
 or in source:
 
 ```powershell
 $env:PHONE_SERVER_ENDPOINT = "http://192.168.1.42:8080"
 $env:PHONE_SERVER_TOKEN = "<token shown in the app>"
-python -m ecorouter phone-health
-python -m ecorouter run --origin phone --prompt "What model are you?" --scenario healthy --live-phone --json
+python -m peqrouter phone-health
+python -m peqrouter run --origin phone --prompt "What model are you?" --scenario healthy --live-phone --json
 ```
 
 `phone-health` checks the server's unauthenticated `/health` endpoint (model loaded, uptime,
@@ -184,7 +184,7 @@ calibrated per-prompt quality estimator and use static capability scores only (s
 Use a real telemetry snapshot or custom model catalog with:
 
 ```powershell
-python -m ecorouter route `
+python -m peqrouter route `
   --origin phone `
   --prompt "Summarize this note" `
   --telemetry examples/telemetry/healthy.json `
@@ -216,8 +216,8 @@ and cloud executors.
 ## Python API
 
 ```python
-from ecorouter import Device, EcoRouter, RouteRequest
-from ecorouter.scenarios import built_in_scenarios
+from peqrouter import Device, PEQRouter, RouteRequest
+from peqrouter.scenarios import built_in_scenarios
 
 request = RouteRequest(
     prompt="What's the weather tomorrow?",
@@ -225,20 +225,20 @@ request = RouteRequest(
     telemetry=built_in_scenarios()["healthy"],
 )
 
-decision = EcoRouter().route(request)
+decision = PEQRouter().route(request)
 print(decision.selected_device, decision.model_id)
 print(decision.explanation)
 ```
 
 For a simulated end-to-end dispatch, call
-`EcoRouter.run(request, default_simulated_executors())`. To make one or more destinations live,
-call `EcoRouter.run(request, build_executors(live_phone=..., live_pc=..., live_cloud=...))` —
+`PEQRouter.run(request, default_simulated_executors())`. To make one or more destinations live,
+call `PEQRouter.run(request, build_executors(live_phone=..., live_pc=..., live_cloud=...))` —
 this is what the CLI's `--live-phone`/`--live-pc`/`--live-cloud` flags use; any destination
 whose flag is left `False` stays simulated. `cirrascale_executors()`, `x_elite_executors()`,
 and `hybrid_executors()` remain as thin single/dual-destination wrappers around it. Each live
 executor (`CirrascaleExecutor`, `XEliteExecutor`, `GenieXPhoneExecutor`) reads its connection
 details lazily from the environment and refuses a decision for a device it doesn't serve. They
-implement `execute_observed(prompt, decision)` so `EcoRouter.run()` can attach live measurements
+implement `execute_observed(prompt, decision)` so `PEQRouter.run()` can attach live measurements
 — including, where the provider reports them, throughput (`ttft_ms`,
 `prefill_speed_tokens_per_second`, `decode_speed_tokens_per_second`) and the phone's measured
 `measured_energy_joules`/`tokens_per_joule` — without making a second request. Other runtimes can
@@ -336,12 +336,12 @@ evaluating whether an NLP-backed analyzer (e.g. Presidio) is warranted remain tr
 
 ### Calibrated quality estimator
 
-`ecorouter.estimator.CalibratedEstimator` (`ecorouter/estimator.py`) replaces two numbers that
+`peqrouter.estimator.CalibratedEstimator` (`peqrouter/estimator.py`) replaces two numbers that
 would otherwise be static guesses: whether a device is good enough for *this* prompt, and how
 long its answer will run. It's a k-NN lookup over MiniLM embeddings of a 106-prompt calibration
 set (`benchmarks/calibration/prompts.json`), fitted by `benchmarks/calibration/fit_heads.py` into
-`benchmarks/calibration/heads/{heads.json,heads.npz}`. It is optional — `EcoRouter(estimator=...)`
-— and the CLI wires it in by default (`ecorouter/cli.py`, `HEADS_DIR` resolved relative to the
+`benchmarks/calibration/heads/{heads.json,heads.npz}`. It is optional — `PEQRouter(estimator=...)`
+— and the CLI wires it in by default (`peqrouter/cli.py`, `HEADS_DIR` resolved relative to the
 package, not the working directory) unless `--no-estimator` is passed or construction fails, in
 which case a one-line notice goes to stderr and routing falls back to the static
 capability-score comparison automatically.
@@ -378,10 +378,10 @@ computed differently from each other:
   [Profile weights and calibration results](#profile-weights-and-calibration-results)). Phone/PC:
   `total_tokens x J/token`. Cloud: `CLOUD_AI_100_TDP_WATTS x predicted_latency` — not
   tokens-based at all.
-- **`ExecutionMetrics.estimated_energy_joules`** — computed by `EcoRouter.run()` as an
+- **`ExecutionMetrics.estimated_energy_joules`** — computed by `PEQRouter.run()` as an
   always-available "uncalibrated" comparison figure alongside whatever `measured_energy_joules`
   a live executor reports (or in place of it, if the executor doesn't report one).
-  `EcoRouter.run()` labels its `energy_scope` per device (`"uncalibrated cloud inference
+  `PEQRouter.run()` labels its `energy_scope` per device (`"uncalibrated cloud inference
   estimate"`, `"uncalibrated PC (X-Elite NPU) inference estimate"`) rather than always saying
   "cloud". Unlike the routing-time figure above, this one *is* `total_tokens x J/token` for every
   device, cloud included — it exists for side-by-side comparison against a measurement, not as a
@@ -409,7 +409,7 @@ additive hop — adding one on top would double-count time already inside this r
 Qualcomm Cloud AI 100 accelerator's rated TDP per the
 [QuIC Cloud AI SDK docs](https://quic.github.io/cloud-ai-sdk-pages/latest/Getting-Started/Architecture/),
 not something measured on this hardware) — and, per the `network_latency_ms` note above, not
-purely compute time either. `_evaluate()` in `ecorouter/router.py` doesn't actually use this
+purely compute time either. `_evaluate()` in `peqrouter/router.py` doesn't actually use this
 field for cloud; it computes predicted cloud energy directly as `CLOUD_AI_100_TDP_WATTS x
 predicted_latency`, since a shared accelerator running at roughly fixed power for however long a
 request takes has no meaningful *per-token* rate the way a dedicated local NPU does. This field
@@ -439,7 +439,7 @@ the token-based estimate, each with its own caveats:
   (see [Live phone execution](#live-phone-execution)): a USB cable would charge the phone and
   invalidate every measurement in that table. Outside those conditions
   `phone_profile.energy_available` is `false`, `GenieXPhoneExecutor` leaves
-  `measured_energy_joules` as `None`, and `EcoRouter.run()` falls back to the uncalibrated
+  `measured_energy_joules` as `None`, and `PEQRouter.run()` falls back to the uncalibrated
   per-token estimate. One caveat the measurement does not isolate: routing arrives over Wi-Fi, so
   the reported energy is decode energy plus whatever the radio drew answering that request — not
   excluded from the whole-device discharge figure. Request/response payloads for these prompt
@@ -459,7 +459,7 @@ energy counter immediately before and after an isolated request, then subtract a
 Attribute CPU/RAM/node energy separately with CPU RAPL counters or a rack PDU/wall meter, account
 for concurrent work, and optionally apply PUE. NVIDIA documents the cumulative millijoule counter
 in the [NVML device query API](https://docs.nvidia.com/deploy/nvml-api/group__nvmlDeviceQueries.html).
-Client-side tools such as CodeCarbon measure the machine running EcoRouter; for a remote API that
+Client-side tools such as CodeCarbon measure the machine running PEQRouter; for a remote API that
 mostly captures the PC waiting on the network and is not cloud inference energy. See the
 [CodeCarbon methodology](https://mlco2.github.io/codecarbon/methodology.html). A stronger
 black-box estimator would calibrate separate input-token/prefill and output-token/decode
@@ -470,7 +470,7 @@ information; use a documented provider account or usage endpoint for account fac
 
 ### Profile weights and calibration results
 
-`ecorouter/router.py::_PROFILE_WEIGHTS` scores every eligible candidate as a weighted sum of
+`peqrouter/router.py::_PROFILE_WEIGHTS` scores every eligible candidate as a weighted sum of
 latency, energy, and quality penalties (each clamped to `[0, 1]`; lower score wins):
 
 | Profile | Latency | Energy | Quality |
@@ -515,7 +515,7 @@ in place:
 | Cloud | `Llama-3.3-70B` | 0.95 |
 
 Change them with a model configuration shaped like [`examples/models.json`](examples/models.json)
-or pass `DeviceConfig` objects to `EcoRouter` in Python. These remain illustrative, uncalibrated
+or pass `DeviceConfig` objects to `PEQRouter` in Python. These remain illustrative, uncalibrated
 numbers — see [TODO.md](TODO.md).
 
 The Cirrascale integration follows the official

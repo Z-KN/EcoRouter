@@ -6,13 +6,13 @@ from unittest.mock import patch
 
 import urllib.error
 
-from ecorouter import (
+from peqrouter import (
     CirrascaleExecutor,
     CloudConfigurationError,
     CloudExecutionError,
     Device,
     DeviceConfig,
-    EcoRouter,
+    PEQRouter,
     GenieXPhoneExecutor,
     HeuristicPromptAnalyzer,
     XEliteExecutor,
@@ -27,8 +27,8 @@ from ecorouter import (
     hybrid_executors,
     x_elite_executors,
 )
-from ecorouter.executors import _ImagineBindings, _MAX_GENERATION_TOKENS, phone_health
-from ecorouter.scenarios import built_in_scenarios
+from peqrouter.executors import _ImagineBindings, _MAX_GENERATION_TOKENS, phone_health
+from peqrouter.scenarios import built_in_scenarios
 
 
 class FakeResponse:
@@ -72,7 +72,7 @@ def _force_device(device: Device) -> "RouteDecision":
     for other in Device:
         if other is not device:
             telemetry[other] = replace(telemetry[other], available=False)
-    router = EcoRouter(analyzer=HeuristicPromptAnalyzer())
+    router = PEQRouter(analyzer=HeuristicPromptAnalyzer())
     request = RouteRequest("What model are you?", Device.PC, telemetry, OptimizationProfile.BALANCED)
     decision = router.route(request)
     if decision.selected_device != device:
@@ -210,7 +210,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
             }
         )
 
-        with patch("ecorouter.executors._load_imagine_bindings", return_value=bindings):
+        with patch("peqrouter.executors._load_imagine_bindings", return_value=bindings):
             self.assertEqual(executor.list_models(), ("Llama-3.3-70B",))
 
         self.assertEqual(
@@ -226,7 +226,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
         )
 
     def test_missing_environment_and_invalid_endpoint_fail_before_sdk_import(self) -> None:
-        with patch("ecorouter.executors._load_imagine_bindings") as loader:
+        with patch("peqrouter.executors._load_imagine_bindings") as loader:
             with self.assertRaisesRegex(
                 CloudConfigurationError, "INFERENCE_CLOUD_API_KEY"
             ):
@@ -257,7 +257,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
             }
         )
         with patch(
-            "ecorouter.executors._load_imagine_bindings",
+            "peqrouter.executors._load_imagine_bindings",
             side_effect=CloudConfigurationError("cloud extra missing"),
         ):
             with self.assertRaisesRegex(CloudConfigurationError, "cloud extra missing") as caught:
@@ -688,7 +688,7 @@ class GenieXPhoneExecutorTests(unittest.TestCase):
             return {"choices": [{"message": {"content": "hi"}}]}
 
         executor = GenieXPhoneExecutor(endpoint="http://phone:8080", token="secret-token")
-        with patch("ecorouter.executors._default_http_post", fake_default_http_post):
+        with patch("peqrouter.executors._default_http_post", fake_default_http_post):
             executor.execute_observed("What model are you?", phone_decision())
 
         self.assertEqual(captured["headers"], {"Authorization": "Bearer secret-token"})

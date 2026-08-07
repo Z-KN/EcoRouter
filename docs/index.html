@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EcoRouter — Cost-, Privacy-, and Quality-Aware Model Routing</title>
-<meta name="description" content="EcoRouter: a hardware-aware router for generative AI that jointly considers physical cost, privacy, and quality.">
+<title>PEQRouter — Cost-, Privacy-, and Quality-Aware Model Routing</title>
+<meta name="description" content="PEQRouter: a hardware-aware router for generative AI that jointly considers physical cost, privacy, and quality.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
 <body>
 
 <!-- Shared defs: gradients/filters used by every slide's figures, and the
-     EcoRouter mark — an "E" built from arrows routing out to several
+     PEQRouter mark — an "E" built from arrows routing out to several
      destinations, echoing the phone/PC/cloud fan-out on slide 1. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -34,7 +34,7 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <symbol id="ecorouter-mark" viewBox="0 0 44 44">
+    <symbol id="peqrouter-mark" viewBox="0 0 44 44">
       <line x1="14" y1="8" x2="14" y2="36" />
       <line x1="14" y1="14" x2="24" y2="14" />
       <polygon points="24,14 18,10.5 18,17.5" />
@@ -53,14 +53,14 @@
     <div class="bg-fx" aria-hidden="true"></div>
 
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
       <div class="slide-index"><span class="idx-current">01</span> / <span class="idx-total">04</span></div>
     </header>
 
     <div class="slide-body hero-layout">
       <div class="hero">
         <p class="kicker center">Motivation</p>
-        <div class="hero-brand"><svg class="mark big"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+        <div class="hero-brand"><svg class="mark big"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
         <h1 class="headline full">Routing requests across GenAI platforms involves more considerations</h1>
         <p class="subhead center">
           Existing model routers optimize for cost or latency alone — none jointly enforce
@@ -126,7 +126,7 @@
     <div class="bg-fx" aria-hidden="true"></div>
 
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
       <div class="slide-index"><span class="idx-current">02</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -145,7 +145,7 @@
           </figcaption>
           <div class="phone-frame">
             <img src="assets/img/phone-executor-demo.jpg?v=2"
-                 alt="EcoRouter's Android app: a sideloaded Qwen3-0.6B model loaded on the phone's NPU, a router-server toggle, and an on-device answer to &quot;Explain what an NPU is&quot; that wrongly describes it as a structure within the brain."
+                 alt="PEQRouter's Android app: a sideloaded Qwen3-0.6B model loaded on the phone's NPU, a router-server toggle, and an on-device answer to &quot;Explain what an NPU is&quot; that wrongly describes it as a structure within the brain."
                  decoding="async">
           </div>
           <div class="phone-demo-notes">
@@ -154,7 +154,7 @@
           </div>
         </figure>
 
-        <div class="flowchart-board" role="img" aria-label="EcoRouter flow chart. A prompt enters EcoRouter, which runs local analysis, a privacy gate, and a calibrated quality gate before ranking candidates, then routes to phone, PC, or cloud and returns the result with measured-energy feedback.">
+        <div class="flowchart-board" role="img" aria-label="PEQRouter flow chart. A prompt enters PEQRouter, which runs local analysis, a privacy gate, and a calibrated quality gate before ranking candidates, then routes to phone, PC, or cloud and returns the result with measured-energy feedback.">
           <div class="flowchart-main">
             <article class="flow-node flow-prompt">
               <span class="node-type">Input</span>
@@ -167,7 +167,7 @@
             <article class="flow-node flow-router">
               <span class="node-type">Router</span>
               <div class="router-head">
-                <div class="router-title"><svg class="mark"><use href="#ecorouter-mark"></use></svg><h2>EcoRouter</h2></div>
+                <div class="router-title"><svg class="mark"><use href="#peqrouter-mark"></use></svg><h2>PEQRouter</h2></div>
                 <p>Every gate runs inside the router, before any candidate is ranked for the active profile.</p>
               </div>
 
@@ -244,7 +244,7 @@
   <section class="slide" id="slide-3" data-slide="3">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
       <div class="slide-index"><span class="idx-current">03</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -253,7 +253,7 @@
         <p class="kicker center">Dashboard</p>
         <h1 class="headline full">One routing decision, fully explained.</h1>
         <p class="subhead center">
-          Prompt → EcoRouter → phone / PC / cloud — the decision parameters, candidate
+          Prompt → PEQRouter → phone / PC / cloud — the decision parameters, candidate
           scoring, and response for one example, end to end.
         </p>
       </div>
@@ -289,11 +289,11 @@
                 </select>
               </div>
               <div class="live-input-row">
-                <input id="liveInput" type="text" placeholder="Ask EcoRouter anything…" />
+                <input id="liveInput" type="text" placeholder="Ask PEQRouter anything…" />
                 <button type="button" id="liveRouteBtn">Route</button>
               </div>
               <p class="live-input-note" id="liveInputNote">
-                POSTs to <code>/api/route</code> and renders EcoRouter's actual decision + response.
+                POSTs to <code>/api/route</code> and renders PEQRouter's actual decision + response.
                 Run <code>python docs/server.py</code> locally to enable this — the hosted copy of
                 this deck will show an error since no backend is reachable there.
               </p>
@@ -304,7 +304,7 @@
           <section class="panel flow-panel" aria-labelledby="flowHeading">
             <h2 id="flowHeading">Routing flow</h2>
             <svg id="flowSvg" viewBox="0 0 640 700" role="img" aria-labelledby="flowDesc">
-              <desc id="flowDesc">Prompt flowing into EcoRouter, which routes it to one of phone, PC, or cloud.</desc>
+              <desc id="flowDesc">Prompt flowing into PEQRouter, which routes it to one of phone, PC, or cloud.</desc>
 
               <!-- input: prompt -> hub -->
               <path id="pathIn" class="flow-path" d="M8,325 L176,325" />
@@ -325,7 +325,7 @@
               <!-- hub -->
               <g class="flow-node flow-node-hub" transform="translate(256,325)">
                 <circle r="80" />
-                <text x="0" y="-4" class="hub-label">EcoRouter</text>
+                <text x="0" y="-4" class="hub-label">PEQRouter</text>
                 <text x="0" y="26" class="hub-sublabel" id="hubProfile"></text>
               </g>
 
@@ -397,7 +397,7 @@
   <section class="slide" id="slide-4" data-slide="4">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
       <div class="slide-index"><span class="idx-current">04</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -407,7 +407,7 @@
         <h1 class="headline full">What happens if a prompt only ever ran on one device, all the time?</h1>
         <p class="subhead center">
           106-prompt calibration set, measured on real phone / PC / cloud hardware — the same sweep
-          EcoRouter's own quality and energy heads are calibrated on. Not simulated.
+          PEQRouter's own quality and energy heads are calibrated on. Not simulated.
         </p>
       </div>
 
@@ -423,7 +423,7 @@
           <span class="eval-leg-item"><i class="eval-dot eval-dot-phone"></i>Always phone</span>
           <span class="eval-leg-item"><i class="eval-dot eval-dot-pc"></i>Always PC</span>
           <span class="eval-leg-item"><i class="eval-dot eval-dot-cloud"></i>Always cloud</span>
-          <span class="eval-leg-item"><i class="eval-dot eval-dot-router"></i>EcoRouter (balanced)</span>
+          <span class="eval-leg-item"><i class="eval-dot eval-dot-router"></i>PEQRouter (balanced)</span>
         </div>
 
         <div class="eval-metrics">
@@ -434,7 +434,7 @@
               <div class="eval-vbar"><span class="eval-vbar-value">915</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:10.5%"></div></div><span class="eval-vbar-label">Phone</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">8,705</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:100%"></div></div><span class="eval-vbar-label">PC</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">4,693</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:53.9%"></div></div><span class="eval-vbar-label">Cloud</span></div>
-              <div class="eval-vbar"><span class="eval-vbar-value">3,790</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.5%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">3,790</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.5%"></div></div><span class="eval-vbar-label">PEQRouter</span></div>
             </div>
           </div>
 
@@ -444,7 +444,7 @@
               <div class="eval-vbar"><span class="eval-vbar-value">0.63</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:0.2%"></div></div><span class="eval-vbar-label">Phone</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">57.8</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:16.4%"></div></div><span class="eval-vbar-label">PC</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">352.0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:100%"></div></div><span class="eval-vbar-label">Cloud</span></div>
-              <div class="eval-vbar"><span class="eval-vbar-value">153.5</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.6%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">153.5</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.6%"></div></div><span class="eval-vbar-label">PEQRouter</span></div>
             </div>
           </div>
 
@@ -454,7 +454,7 @@
               <div class="eval-vbar"><span class="eval-vbar-value">46%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:46%"></div></div><span class="eval-vbar-label">Phone</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">93%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:93%"></div></div><span class="eval-vbar-label">PC</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">96%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:96%"></div></div><span class="eval-vbar-label">Cloud</span></div>
-              <div class="eval-vbar"><span class="eval-vbar-value">94%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:94%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">94%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:94%"></div></div><span class="eval-vbar-label">PEQRouter</span></div>
             </div>
           </div>
 
@@ -464,7 +464,7 @@
               <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:2%"></div></div><span class="eval-vbar-label">Phone</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:2%"></div></div><span class="eval-vbar-label">PC</span></div>
               <div class="eval-vbar"><span class="eval-vbar-value">6</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:100%"></div></div><span class="eval-vbar-label">Cloud</span></div>
-              <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:2%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:2%"></div></div><span class="eval-vbar-label">PEQRouter</span></div>
             </div>
           </div>
 
@@ -474,7 +474,7 @@
       <p class="eval-takeaway">
         No always-one-device policy is safe by default: phone is fast and cheap but wrong on more than
         half of math/logic prompts; PC and cloud are accurate but ~9.5x and ~560x phone's energy
-        respectively; cloud also leaks every PII prompt it's fed. EcoRouter's balanced profile matches
+        respectively; cloud also leaks every PII prompt it's fed. PEQRouter's balanced profile matches
         PC/cloud-level quality while cutting energy 72% vs. always-cloud and keeping zero privacy violations.
       </p>
     </div>

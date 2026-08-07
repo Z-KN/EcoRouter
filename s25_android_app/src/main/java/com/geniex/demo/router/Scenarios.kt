@@ -5,7 +5,7 @@
 package com.geniex.demo.router
 
 /**
- * Kotlin port of `ecorouter/scenarios.py`'s built-in telemetry scenarios.
+ * Kotlin port of `peqrouter/scenarios.py`'s built-in telemetry scenarios.
  *
  * Live telemetry collection (battery/thermal/network probes on-device) is
  * not implemented here yet, same as it isn't on the PC side -- see

@@ -1,4 +1,4 @@
-"""Typed data contracts for EcoRouter."""
+"""Typed data contracts for PEQRouter."""
 
 from __future__ import annotations
 
@@ -7,19 +7,19 @@ from enum import Enum
 from typing import Any, Mapping
 
 
-class EcoRouterError(Exception):
-    """Base class for expected EcoRouter failures."""
+class PEQRouterError(Exception):
+    """Base class for expected PEQRouter failures."""
 
 
-class ValidationError(EcoRouterError):
+class ValidationError(PEQRouterError):
     """Raised when a request or configuration is invalid."""
 
 
-class NoRouteError(EcoRouterError):
+class NoRouteError(PEQRouterError):
     """Raised when every destination is excluded by hard constraints."""
 
 
-class ExecutionError(EcoRouterError):
+class ExecutionError(PEQRouterError):
     """Raised when the selected destination has no usable executor."""
 
 
@@ -47,7 +47,7 @@ class PhoneExecutionError(ExecutionError):
     """Raised when the phone's in-app inference server cannot complete a request."""
 
 
-class PrivacyError(EcoRouterError):
+class PrivacyError(PEQRouterError):
     """Base class for fail-closed privacy analyzer failures."""
 
 

@@ -7,7 +7,7 @@ times repeated single-prompt inference over a short/medium/long prompt set,
 and reports load time, per-prompt latency (mean/p50/p95), and process RSS
 memory delta.
 
-This script intentionally does not import the ``ecorouter`` package -- see
+This script intentionally does not import the ``peqrouter`` package -- see
 README.md for why estimator prototyping stays isolated from the router.
 
 Usage:

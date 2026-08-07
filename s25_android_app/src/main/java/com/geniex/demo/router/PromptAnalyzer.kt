@@ -8,7 +8,7 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 /**
- * Kotlin port of `ecorouter/analyzer.py`'s `HeuristicPromptAnalyzer`: the
+ * Kotlin port of `peqrouter/analyzer.py`'s `HeuristicPromptAnalyzer`: the
  * same dependency-free, regex-only PII/intent/complexity heuristic, so a
  * prompt accepted on the phone gets the identical privacy-sensitivity and
  * routing-feature verdict it would get from the PC's Python router. Detection

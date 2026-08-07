@@ -281,7 +281,7 @@ def _load_embedder(model_name: str):
     except ImportError as error:
         raise EstimatorUnavailableError(
             "the calibrated estimator needs torch + transformers; "
-            "install them or construct EcoRouter without an estimator"
+            "install them or construct PEQRouter without an estimator"
         ) from error
 
     revision = _PINNED_REVISIONS.get(model_name)

@@ -1,4 +1,4 @@
-# EcoRouter Backlog
+# PEQRouter Backlog
 
 This is the canonical list of deliberate MVP simplifications and deferred work. Each item has
 a priority, target version, dependency, and measurable completion condition. Features completed

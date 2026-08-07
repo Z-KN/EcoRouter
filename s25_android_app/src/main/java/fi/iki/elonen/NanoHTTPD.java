@@ -634,7 +634,7 @@ public abstract class NanoHTTPD {
 
         private String remoteIp;
 
-        // EcoRouter: was resolved eagerly here via inetAddress.getHostName(),
+        // PEQRouter: was resolved eagerly here via inetAddress.getHostName(),
         // a blocking reverse-DNS (PTR) lookup done unconditionally for every
         // non-loopback connection, before serve() ever runs. On networks
         // that black-hole rather than NXDOMAIN unresolvable PTR queries, that

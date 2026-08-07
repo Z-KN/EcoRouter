@@ -4,7 +4,7 @@ Slide 3 has two modes:
   - static:  the "Example" tabs — canned data from
              docs/assets/js/dashboard-scenarios.js, no backend involved.
   - dynamic: the "Try your own prompt" box — this server's `POST /api/route`,
-             which wraps the real `EcoRouter.run()` with every device live
+             which wraps the real `PEQRouter.run()` with every device live
              (build_executors(live_phone=True, live_pc=True, live_cloud=True)).
              A prompt that routes to a device you haven't configured (see
              below) fails with a clear error instead of returning fake text —
@@ -23,13 +23,13 @@ Then open http://localhost:8090/#slide-3 — same origin as the API, so no
 CORS setup is needed. The default port is 8090, not 8000, on purpose: 8000 is
 where the local X-Elite NPU server listens (see "pc" below), and this server
 calling itself instead of that server is a real failure mode, not a
-theoretical one. Live execution needs, per device (same as `ecorouter run`'s
---live-* flags, see ecorouter/cli.py):
+theoretical one. Live execution needs, per device (same as `peqrouter run`'s
+--live-* flags, see peqrouter/cli.py):
   - phone: PHONE_SERVER_ENDPOINT and PHONE_SERVER_TOKEN env vars.
-  - pc:    the local X-Elite NPU server (ecorouter/executors.py's
+  - pc:    the local X-Elite NPU server (peqrouter/executors.py's
            XEliteExecutor defaults to http://localhost:8000 if
            XELITE_SERVER_ENDPOINT isn't set).
-  - cloud: Cirrascale credentials (see ecorouter/executors.py).
+  - cloud: Cirrascale credentials (see peqrouter/executors.py).
 """
 from __future__ import annotations
 
@@ -45,17 +45,17 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from demo import calibrated_telemetry  # noqa: E402
-from ecorouter.estimator import CalibratedEstimator, EstimatorUnavailableError  # noqa: E402
-from ecorouter.executors import build_executors  # noqa: E402
-from ecorouter.models import (  # noqa: E402
+from peqrouter.estimator import CalibratedEstimator, EstimatorUnavailableError  # noqa: E402
+from peqrouter.executors import build_executors  # noqa: E402
+from peqrouter.models import (  # noqa: E402
     Device,
-    EcoRouterError,
+    PEQRouterError,
     OptimizationProfile,
     RouteRequest,
     default_device_configs,
 )
-from ecorouter.router import EcoRouter  # noqa: E402
-from ecorouter.scenarios import built_in_scenarios  # noqa: E402
+from peqrouter.router import PEQRouter  # noqa: E402
+from peqrouter.scenarios import built_in_scenarios  # noqa: E402
 
 # Same convention as cli.py/demo.py: resolved from this file's location, not
 # the working directory.
@@ -82,7 +82,7 @@ def build_router():
             if observed:
                 device_configs[device] = replace(config, model_id=observed)
 
-    router = EcoRouter(device_configs=device_configs, estimator=estimator)
+    router = PEQRouter(device_configs=device_configs, estimator=estimator)
 
     telemetry = built_in_scenarios()["healthy"]
     if estimator is not None:
@@ -90,13 +90,13 @@ def build_router():
 
     # Dynamic mode means true execution: every device is live. A route that
     # lands on an unconfigured device raises a *ConfigurationError (caught
-    # below as an EcoRouterError) instead of quietly returning simulated text.
+    # below as an PEQRouterError) instead of quietly returning simulated text.
     executors = build_executors(live_phone=True, live_pc=True, live_cloud=True)
     return router, telemetry, executors
 
 
 class DeckHandler(SimpleHTTPRequestHandler):
-    router: EcoRouter
+    router: PEQRouter
     telemetry: dict
     executors: dict
 
@@ -145,7 +145,7 @@ class DeckHandler(SimpleHTTPRequestHandler):
             # ValueError on a value outside the enum.
             self._json_error(400, str(error))
             return
-        except EcoRouterError as error:
+        except PEQRouterError as error:
             # Domain-level rejection (e.g. origin=cloud, no eligible device) —
             # a well-formed request the router still can't honor.
             self._json_error(422, str(error))
@@ -176,7 +176,7 @@ def main() -> int:
     DeckHandler.executors = executors
 
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), DeckHandler)
-    print(f"EcoRouter deck: http://127.0.0.1:{args.port}/#slide-3")
+    print(f"PEQRouter deck: http://127.0.0.1:{args.port}/#slide-3")
     print("Dynamic mode ('Try your own prompt') executes live on whichever device wins routing:")
     phone_ready = bool(os.environ.get("PHONE_SERVER_ENDPOINT")) and bool(os.environ.get("PHONE_SERVER_TOKEN"))
     cloud_ready = bool(os.environ.get("INFERENCE_CLOUD_API_KEY")) and bool(os.environ.get("INFERENCE_CLOUD_ENDPOINT"))

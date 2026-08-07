@@ -96,7 +96,7 @@
             android:background="#E7E7E7" />
 
         <!-- Router server: exposes the loaded model on the LAN at
-             /v1/chat/completions so EcoRouter can route to this phone. -->
+             /v1/chat/completions so PEQRouter can route to this phone. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:text="EcoRouter (accept prompt on this phone)" />
+            android:text="PEQRouter (accept prompt on this phone)" />
 
         <View
             android:layout_width="match_parent"

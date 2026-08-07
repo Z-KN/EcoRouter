@@ -16,10 +16,10 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 
 /** Raised when the local X-Elite PC server is unreachable or misconfigured. */
-class PcConfigurationError(message: String) : EcoRouterError(message)
+class PcConfigurationError(message: String) : PEQRouterError(message)
 
 /** Raised when the local X-Elite PC server responds but not usefully. */
-class PcExecutionError(message: String) : EcoRouterError(message)
+class PcExecutionError(message: String) : PEQRouterError(message)
 
 /**
  * Result of dispatching a routed request to a remote executor, trimmed to
@@ -142,4 +142,4 @@ object XEliteRemoteExecutor {
  * process that currently holds it. Surfacing that as an explicit error
  * keeps the omission visible instead of a silent no-op.
  */
-class CloudDispatchNotSupportedError(message: String) : EcoRouterError(message)
+class CloudDispatchNotSupportedError(message: String) : PEQRouterError(message)
