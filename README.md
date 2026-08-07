@@ -568,3 +568,11 @@ of hand-authored JSON), streaming and cancellation, multilingual or multimodal i
 privacy-preserving redaction, a learned (MLP/GBDT) latency/energy predictor beyond the k-NN
 calibrated estimator, an API, and a dashboard are explicitly deferred and tracked in
 [TODO.md](TODO.md).
+
+
+Contributors:
+Kaining Zhou (zkn.ms@outlook.com)
+Shreyas Donti (shreyasdonti15@gmail.com)
+Leo Lu (leo.hz.lu@gmail.com)
+Aadesh Madnaik (aadesh.madnaik@gmail.com)
+Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
