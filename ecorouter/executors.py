@@ -35,6 +35,13 @@ _DEFAULT_XELITE_ENDPOINT = "http://localhost:8000"
 _PHONE_ENDPOINT_ENV = "PHONE_SERVER_ENDPOINT"
 _PHONE_TOKEN_ENV = "PHONE_SERVER_TOKEN"
 
+# Sent as every live executor's max_tokens. This is a runaway/cost backstop,
+# not a length prediction: decision.analysis.estimated_output_tokens is a
+# routing-time guess used to score candidate devices on latency/energy (see
+# router.py), and capping real generation at a *predicted* length truncates
+# any genuine answer that runs longer than the guess.
+_MAX_GENERATION_TOKENS = 2048
+
 
 @dataclass(frozen=True)
 class _ImagineBindings:
@@ -156,7 +163,7 @@ class CirrascaleExecutor:
             response = client.chat(
                 messages=[message_factory(role="user", content=prompt)],
                 model=decision.model_id,
-                max_tokens=decision.analysis.estimated_output_tokens,
+                max_tokens=_MAX_GENERATION_TOKENS,
                 temperature=0,
             )
             finished_ns = self._clock_ns()
@@ -330,7 +337,7 @@ class XEliteExecutor:
 
         payload = {
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": decision.analysis.estimated_output_tokens,
+            "max_tokens": _MAX_GENERATION_TOKENS,
             "stream": False,
         }
 
@@ -430,7 +437,7 @@ class GenieXPhoneExecutor:
 
         payload = {
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": decision.analysis.estimated_output_tokens,
+            "max_tokens": _MAX_GENERATION_TOKENS,
             "stream": False,
         }
 

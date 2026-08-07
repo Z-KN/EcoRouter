@@ -27,7 +27,7 @@ from ecorouter import (
     hybrid_executors,
     x_elite_executors,
 )
-from ecorouter.executors import _ImagineBindings, phone_health
+from ecorouter.executors import _ImagineBindings, _MAX_GENERATION_TOKENS, phone_health
 from ecorouter.scenarios import built_in_scenarios
 
 
@@ -188,7 +188,7 @@ class CirrascaleExecutorTests(unittest.TestCase):
                 {
                     "messages": [{"role": "user", "content": "What model are you?"}],
                     "model": "Llama-3.3-70B",
-                    "max_tokens": decision.analysis.estimated_output_tokens,
+                    "max_tokens": _MAX_GENERATION_TOKENS,
                     "temperature": 0,
                 }
             ],
@@ -360,9 +360,7 @@ class XEliteExecutorTests(unittest.TestCase):
             captured["payload"]["messages"],
             [{"role": "user", "content": "What model are you?"}],
         )
-        self.assertEqual(
-            captured["payload"]["max_tokens"], decision.analysis.estimated_output_tokens
-        )
+        self.assertEqual(captured["payload"]["max_tokens"], _MAX_GENERATION_TOKENS)
         self.assertEqual(observation.response, "I am Qwen3-VL-4B-Instruct.")
         self.assertEqual(observation.api_turnaround_latency_ms, 93.0)
         self.assertEqual(observation.model_id, "ai-hub-models/Qwen3-VL-4B-Instruct")
@@ -556,9 +554,7 @@ class GenieXPhoneExecutorTests(unittest.TestCase):
         self.assertEqual(
             captured["payload"]["messages"], [{"role": "user", "content": "What model are you?"}]
         )
-        self.assertEqual(
-            captured["payload"]["max_tokens"], decision.analysis.estimated_output_tokens
-        )
+        self.assertEqual(captured["payload"]["max_tokens"], _MAX_GENERATION_TOKENS)
         self.assertEqual(observation.response, "I am Qwen3-0.6B-GGUF.")
         self.assertEqual(observation.api_turnaround_latency_ms, 410.0)
         self.assertEqual(observation.model_id, "Qwen3-0.6B-GGUF")

@@ -195,12 +195,12 @@ class EcoRouter:
                     "model; no privacy-safe, healthy destination met the requested quality."
                 )
 
-        # Head B's p90 becomes the generation cap actually sent to the device.
-        # Without this the executor forwards the analyzer's guess, which on the
-        # phone means a 0.6B model is handed a budget far larger than any answer
-        # it gave during calibration -- it then rambles to the cap and times
-        # out. p90 rather than p50: the cap must not truncate the answers the
-        # model does produce, only bound the runaway ones.
+        # Head B's p90 replaces the analyzer's guess in the reported decision
+        # (SimulatedExecutor's receipt, the "Est. output tokens" stat,
+        # ExecutionResult.to_dict()). It is not sent to live executors as a
+        # generation cap -- see _MAX_GENERATION_TOKENS in executors.py, which
+        # exists precisely because a *predicted* length must never truncate a
+        # real answer that runs longer than predicted.
         if estimate is not None and estimate.trusted:
             capped = estimate.length_p90.get(selected.device)
             if capped:

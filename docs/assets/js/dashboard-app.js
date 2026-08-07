@@ -313,5 +313,62 @@ function renderScenario(scenario) {
   renderMetrics(scenario);
 }
 
+// Wires the "Try your own prompt" box to POST /api/route (see docs/server.py)
+// and render the real response through the same renderScenario() pipeline
+// the canned SCENARIOS use — the shape is identical because both are
+// ExecutionResult.to_dict() (ecorouter/models.py). Fails gracefully when no
+// local server is reachable (e.g. the hosted GitHub Pages copy of this deck).
+function setupLiveInput() {
+  const input = document.getElementById("liveInput");
+  const button = document.getElementById("liveRouteBtn");
+  const originSelect = document.getElementById("liveOrigin");
+  const profileSelect = document.getElementById("liveProfile");
+  const note = document.getElementById("liveInputNote");
+  const defaultNote = note.textContent;
+
+  async function submit() {
+    const prompt = input.value.trim();
+    if (!prompt) return;
+
+    input.disabled = true;
+    button.disabled = true;
+    button.textContent = "Routing…";
+    note.classList.remove("is-error");
+    note.textContent = "Routing live…";
+
+    const origin = originSelect.value;
+    const profile = profileSelect.value;
+
+    try {
+      const response = await fetch("/api/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, origin, profile }),
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error((body && body.error) || `HTTP ${response.status}`);
+      }
+      activeIndex = -1;
+      renderScenarioTabs();
+      renderScenario({ prompt, origin, result: body });
+      note.textContent = defaultNote;
+    } catch (error) {
+      note.classList.add("is-error");
+      note.textContent = `Live routing failed: ${error.message}. Run "python docs/server.py" locally to enable this.`;
+    } finally {
+      input.disabled = false;
+      button.disabled = false;
+      button.textContent = "Route";
+    }
+  }
+
+  button.addEventListener("click", submit);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") submit();
+  });
+}
+
 renderScenarioTabs();
 renderScenario(SCENARIOS[activeIndex]);
+setupLiveInput();

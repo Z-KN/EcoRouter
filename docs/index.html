@@ -346,14 +346,28 @@
               <span>Image input — coming soon</span>
             </div>
 
-            <div class="live-input" aria-disabled="true">
+            <div class="live-input" id="liveInputWrap">
               <label for="liveInput">Try your own prompt</label>
-              <div class="live-input-row">
-                <input id="liveInput" type="text" placeholder="Live routing coming soon…" disabled />
-                <button type="button" disabled>Route</button>
+              <div class="live-input-controls">
+                <select id="liveOrigin" aria-label="Origin device">
+                  <option value="phone">Origin: Phone</option>
+                  <option value="pc">Origin: PC</option>
+                </select>
+                <select id="liveProfile" aria-label="Optimization profile">
+                  <option value="balanced">Profile: Balanced</option>
+                  <option value="low-latency">Profile: Low latency</option>
+                  <option value="low-energy">Profile: Low energy</option>
+                  <option value="high-quality">Profile: High quality</option>
+                </select>
               </div>
-              <p class="live-input-note">
-                This will POST to EcoRouter and render its actual response.
+              <div class="live-input-row">
+                <input id="liveInput" type="text" placeholder="Ask EcoRouter anything…" />
+                <button type="button" id="liveRouteBtn">Route</button>
+              </div>
+              <p class="live-input-note" id="liveInputNote">
+                POSTs to <code>/api/route</code> and renders EcoRouter's actual decision + response.
+                Run <code>python docs/server.py</code> locally to enable this — the hosted copy of
+                this deck will show an error since no backend is reachable there.
               </p>
             </div>
           </section>

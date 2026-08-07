@@ -194,6 +194,23 @@
   margin-bottom: 6px;
 }
 
+.live-input-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.live-input-controls select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-page);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.78rem;
+}
+
 .live-input-row {
   display: flex;
   gap: 8px;
@@ -205,7 +222,7 @@
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface-page);
-  color: var(--text-muted);
+  color: var(--text-primary);
   font: inherit;
 }
 
@@ -214,14 +231,19 @@
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface-page);
-  color: var(--text-muted);
+  color: var(--text-primary);
   font: inherit;
   font-weight: 600;
+  cursor: pointer;
+}
+.live-input-row button:hover:not(:disabled) {
+  background: var(--surface-1);
 }
 
 .live-input-row input:disabled,
 .live-input-row button:disabled {
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .live-input-note {
@@ -231,6 +253,9 @@
 }
 .live-input-note code {
   font-size: 0.74rem;
+}
+.live-input-note.is-error {
+  color: var(--status-critical);
 }
 
 /* ---------- Flow diagram ---------- */
