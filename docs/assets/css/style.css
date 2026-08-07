@@ -776,6 +776,8 @@ html, body {
 
 .dash-head { text-align: center; flex: 0 0 auto; }
 .dash-head .subhead { margin-left: auto; margin-right: auto; }
+#slide-3 .slide-index { color: var(--ink-dim); }
+#slide-3 .subhead { color: var(--ink-soft); }
 
 /* ---------- placeholder slides ---------- */
 

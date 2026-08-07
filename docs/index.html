@@ -257,11 +257,6 @@
             </div>
             <p class="prompt-text" id="promptText"></p>
 
-            <div class="attachment-slot" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="icon"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9.5" r="1.5" /><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19" /></svg>
-              <span>Image input — coming soon</span>
-            </div>
-
             <div class="live-input" id="liveInputWrap">
               <label for="liveInput">Try your own prompt</label>
               <div class="live-input-controls">
@@ -341,6 +336,7 @@
 
           <!-- Response -->
           <section class="panel response-panel" aria-labelledby="responseHeading">
+            <div class="stat-grid response-primary-metrics" id="primaryMetricsGrid"></div>
             <h2 id="responseHeading">Response</h2>
             <div class="response-header" id="responseHeader"></div>
             <p class="response-text" id="responseText"></p>
@@ -372,16 +368,10 @@
 
           <!-- Execution metrics -->
           <section class="panel full-width" aria-labelledby="metricsHeading">
-            <h2 id="metricsHeading">Execution metrics</h2>
+            <h2 id="metricsHeading">Other execution metrics</h2>
             <div class="stat-grid" id="metricsGrid"></div>
-            <p class="metrics-scope" id="metricsScope"></p>
           </section>
         </main>
-
-        <p class="dash-footer">
-          Illustrative example data — shapes match <code>ExecutionResult.to_dict()</code> in
-          <code>ecorouter/models.py</code>. Not a live EcoRouter run.
-        </p>
       </div>
     </div>
   </section>

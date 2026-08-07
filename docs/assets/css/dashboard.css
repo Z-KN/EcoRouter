@@ -9,10 +9,10 @@
   --surface-1: var(--card);
   --surface-page: transparent;
   --text-primary: var(--ink);
-  --text-secondary: var(--ink-dim);
-  --text-muted: var(--ink-dimmer);
+  --text-secondary: #d3d9e8;
+  --text-muted: #b8c1d5;
   --gridline: var(--line);
-  --baseline: var(--ink-dimmer);
+  --baseline: rgba(184, 193, 213, 0.5);
   --border: var(--line);
 
   --series-phone: var(--accent-a);
@@ -167,24 +167,6 @@
   border-radius: 10px;
   padding: 14px 16px;
   margin: 0 0 16px;
-}
-
-.attachment-slot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px dashed var(--baseline);
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  margin-bottom: 20px;
-}
-.attachment-slot .icon {
-  stroke: var(--text-muted);
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
 }
 
 .live-input label {
@@ -342,7 +324,7 @@
 }
 .flow-node-device .device-sublabel {
   text-anchor: middle;
-  font-size: 20px;
+  font-size: 16px;
   fill: var(--text-muted);
 }
 
@@ -618,22 +600,14 @@
   margin: 0;
 }
 
-/* ---------- Metrics scope ---------- */
-
-.metrics-scope {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin: 4px 0 0;
+.response-primary-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 88px;
+  margin: 0 0 18px;
 }
-
-/* ---------- Footer note ---------- */
-
-.dash-footer {
-  text-align: center;
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  padding: 14px 0 0;
-}
-.dash-footer code {
-  font-size: 0.76rem;
+.response-primary-metrics .stat-tile {
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

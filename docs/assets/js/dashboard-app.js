@@ -252,32 +252,22 @@ function renderResponse(scenario) {
 function renderMetrics(scenario) {
   const decision = scenario.result.decision;
   const metrics = scenario.result.metrics;
+  const primaryGrid = document.getElementById("primaryMetricsGrid");
   const grid = document.getElementById("metricsGrid");
-  const scopeEl = document.getElementById("metricsScope");
+  primaryGrid.innerHTML = "";
   grid.innerHTML = "";
-  scopeEl.textContent = "";
 
   if (!metrics) {
-    grid.appendChild(
-      statTile("Latency", fmtMs(decision.predicted.latency_ms), "predicted only — no live execution")
-    );
-    grid.appendChild(
-      statTile("Energy", fmtJoules(decision.predicted.energy_joules), "predicted only — no live execution")
-    );
+    primaryGrid.appendChild(statTile("Latency", "—", "Awaiting live result"));
+    primaryGrid.appendChild(statTile("Energy", "—", "Awaiting live result"));
     return;
   }
 
-  grid.appendChild(
-    statTile("API latency", fmtMs(metrics.api_turnaround_latency_ms), `predicted: ${fmtMs(decision.predicted.latency_ms)}`)
+  primaryGrid.appendChild(
+    statTile("Latency", fmtMs(metrics.api_turnaround_latency_ms))
   );
   const energyValue = metrics.measured_energy_joules ?? metrics.estimated_energy_joules;
-  grid.appendChild(
-    statTile(
-      metrics.measured_energy_joules !== null ? "Energy (measured)" : "Energy (estimated)",
-      fmtJoules(energyValue),
-      `predicted: ${fmtJoules(decision.predicted.energy_joules)}`
-    )
-  );
+  primaryGrid.appendChild(statTile("Energy", fmtJoules(energyValue)));
   grid.appendChild(
     statTile("Tokens", fmtNumber(metrics.total_tokens), `${fmtNumber(metrics.prompt_tokens)} prompt · ${fmtNumber(metrics.completion_tokens)} completion`)
   );
@@ -301,8 +291,6 @@ function renderMetrics(scenario) {
   if (metrics.compute_unit) {
     grid.appendChild(statTile("Compute unit", metrics.compute_unit, metrics.backend || undefined));
   }
-
-  scopeEl.textContent = `Energy scope: ${metrics.energy_scope}`;
 }
 
 function renderScenario(scenario) {

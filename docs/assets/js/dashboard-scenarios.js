@@ -24,7 +24,7 @@ const SCENARIOS = [
     result: {
       decision: {
         selected_device: "phone",
-        model_id: "phone-model",
+        model_id: "Qwen3-0.6B",
         profile: "balanced",
         analysis: {
           intent: "reasoning",
@@ -37,12 +37,12 @@ const SCENARIOS = [
         },
         quality_degraded: false,
         explanation:
-          "Selected phone/phone-model: it had the lowest balanced score among privacy-safe, healthy models meeting required quality.",
+          "Selected phone/Qwen3-0.6B: it had the lowest balanced score among privacy-safe, healthy models meeting required quality.",
         predicted: { latency_ms: 520.06, energy_joules: 2.019, cloud_cost_usd: 0.0 },
         candidates: [
           {
             device: "phone",
-            model_id: "phone-model",
+            model_id: "Qwen3-0.6B",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: true,
@@ -54,7 +54,7 @@ const SCENARIOS = [
           },
           {
             device: "pc",
-            model_id: "pc-model",
+            model_id: "Qwen3-VL-4B-Instruct",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: true,
@@ -129,7 +129,7 @@ const SCENARIOS = [
         candidates: [
           {
             device: "phone",
-            model_id: "phone-model",
+            model_id: "Qwen3-0.6B",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: false,
@@ -141,7 +141,7 @@ const SCENARIOS = [
           },
           {
             device: "pc",
-            model_id: "pc-model",
+            model_id: "Qwen3-VL-4B-Instruct",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: false,
@@ -198,7 +198,7 @@ const SCENARIOS = [
     result: {
       decision: {
         selected_device: "pc",
-        model_id: "pc-model",
+        model_id: "Qwen3-VL-4B-Instruct",
         profile: "high-quality",
         analysis: {
           intent: "summarization",
@@ -211,12 +211,12 @@ const SCENARIOS = [
         },
         quality_degraded: false,
         explanation:
-          "Selected pc/pc-model: it had the lowest high-quality score among privacy-safe, healthy models meeting required quality.",
+          "Selected pc/Qwen3-VL-4B-Instruct: it had the lowest high-quality score among privacy-safe, healthy models meeting required quality.",
         predicted: { latency_ms: 6636.0, energy_joules: 59.59, cloud_cost_usd: 0.0 },
         candidates: [
           {
             device: "phone",
-            model_id: "phone-model",
+            model_id: "Qwen3-0.6B",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: true,
@@ -228,7 +228,7 @@ const SCENARIOS = [
           },
           {
             device: "pc",
-            model_id: "pc-model",
+            model_id: "Qwen3-VL-4B-Instruct",
             eligible: true,
             exclusion_reasons: [],
             quality_sufficient: true,
