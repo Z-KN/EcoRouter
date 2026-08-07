@@ -569,15 +569,7 @@ privacy-preserving redaction, a learned (MLP/GBDT) latency/energy predictor beyo
 calibrated estimator, an API, and a dashboard are explicitly deferred and tracked in
 [TODO.md](TODO.md).
 
-<<<<<<< Updated upstream
 
-Contributors:
-Kaining Zhou (zkn.ms@outlook.com)
-Shreyas Donti (shreyasdonti15@gmail.com)
-Leo Lu (leo.hz.lu@gmail.com)
-Aadesh Madnaik (aadesh.madnaik@gmail.com)
-Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
-=======
 ## Contributors
 
 - Kaining Zhou (zkn.ms@outlook.com)
@@ -585,4 +577,4 @@ Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
 - Leo Lu (leo.hz.lu@gmail.com)
 - Aadesh Madnaik (aadesh.madnaik@gmail.com)
 - Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
->>>>>>> Stashed changes
+
