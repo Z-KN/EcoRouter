@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="780" viewBox="0 0 980 780">
+<style>
+  .title { font: 700 23px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #0f172a; letter-spacing: -0.02em; }
+  .subtitle { font: 400 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #475569; }
+  .axis { font: 500 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #334155; }
+  .value { font: 700 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #0f172a; }
+  .panel-title { font: 700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #0f172a; }
+  .panel-subtitle { font: 400 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #64748b; }
+  .small { font: 400 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #64748b; }
+</style>
+<rect x="0" y="0" width="980" height="780" fill="#ffffff"/>
+<text x="32" y="38" class="title">Blind baseline comparison</text>
+<text x="32" y="58" class="subtitle">Forced single-device baselines from offline calibration runs. White background preserved.</text>
+<rect x="32" y="78" width="12" height="12" rx="3" fill="#1f6feb"/>
+<text x="50" y="89" class="axis">Phone</text>
+<rect x="132" y="78" width="12" height="12" rx="3" fill="#2da44e"/>
+<text x="150" y="89" class="axis">PC</text>
+<rect x="232" y="78" width="12" height="12" rx="3" fill="#f59e0b"/>
+<text x="250" y="89" class="axis">Cloud</text>
+<rect x="24" y="98" width="932" height="192" rx="18" fill="#ffffff" stroke="#dbe3ee"/>
+<text x="42" y="122" class="panel-title">Pass rate</text>
+<text x="42" y="138" class="panel-subtitle">Exact-match / mechanical grading on labeled prompts only.</text>
+<line x1="66" y1="252" x2="940" y2="252" stroke="#dbe3ee"/>
+<line x1="62" y1="252.0" x2="940" y2="252.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="256.0" text-anchor="end" class="small">0%</text>
+<line x1="62" y1="226.5" x2="940" y2="226.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="230.5" text-anchor="end" class="small">25%</text>
+<line x1="62" y1="201.0" x2="940" y2="201.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="205.0" text-anchor="end" class="small">50%</text>
+<line x1="62" y1="175.5" x2="940" y2="175.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="179.5" text-anchor="end" class="small">75%</text>
+<line x1="62" y1="150.0" x2="940" y2="150.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="154.0" text-anchor="end" class="small">100%</text>
+<text x="206.3" y="280" text-anchor="middle" class="axis">Phone</text>
+<rect x="66.0" y="205.1" width="280.7" height="46.9" rx="8" fill="#1f6feb"/>
+<text x="206.3" y="197.1" text-anchor="middle" dominant-baseline="auto" class="value" fill="#0f172a">46%</text>
+<text x="503.0" y="280" text-anchor="middle" class="axis">PC</text>
+<rect x="362.7" y="157.1" width="280.7" height="94.9" rx="8" fill="#2da44e"/>
+<text x="503.0" y="204.6" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">93%</text>
+<text x="799.7" y="280" text-anchor="middle" class="axis">Cloud</text>
+<rect x="659.3" y="154.1" width="280.7" height="97.9" rx="8" fill="#f59e0b"/>
+<text x="799.7" y="203.0" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">96%</text>
+<rect x="24" y="312" width="932" height="192" rx="18" fill="#ffffff" stroke="#dbe3ee"/>
+<text x="42" y="336" class="panel-title">Median wall latency</text>
+<text x="42" y="352" class="panel-subtitle">End-to-end request time measured in the calibration sweep.</text>
+<line x1="66" y1="466" x2="940" y2="466" stroke="#dbe3ee"/>
+<line x1="62" y1="466.0" x2="940" y2="466.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="470.0" text-anchor="end" class="small">0.0 ms</text>
+<line x1="62" y1="440.5" x2="940" y2="440.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="444.5" text-anchor="end" class="small">1807.0 ms</text>
+<line x1="62" y1="415.0" x2="940" y2="415.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="419.0" text-anchor="end" class="small">3613.9 ms</text>
+<line x1="62" y1="389.5" x2="940" y2="389.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="393.5" text-anchor="end" class="small">5420.9 ms</text>
+<line x1="62" y1="364.0" x2="940" y2="364.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="368.0" text-anchor="end" class="small">7227.9 ms</text>
+<text x="206.3" y="494" text-anchor="middle" class="axis">Phone</text>
+<rect x="66.0" y="452.3" width="280.7" height="13.7" rx="8" fill="#1f6feb"/>
+<text x="206.3" y="459.2" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">969.8 ms</text>
+<text x="503.0" y="494" text-anchor="middle" class="axis">PC</text>
+<rect x="362.7" y="364.0" width="280.7" height="102.0" rx="8" fill="#2da44e"/>
+<text x="503.0" y="415.0" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">7227.9 ms</text>
+<text x="799.7" y="494" text-anchor="middle" class="axis">Cloud</text>
+<rect x="659.3" y="410.0" width="280.7" height="56.0" rx="8" fill="#f59e0b"/>
+<text x="799.7" y="402.0" text-anchor="middle" dominant-baseline="auto" class="value" fill="#0f172a">3971.2 ms</text>
+<rect x="24" y="526" width="932" height="192" rx="18" fill="#ffffff" stroke="#dbe3ee"/>
+<text x="42" y="550" class="panel-title">Median average power</text>
+<text x="42" y="566" class="panel-subtitle">Phone and PC are derived from recorded energy divided by wall time; cloud uses a fixed 75 W assumption.</text>
+<line x1="66" y1="680" x2="940" y2="680" stroke="#dbe3ee"/>
+<line x1="62" y1="680.0" x2="940" y2="680.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="684.0" text-anchor="end" class="small">0.0 W</text>
+<line x1="62" y1="654.5" x2="940" y2="654.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="658.5" text-anchor="end" class="small">18.8 W</text>
+<line x1="62" y1="629.0" x2="940" y2="629.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="633.0" text-anchor="end" class="small">37.5 W</text>
+<line x1="62" y1="603.5" x2="940" y2="603.5" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="607.5" text-anchor="end" class="small">56.2 W</text>
+<line x1="62" y1="578.0" x2="940" y2="578.0" stroke="#e8eef5" stroke-dasharray="2 4"/>
+<text x="58" y="582.0" text-anchor="end" class="small">75.0 W</text>
+<text x="206.3" y="708" text-anchor="middle" class="axis">Phone</text>
+<rect x="66.0" y="677.1" width="280.7" height="2.9" rx="8" fill="#1f6feb"/>
+<text x="206.3" y="678.5" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">2.2 W</text>
+<text x="503.0" y="708" text-anchor="middle" class="axis">PC</text>
+<rect x="362.7" y="671.5" width="280.7" height="8.5" rx="8" fill="#2da44e"/>
+<text x="503.0" y="675.8" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">6.2 W</text>
+<text x="799.7" y="708" text-anchor="middle" class="axis">Cloud</text>
+<rect x="659.3" y="578.0" width="280.7" height="102.0" rx="8" fill="#f59e0b"/>
+<text x="799.7" y="629.0" text-anchor="middle" dominant-baseline="middle" class="value" fill="#ffffff">75.0 W</text>
+</svg>

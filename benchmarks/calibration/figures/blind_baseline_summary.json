@@ -1,0 +1,110 @@
+{
+  "inputs": [
+    "/Users/leolu/Desktop/VScode/EcoRouter/benchmarks/calibration/runs/sweep.jsonl",
+    "/Users/leolu/Desktop/VScode/EcoRouter/benchmarks/calibration/runs/sweep_phone.jsonl",
+    "/Users/leolu/Desktop/VScode/EcoRouter/benchmarks/calibration/runs/sweep_pc_only.jsonl",
+    "/Users/leolu/Desktop/VScode/EcoRouter/benchmarks/calibration/runs/sweep_cloud_llama70b.jsonl"
+  ],
+  "devices": {
+    "phone": {
+      "label": "Phone",
+      "total": 106,
+      "passed": 46,
+      "accuracy": 0.46,
+      "median_wall_latency_ms": 969.8499999999999,
+      "median_energy_joules": 0.629730156,
+      "median_power_watts": 2.157224004259851,
+      "median_completion_tokens": 59.5
+    },
+    "pc": {
+      "label": "PC",
+      "total": 106,
+      "passed": 93,
+      "accuracy": 0.93,
+      "median_wall_latency_ms": 7227.9,
+      "median_energy_joules": 44.929586514600004,
+      "median_power_watts": 6.216111264949035,
+      "median_completion_tokens": 101.5
+    },
+    "cloud": {
+      "label": "Cloud",
+      "total": 100,
+      "passed": 96,
+      "accuracy": 0.96,
+      "median_wall_latency_ms": 3971.2,
+      "median_energy_joules": null,
+      "median_power_watts": 75.0,
+      "median_completion_tokens": 92.5
+    }
+  },
+  "categories": {
+    "code": {
+      "pc": {
+        "passed": 15,
+        "graded": 15,
+        "accuracy": 1.0
+      },
+      "phone": {
+        "passed": 8,
+        "graded": 15,
+        "accuracy": 0.5333333333333333
+      },
+      "cloud": {
+        "passed": 15,
+        "graded": 15,
+        "accuracy": 1.0
+      }
+    },
+    "fact": {
+      "pc": {
+        "passed": 20,
+        "graded": 20,
+        "accuracy": 1.0
+      },
+      "phone": {
+        "passed": 14,
+        "graded": 20,
+        "accuracy": 0.7
+      },
+      "cloud": {
+        "passed": 20,
+        "graded": 20,
+        "accuracy": 1.0
+      }
+    },
+    "math": {
+      "phone": {
+        "passed": 13,
+        "graded": 35,
+        "accuracy": 0.37142857142857144
+      },
+      "pc": {
+        "passed": 32,
+        "graded": 35,
+        "accuracy": 0.9142857142857143
+      },
+      "cloud": {
+        "passed": 33,
+        "graded": 35,
+        "accuracy": 0.9428571428571428
+      }
+    },
+    "mcq": {
+      "pc": {
+        "passed": 26,
+        "graded": 30,
+        "accuracy": 0.8666666666666667
+      },
+      "phone": {
+        "passed": 11,
+        "graded": 30,
+        "accuracy": 0.36666666666666664
+      },
+      "cloud": {
+        "passed": 28,
+        "graded": 30,
+        "accuracy": 0.9333333333333333
+      }
+    }
+  }
+}
