@@ -460,7 +460,14 @@ html, body {
 
 .flowchart-main {
   display: grid;
-  grid-template-columns: 0.95fr 0.17fr 4.3fr 0.17fr 1.15fr 0.17fr 0.95fr;
+  /* Connector tracks need a real minimum width. Fraction-only tracks could
+     collapse below the arrow width on scaled laptop displays, leaving an
+     apparent gap between adjacent cards. */
+  grid-template-columns:
+    minmax(92px, 0.95fr) clamp(26px, 1.7vw, 34px)
+    minmax(430px, 4.3fr) clamp(26px, 1.7vw, 34px)
+    minmax(132px, 1.15fr) clamp(26px, 1.7vw, 34px)
+    minmax(92px, 0.95fr);
   align-items: stretch;
 }
 
@@ -563,7 +570,11 @@ html, body {
   margin: 0 clamp(6px, 0.6vw, 11px);
 }
 
-.router-tags { flex: 0 0 auto; padding-top: clamp(12px, 1.6vh, 18px); }
+.router-tags {
+  flex: 0 0 auto;
+  justify-content: center;
+  padding-top: clamp(12px, 1.6vh, 18px);
+}
 .flow-result {
   border-color: rgba(86, 227, 159, 0.48);
   background: linear-gradient(180deg, rgba(86, 227, 159, 0.09), rgba(9, 12, 20, 0.78));
@@ -640,8 +651,8 @@ html, body {
 .flow-connector::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 9px;
+  left: -1px;
+  right: 7px;
   top: 50%;
   height: 2px;
   transform: translateY(-50%);
@@ -651,7 +662,7 @@ html, body {
   content: "";
   position: absolute;
   top: 50%;
-  right: 1px;
+  right: -1px;
   transform: translateY(-50%);
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
@@ -707,8 +718,10 @@ html, body {
   content: "";
   position: absolute;
   left: 4px;
-  top: 16%;
-  bottom: 16%;
+  /* All three rows have the same height, so these endpoints land exactly on
+     the first and last branch centres at every viewport. */
+  top: 27px;
+  bottom: 27px;
   width: 2px;
   background: rgba(94, 231, 255, 0.45);
 }
@@ -719,6 +732,7 @@ html, body {
   align-items: baseline;
   justify-content: space-between;
   gap: 2px 8px;
+  min-height: 54px;
   padding: 10px 11px;
   border: 1px solid rgba(94, 231, 255, 0.22);
   border-radius: 10px;
@@ -830,7 +844,7 @@ html, body {
   100% { left: 5%; opacity: 0; }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1240px) {
   /* Stacked, the flow chart is taller than the slide. Centring it here
      overflows past the top of the board (unreachable even while scrolling),
      so pin it to the top and let the slide scroll. */
