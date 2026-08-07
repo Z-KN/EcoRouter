@@ -1,0 +1,624 @@
+:root {
+  --bg: #090c14;
+  --bg-2: #0d1220;
+  --ink: #eef1f8;
+  --ink-dim: #9aa4bd;
+  --ink-dimmer: #626a83;
+  --ink-soft: #d3d9ec;
+  --accent-a: #5ee7ff;
+  --accent-b: #8b7bff;
+  --accent-bad: #ff6b81;
+  --accent-good: #56e39f;
+  --line: rgba(255, 255, 255, 0.09);
+  --card: rgba(255, 255, 255, 0.03);
+  --radius: 18px;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ---------- deck / slide shell ---------- */
+
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  padding: clamp(16px, 3.2vh, 40px) clamp(28px, 5vw, 64px) clamp(52px, 9vh, 88px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  overflow-y: auto;
+}
+
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+.bg-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 78% 18%, rgba(139, 123, 255, 0.20), transparent 60%),
+    radial-gradient(50% 45% at 15% 85%, rgba(94, 231, 255, 0.14), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+}
+
+.bg-fx::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(70% 70% at 50% 40%, black, transparent 90%);
+}
+
+.topbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  font-family: var(--font-display);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+/* EcoRouter mark: an "E" built from arrows routing outward to several
+   destinations, echoing the phone/PC/cloud fan-out in the figure. */
+.mark {
+  display: inline-block;
+  overflow: visible;
+  flex: none;
+}
+.mark line {
+  stroke: url(#markGrad);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+.mark polygon {
+  fill: url(#markGrad);
+}
+.wordmark .mark {
+  width: 1.15em;
+  height: 1.15em;
+  filter: url(#glow);
+}
+.hero-brand .mark {
+  width: 0.8em;
+  height: 0.8em;
+  filter: url(#glow);
+}
+
+.slide-index {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ink-dimmer);
+}
+.idx-current { color: var(--ink-dim); font-weight: 600; }
+
+/* ---------- slide 1 layout ---------- */
+
+.slide-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+.hero-layout {
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(8px, 1.8vh, 22px);
+  min-height: 0;
+}
+
+.hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.18em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: min(clamp(26px, 4.6vw, 58px), 8vh);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: clamp(2px, 0.6vh, 6px) 0 clamp(6px, 1.2vh, 14px);
+  background: linear-gradient(120deg, var(--ink) 40%, var(--accent-a) 75%, var(--accent-b) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: clamp(10px, 1.5vh, 13px);
+  letter-spacing: 0.22em;
+  color: var(--accent-a);
+  margin: 0 0 clamp(4px, 0.8vh, 12px);
+  font-weight: 600;
+}
+.kicker.center { text-align: center; }
+
+.headline {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3.4vh, 38px);
+  line-height: 1.15;
+  font-weight: 700;
+  margin: 0 0 clamp(6px, 1.2vh, 16px);
+  color: var(--ink);
+}
+.headline.full {
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+.subhead {
+  font-size: clamp(12px, 1.7vh, 15.5px);
+  line-height: 1.55;
+  color: var(--ink-dim);
+  margin: 0 0 clamp(6px, 1.4vh, 20px);
+  max-width: 62ch;
+}
+.subhead em { color: var(--ink); font-style: normal; font-weight: 600; }
+.subhead.center { text-align: center; margin-left: auto; margin-right: auto; }
+
+.compare-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 40px);
+  width: 100%;
+  min-height: 0;
+}
+
+.compare-col {
+  flex: 0 1 420px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.9vh, 10px);
+  min-height: 0;
+}
+
+.compare-left {
+  align-self: flex-start;
+}
+
+.compare-right {
+  align-self: flex-start;
+}
+
+.gap-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: clamp(6px, 1.1vh, 12px) 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.gap-mark {
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.gap-x {
+  background: rgba(255, 107, 129, 0.12);
+  color: var(--accent-bad);
+}
+
+.gap-check {
+  background: rgba(86, 227, 159, 0.16);
+  color: var(--accent-good);
+}
+
+.gap-title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(12px, 1.6vh, 14px);
+  color: var(--ink);
+}
+
+.gap-desc {
+  display: block;
+  font-size: clamp(11px, 1.4vh, 13px);
+  line-height: 1.45;
+  color: var(--ink-dim);
+  margin-top: 1px;
+}
+.gap-desc em { color: var(--ink); font-style: normal; }
+
+.gap-row-good {
+  background: linear-gradient(90deg, rgba(86,227,159,0.08), rgba(94,231,255,0.05));
+  border-color: rgba(86, 227, 159, 0.22);
+}
+.gap-row-good .gap-title { color: var(--accent-good); }
+.gap-row-good .gap-desc { color: var(--ink); }
+
+.footer-strip {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: clamp(4px, 1vh, 12px) 0 0;
+  padding: 0;
+}
+.footer-strip.center { justify-content: center; }
+.footer-strip li {
+  font-size: clamp(9.5px, 1.2vh, 11px);
+  letter-spacing: 0.03em;
+  color: var(--ink-dimmer);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: clamp(3px, 0.6vh, 5px) 11px;
+}
+
+/* ---------- routing figure (shared: slide 2's main diagram) ---------- */
+
+.fig-wrap {
+  margin-top: clamp(4px, 1vh, 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(3px, 0.7vh, 8px);
+  min-height: 0;
+}
+
+.routing-fig {
+  width: 100%;
+  max-width: min(420px, 50vh);
+  height: auto;
+  flex: 0 1 auto;
+}
+
+.routing-fig .node-prompt rect {
+  fill: rgba(139, 123, 255, 0.14);
+  stroke: var(--accent-b);
+  stroke-width: 1.8;
+}
+.routing-fig .node-prompt text {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 37px;
+}
+
+.routing-fig .gate-pill {
+  fill: var(--card);
+  stroke: var(--line);
+  stroke-width: 1.4;
+}
+.routing-fig .gate text {
+  fill: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 31px;
+  letter-spacing: 0.02em;
+}
+
+.routing-fig .node-step rect {
+  fill: rgba(94, 231, 255, 0.06);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+.routing-fig .step-label {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 32px;
+}
+.routing-fig .step-sub {
+  fill: var(--ink-soft);
+  font-size: 23px;
+}
+
+.routing-fig .node-estimator rect {
+  fill: rgba(139, 123, 255, 0.12);
+  stroke: var(--accent-b);
+  stroke-opacity: 0.5;
+  stroke-dasharray: 4 3;
+}
+
+.routing-fig .node-result rect {
+  fill: rgba(86, 227, 159, 0.1);
+  stroke: var(--accent-good);
+  stroke-opacity: 0.45;
+}
+.routing-fig .node-result .step-label { fill: var(--accent-good); }
+
+.routing-fig .edge {
+  fill: none;
+  stroke: url(#edgeGrad);
+  stroke-width: 2;
+  opacity: 0.6;
+}
+.routing-fig .edge-in {
+  stroke: var(--accent-b);
+  opacity: 0.85;
+}
+.routing-fig .edge-feed {
+  fill: none;
+  stroke: var(--accent-b);
+  stroke-width: 1.8;
+  opacity: 0.65;
+}
+.routing-fig .edge-loop {
+  fill: none;
+  stroke: var(--accent-a);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 5;
+  opacity: 0.45;
+}
+.routing-fig .edge-loop-arrow {
+  fill: var(--accent-a);
+  opacity: 0.6;
+}
+.routing-fig .edge-label {
+  fill: var(--ink-soft);
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  font-style: italic;
+}
+
+.routing-fig .node-device rect {
+  fill: var(--card);
+  stroke: var(--accent-a);
+  stroke-opacity: 0.4;
+  stroke-width: 1.6;
+  filter: url(#glow);
+}
+.routing-fig .device-label {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 34px;
+}
+.routing-fig .device-sub {
+  fill: var(--ink-soft);
+  font-size: 24px;
+}
+
+.routing-fig .pulse {
+  fill: var(--accent-a);
+  filter: url(#glow);
+  offset-rotate: 0deg;
+}
+.pulse-a { offset-path: path("M1482,190 C1502,190 1502,50 1542,50"); animation: travel 3.2s linear infinite; }
+.pulse-b { offset-path: path("M1482,190 L1542,190"); animation: travel 3.2s linear infinite 1.05s; }
+.pulse-c { offset-path: path("M1482,190 C1502,190 1502,330 1542,330"); animation: travel 3.2s linear infinite 2.1s; }
+.pulse-main { offset-path: path("M158,190 L1482,190"); animation: travel 3.6s linear infinite; }
+.pulse-loop {
+  fill: var(--accent-b);
+  offset-path: path("M1987,239 C2020,340 1780,560 1482,560 L1122,560 C820,560 500,560 300,480 C220,440 230,250 230,120 C230,10 400,-90 771,-90");
+  animation: travel 6s linear infinite 0.6s;
+}
+
+@keyframes travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@supports not (offset-path: path("M0,0")) {
+  .routing-fig .pulse { display: none; }
+}
+
+.fig-caption {
+  max-width: 400px;
+  text-align: center;
+  font-size: clamp(10px, 1.25vh, 12px);
+  line-height: 1.4;
+  color: var(--ink-dimmer);
+  margin: 0;
+}
+
+/* ---------- slide 2 layout ---------- */
+
+.impl-layout {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: clamp(4px, 1vh, 12px);
+  min-height: 0;
+}
+
+.impl-head {
+  text-align: center;
+  flex: 0 0 auto;
+}
+.impl-head .headline { margin-bottom: 0; }
+
+.fig-wrap-lg {
+  margin-top: 0;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+.fig-wrap-lg .routing-fig {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  flex: 1 1 auto;
+}
+
+.fig-highlighted {
+  position: relative;
+  min-height: 0;
+  padding: clamp(6px, 1.2vh, 14px);
+  border-radius: 24px;
+  background:
+    radial-gradient(60% 75% at 50% 45%, rgba(94, 231, 255, 0.08), transparent 70%),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(94, 231, 255, 0.16);
+  box-shadow:
+    0 0 0 1px rgba(139, 123, 255, 0.06),
+    0 40px 90px -35px rgba(94, 231, 255, 0.28),
+    0 0 70px -12px rgba(139, 123, 255, 0.2);
+}
+
+/* callout annotations: HTML text boxes embedded in the SVG via foreignObject,
+   so they scale in lockstep with their connector arrows and the rest of the
+   diagram instead of drifting out of alignment at different figure sizes. */
+.callout-box {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: rgba(9, 12, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+.callout-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 32px;
+  color: var(--accent-a);
+  letter-spacing: 0.01em;
+}
+.callout-desc {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.routing-fig .callout-line {
+  fill: none;
+  stroke: var(--accent-a);
+  stroke-width: 2;
+  opacity: 0.55;
+}
+.routing-fig .callout-arrowhead {
+  fill: var(--accent-a);
+  opacity: 0.7;
+}
+
+/* ---------- placeholder slides ---------- */
+
+.placeholder-body {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.placeholder-body .headline { color: var(--ink-dimmer); }
+
+/* ---------- nav ---------- */
+
+.deck-nav {
+  position: fixed;
+  left: 26px;
+  bottom: 26px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  backdrop-filter: blur(8px);
+}
+
+.nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-dimmer);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot.active {
+  background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+  transform: scale(1.35);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 980px) {
+  .slide { padding: 28px 24px 96px; overflow-y: auto; }
+  .compare-row { flex-direction: column; align-items: stretch; }
+  .compare-col { flex: 1 1 auto; }
+  html, body { overflow: auto; }
+}

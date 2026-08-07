@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoRouter — Cost-, Privacy-, and Quality-Aware Model Routing</title>
+<meta name="description" content="EcoRouter: a hardware-aware router for generative AI that jointly considers physical cost, privacy, and quality.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Shared defs: gradients/filters used by every slide's figures, and the
+     EcoRouter mark — an "E" built from arrows routing out to several
+     destinations, echoing the phone/PC/cloud fan-out on slide 1. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5ee7ff"/>
+      <stop offset="100%" stop-color="#8b7bff"/>
+    </linearGradient>
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5ee7ff"/>
+      <stop offset="100%" stop-color="#8b7bff"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <symbol id="ecorouter-mark" viewBox="0 0 44 44">
+      <line x1="14" y1="8" x2="14" y2="36" />
+      <line x1="14" y1="14" x2="24" y2="14" />
+      <polygon points="24,14 18,10.5 18,17.5" />
+      <line x1="14" y1="22" x2="34" y2="22" />
+      <polygon points="34,22 28,18.5 28,25.5" />
+      <line x1="14" y1="30" x2="24" y2="30" />
+      <polygon points="24,30 18,26.5 18,33.5" />
+    </symbol>
+  </defs>
+</svg>
+
+<div class="deck" id="deck">
+
+  <!-- ============ SLIDE 1 : INTRODUCTION / MOTIVATION ============ -->
+  <section class="slide" id="slide-1" data-slide="1">
+    <div class="bg-fx" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="slide-index"><span class="idx-current">01</span> / <span class="idx-total">04</span></div>
+    </header>
+
+    <div class="slide-body hero-layout">
+      <div class="hero">
+        <p class="kicker center">Motivation</p>
+        <div class="hero-brand"><svg class="mark big"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+        <h1 class="headline full">Routing requests across GenAI platforms involves more considerations</h1>
+        <p class="subhead center">
+          Existing model routers optimize for cost or latency alone — none jointly enforce
+          <em>energy</em>, <em>privacy</em>, and <em>output quality</em> at request time.
+        </p>
+      </div>
+
+      <div class="compare-row">
+        <div class="compare-col compare-left">
+          <div class="gap-row">
+            <span class="gap-mark gap-x">✕</span>
+            <div class="gap-copy">
+              <span class="gap-title">Cost-only routers</span>
+              <span class="gap-desc">optimize dollars or latency, blind to on-device energy and battery impact.</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <span class="gap-mark gap-x">✕</span>
+            <div class="gap-copy">
+              <span class="gap-title">Cloud-first routers</span>
+              <span class="gap-desc">assume every prompt is safe to ship off-device — no PII-aware exclusion.</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <span class="gap-mark gap-x">✕</span>
+            <div class="gap-copy">
+              <span class="gap-title">Quality-agnostic routers</span>
+              <span class="gap-desc">pick the cheapest destination without checking it's good enough for <em>this</em> prompt.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="compare-col compare-right">
+          <div class="gap-row gap-row-good">
+            <span class="gap-mark gap-check">✓</span>
+            <div class="gap-copy">
+              <span class="gap-title">Physical cost</span>
+              <span class="gap-desc">modeled and scored per device, live, on every request.</span>
+            </div>
+          </div>
+          <div class="gap-row gap-row-good">
+            <span class="gap-mark gap-check">✓</span>
+            <div class="gap-copy">
+              <span class="gap-title">Privacy</span>
+              <span class="gap-desc">regex PII gate excludes cloud for sensitive prompts.</span>
+            </div>
+          </div>
+          <div class="gap-row gap-row-good">
+            <span class="gap-mark gap-check">✓</span>
+            <div class="gap-copy">
+              <span class="gap-title">Quality</span>
+              <span class="gap-desc">calibrated per-prompt estimator checks sufficiency before routing.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="footer-strip center">
+        <li>phone</li><li>PC</li><li>cloud</li><li>regex PII gate</li><li>calibrated per-prompt quality</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2 : IMPLEMENTATION ============ -->
+  <section class="slide" id="slide-2" data-slide="2">
+    <div class="bg-fx" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="slide-index"><span class="idx-current">02</span> / <span class="idx-total">04</span></div>
+    </header>
+
+    <div class="slide-body impl-layout">
+      <div class="impl-head">
+        <p class="kicker center">Implementation</p>
+        <h1 class="headline full">One pipeline, three live executors, and a calibrated estimator in between.</h1>
+      </div>
+
+      <div class="fig-wrap fig-wrap-lg fig-highlighted">
+        <svg class="routing-fig horizontal" viewBox="-470 -360 2610 1190" role="img" aria-labelledby="fig2-title">
+          <title id="fig2-title">EcoRouter's routing pipeline: local analysis feeds a sensitivity gate and a calibrated estimator, which gate a profile-weighted scoring step (or bypass it when untrusted), fanning out to three live executors whose measured energy feeds back into the offline calibration sweep.</title>
+
+          <!-- spine connecting prompt through the main chain to the fan-out point -->
+          <path class="edge edge-in" d="M158,190 L1482,190" />
+
+          <!-- feedback loop: measured energy back into the calibration sweep (drawn first, so the
+               main chain renders on top of it where they cross) -->
+          <path class="edge edge-loop" d="M1987,239 C2020,340 1780,560 1482,560 L1122,560 C820,560 500,560 300,480 C220,440 230,250 230,120 C230,10 400,-90 771,-90" />
+          <polygon class="edge-loop-arrow" points="0,-8 14,0 0,8" transform="translate(771,-90)" />
+
+          <!-- sensitivity gate self-loop -->
+          <path class="edge edge-loop" d="M500,156 C520,90 730,90 750,156" />
+
+          <!-- bypass arc: untrusted estimate skips scoring entirely -->
+          <path class="edge edge-loop" d="M950,224 C950,320 1482,320 1482,190" />
+
+          <!-- prompt node -->
+          <g class="node node-prompt">
+            <rect x="8" y="155" width="150" height="70" rx="30" />
+            <text x="83" y="200" text-anchor="middle">Prompt</text>
+          </g>
+
+          <!-- local analysis -->
+          <g class="node node-step">
+            <rect x="194" y="142" width="250" height="96" rx="28" />
+            <text x="319" y="180" text-anchor="middle" class="step-label">Local analysis</text>
+            <text x="319" y="214" text-anchor="middle" class="step-sub">PII + intent</text>
+          </g>
+
+          <!-- sensitivity gate -->
+          <g class="gate">
+            <rect x="480" y="156" width="270" height="68" rx="30" class="gate-pill" />
+            <text x="615" y="198" text-anchor="middle">sensitivity gate</text>
+          </g>
+          <text x="615" y="65" text-anchor="middle" class="edge-label">excludes cloud if matched</text>
+
+          <!-- calibrated estimator (offset above the spine) -->
+          <g class="node node-step node-estimator">
+            <rect x="771" y="-139" width="330" height="98" rx="26" />
+            <text x="936" y="-100" text-anchor="middle" class="step-label">Calibrated estimator</text>
+            <text x="936" y="-64" text-anchor="middle" class="step-sub">106 calibration prompts</text>
+          </g>
+          <path class="edge edge-feed" d="M936,-41 L936,156" />
+
+          <!-- cost + quality gate -->
+          <g class="gate">
+            <rect x="786" y="156" width="300" height="68" rx="30" class="gate-pill" />
+            <text x="936" y="198" text-anchor="middle">cost + quality gate</text>
+          </g>
+          <text x="1200" y="300" text-anchor="middle" class="edge-label">untrusted → skip scoring</text>
+
+          <!-- profile-weighted scoring -->
+          <g class="node node-step">
+            <rect x="1122" y="141" width="300" height="98" rx="26" />
+            <text x="1272" y="180" text-anchor="middle" class="step-label">Profile score</text>
+            <text x="1272" y="216" text-anchor="middle" class="step-sub">latency · energy · quality</text>
+          </g>
+          <text x="1104" y="170" text-anchor="middle" class="edge-label">trusted</text>
+
+          <!-- fan-out edges from the junction to each device -->
+          <path class="edge" d="M1482,190 C1502,190 1502,50 1542,50" />
+          <path class="edge" d="M1482,190 L1542,190" />
+          <path class="edge" d="M1482,190 C1502,190 1502,330 1542,330" />
+
+          <!-- device + live-executor nodes -->
+          <g class="node node-device">
+            <rect x="1542" y="0" width="270" height="100" rx="26" />
+            <text x="1677" y="42" text-anchor="middle" class="device-label">Phone</text>
+            <text x="1677" y="76" text-anchor="middle" class="device-sub">on-device, wireless</text>
+          </g>
+          <g class="node node-device">
+            <rect x="1542" y="140" width="270" height="100" rx="26" />
+            <text x="1677" y="182" text-anchor="middle" class="device-label">PC</text>
+            <text x="1677" y="216" text-anchor="middle" class="device-sub">on-device, NPU</text>
+          </g>
+          <g class="node node-device">
+            <rect x="1542" y="280" width="270" height="100" rx="26" />
+            <text x="1677" y="322" text-anchor="middle" class="device-label">Cloud</text>
+            <text x="1677" y="356" text-anchor="middle" class="device-sub">cloud API</text>
+          </g>
+
+          <!-- merge edges from each device into the execution result -->
+          <path class="edge" d="M1812,50 C1832,50 1832,190 1882,190" />
+          <path class="edge" d="M1812,190 L1882,190" />
+          <path class="edge" d="M1812,330 C1832,330 1832,190 1882,190" />
+
+          <!-- execution result -->
+          <g class="node node-step node-result">
+            <rect x="1882" y="141" width="210" height="98" rx="26" />
+            <text x="1987" y="180" text-anchor="middle" class="step-label">Result</text>
+            <text x="1987" y="216" text-anchor="middle" class="step-sub">measured energy</text>
+          </g>
+
+          <!-- pulse dots tracing the live request path -->
+          <circle class="pulse pulse-main" r="6.5" />
+          <circle class="pulse pulse-a" r="6.5" />
+          <circle class="pulse pulse-b" r="6.5" />
+          <circle class="pulse pulse-c" r="6.5" />
+          <circle class="pulse pulse-loop" r="6.5" />
+
+          <!-- ===== annotation callouts: short, high-level text boxes with arrows into the diagram ===== -->
+
+          <!-- callout: analysis -->
+          <path class="callout-line" d="M-60,90 L194,190" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(194,190) rotate(22)" />
+          <foreignObject x="-420" y="15" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Analysis</span>
+              <p class="callout-desc">Reads the prompt locally — no network calls yet.</p>
+            </div>
+          </foreignObject>
+
+          <!-- callout: privacy -->
+          <path class="callout-line" d="M560,-110 L615,156" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(615,156) rotate(78)" />
+          <foreignObject x="380" y="-260" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Privacy</span>
+              <p class="callout-desc">Sensitive prompts never leave the device.</p>
+            </div>
+          </foreignObject>
+
+          <!-- callout: estimator -->
+          <path class="callout-line" d="M951,-170 L936,-139" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(936,-139) rotate(116)" />
+          <foreignObject x="771" y="-320" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Estimator</span>
+              <p class="callout-desc">Learns which device is good enough.</p>
+            </div>
+          </foreignObject>
+
+          <!-- callout: scoring -->
+          <path class="callout-line" d="M1302,350 L1272,239" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1272,239) rotate(-105)" />
+          <foreignObject x="1122" y="350" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Scoring</span>
+              <p class="callout-desc">Balances speed, energy, and quality.</p>
+            </div>
+          </foreignObject>
+
+          <!-- callout: execution -->
+          <path class="callout-line" d="M1830,-110 L1677,0" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1677,0) rotate(144)" />
+          <foreignObject x="1650" y="-260" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Execution</span>
+              <p class="callout-desc">Runs on real hardware, not a simulation.</p>
+            </div>
+          </foreignObject>
+
+          <!-- callout: feedback -->
+          <path class="callout-line" d="M1330,620 L1300,560" />
+          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1300,560) rotate(-117)" />
+          <foreignObject x="1150" y="620" width="360" height="150">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
+              <span class="callout-title">Feedback</span>
+              <p class="callout-desc">Results sharpen the next estimate.</p>
+            </div>
+          </foreignObject>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3 : DASHBOARD (placeholder) ============ -->
+  <section class="slide slide-placeholder" id="slide-3" data-slide="3">
+    <div class="bg-fx" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="slide-index"><span class="idx-current">03</span> / <span class="idx-total">04</span></div>
+    </header>
+    <div class="slide-body placeholder-body">
+      <p class="kicker">Dashboard</p>
+      <h1 class="headline">Coming next.</h1>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4 : EVALUATION (placeholder) ============ -->
+  <section class="slide slide-placeholder" id="slide-4" data-slide="4">
+    <div class="bg-fx" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
+      <div class="slide-index"><span class="idx-current">04</span> / <span class="idx-total">04</span></div>
+    </header>
+    <div class="slide-body placeholder-body">
+      <p class="kicker">Evaluation</p>
+      <h1 class="headline">Coming next.</h1>
+    </div>
+  </section>
+
+</div>
+
+<nav class="deck-nav" aria-label="Slide navigation">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
+</nav>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
