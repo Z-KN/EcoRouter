@@ -332,14 +332,119 @@ html, body {
   margin-bottom: 0;
 }
 
+/* Slide 2 splits into a live-phone panel + the pipeline flow chart. */
+.impl-stage {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(14px, 1.5vw, 26px);
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.phone-demo {
+  flex: 0 0 clamp(200px, 17.5vw, 312px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(9px, 1.2vh, 15px);
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(13px, 1.2vw, 21px);
+  border-radius: 28px;
+  background:
+    radial-gradient(70% 45% at 50% 0%, rgba(139, 123, 255, 0.1), transparent 75%),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(139, 123, 255, 0.22);
+  box-shadow:
+    0 0 0 1px rgba(94, 231, 255, 0.05),
+    0 36px 80px -38px rgba(139, 123, 255, 0.3);
+}
+
+.phone-demo-head {
+  flex: 0 0 auto;
+  text-align: center;
+}
+.phone-demo-kicker {
+  display: block;
+  color: var(--accent-b);
+  font-family: var(--font-display);
+  font-size: clamp(10.5px, 0.68vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.phone-demo-head strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(14px, 0.92vw, 18px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.phone-frame {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+}
+.phone-frame img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 26px 60px -30px rgba(94, 231, 255, 0.55);
+}
+
+.phone-demo-notes {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.phone-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(86, 227, 159, 0.26);
+  border-radius: 10px;
+  color: var(--ink-soft);
+  background: rgba(86, 227, 159, 0.07);
+  font-size: clamp(10.5px, 0.68vw, 13px);
+  line-height: 1.35;
+}
+.phone-note b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.phone-note i {
+  flex: 0 0 auto;
+  color: var(--accent-good);
+  font-style: normal;
+}
+.phone-note-bad {
+  border-color: rgba(255, 107, 129, 0.26);
+  background: rgba(255, 107, 129, 0.07);
+}
+.phone-note-bad i { color: var(--accent-bad); }
+
 .flowchart-board {
   position: relative;
   width: 100%;
+  min-width: 0;
+  align-self: center;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: clamp(16px, 2.1vh, 24px);
   padding: clamp(20px, 2vw, 34px);
   border-radius: 28px;
@@ -355,10 +460,8 @@ html, body {
 
 .flowchart-main {
   display: grid;
-  grid-template-columns:
-    0.68fr 0.24fr 1fr 0.24fr 1.05fr 0.24fr 1.2fr
-    0.24fr 1.15fr 0.24fr 1.18fr 0.24fr 0.82fr;
-  align-items: center;
+  grid-template-columns: 0.95fr 0.17fr 4.3fr 0.17fr 1.15fr 0.17fr 0.95fr;
+  align-items: stretch;
 }
 
 .flow-node {
@@ -366,8 +469,8 @@ html, body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: clamp(280px, 36vh, 370px);
-  padding: clamp(16px, 1.15vw, 23px);
+  min-height: clamp(240px, 34vh, 380px);
+  padding: clamp(13px, 1vw, 20px);
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 20px;
   background: rgba(9, 12, 20, 0.74);
@@ -387,6 +490,80 @@ html, body {
   box-shadow: 0 0 38px -22px rgba(94, 231, 255, 0.75);
 }
 .flow-executors { border-color: rgba(94, 231, 255, 0.38); }
+
+/* The three gates live inside the router: it owns them, so they read as one
+   box with an internal chain rather than four peers on the top-level rail. */
+.router-head { flex: 0 0 auto; }
+.router-head p {
+  margin-bottom: clamp(12px, 1.6vh, 18px);
+  text-align: center;
+}
+
+.router-stages {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  flex: 1 1 auto;
+}
+
+.stage-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(11px, 0.85vw, 17px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  background: rgba(9, 12, 20, 0.62);
+}
+.stage-local { border-color: rgba(94, 231, 255, 0.3); }
+.stage-privacy { border-color: rgba(255, 107, 129, 0.32); }
+.stage-quality {
+  border-color: rgba(139, 123, 255, 0.42);
+  background: linear-gradient(180deg, rgba(139, 123, 255, 0.08), rgba(9, 12, 20, 0.7));
+}
+
+/* Fixed label and title blocks so the body copy starts on the same line in
+   all three cards, however the headings wrap. */
+.stage-type {
+  display: block;
+  min-height: 2.3em;
+  text-align: center;
+  margin-bottom: clamp(6px, 0.8vh, 10px);
+  color: var(--accent-a);
+  font-family: var(--font-display);
+  font-size: clamp(10.5px, 0.7vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+.stage-privacy .stage-type { color: var(--accent-bad); }
+.stage-quality .stage-type { color: var(--accent-b); }
+
+.stage-card h3 {
+  min-height: 2.3em;
+  text-align: center;
+  margin: 0 0 clamp(8px, 1vh, 12px);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(15px, 1vw, 21px);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.stage-card p {
+  margin: 0 0 clamp(10px, 1.4vh, 15px);
+  color: var(--ink-dim);
+  font-size: clamp(12px, 0.76vw, 15px);
+  line-height: 1.45;
+}
+.stage-card .node-tags,
+.stage-card .node-status { margin-top: auto; }
+.stage-connector {
+  width: clamp(20px, 1.7vw, 34px);
+  margin: 0 clamp(6px, 0.6vw, 11px);
+}
+
+.router-tags { flex: 0 0 auto; padding-top: clamp(12px, 1.6vh, 18px); }
 .flow-result {
   border-color: rgba(86, 227, 159, 0.48);
   background: linear-gradient(180deg, rgba(86, 227, 159, 0.09), rgba(9, 12, 20, 0.78));
@@ -394,6 +571,7 @@ html, body {
 
 .node-type {
   display: block;
+  text-align: center;
   margin-bottom: clamp(18px, 2.2vh, 26px);
   color: var(--accent-a);
   font-family: var(--font-display);
@@ -407,15 +585,16 @@ html, body {
 
 .flow-node h2 {
   margin: 0 0 clamp(12px, 1.5vh, 17px);
+  text-align: center;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(20px, 1.35vw, 28px);
+  font-size: clamp(17px, 1.2vw, 26px);
   line-height: 1.12;
 }
 .flow-node p {
   margin: 0;
   color: var(--ink-dim);
-  font-size: clamp(14px, 0.88vw, 17px);
+  font-size: clamp(13px, 0.8vw, 16px);
   line-height: 1.5;
 }
 
@@ -441,6 +620,11 @@ html, body {
   border-color: rgba(255, 107, 129, 0.24);
   color: var(--accent-bad);
   background: rgba(255, 107, 129, 0.07);
+}
+.node-status-est {
+  border-color: rgba(139, 123, 255, 0.34);
+  color: var(--accent-b);
+  background: rgba(139, 123, 255, 0.08);
 }
 .node-status-good {
   border-color: rgba(86, 227, 159, 0.28);
@@ -474,7 +658,6 @@ html, body {
   border-left: 9px solid var(--accent-a);
 }
 .flow-dot,
-.estimator-dot,
 .feedback-return-dot {
   position: absolute;
   z-index: 2;
@@ -495,77 +678,17 @@ html, body {
 .connector-5 .flow-dot { animation-delay: 1.4s; }
 .connector-6 .flow-dot { animation-delay: 1.75s; }
 
-.estimator-box,
-.quality-box {
-  padding: clamp(12px, 1.1vw, 17px);
-  border-radius: 13px;
-  text-align: center;
-}
-.estimator-box {
-  border: 1px solid rgba(139, 123, 255, 0.45);
-  background: rgba(139, 123, 255, 0.1);
-}
-.quality-box {
-  border: 1px solid rgba(94, 231, 255, 0.34);
-  background: rgba(94, 231, 255, 0.07);
-}
-.estimator-box strong,
-.quality-box strong {
-  display: block;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: clamp(15px, 0.95vw, 19px);
-  line-height: 1.2;
-}
-.estimator-box span,
-.quality-box span {
-  display: block;
-  margin-top: 5px;
-  color: var(--ink-dim);
-  font-size: clamp(11px, 0.72vw, 14px);
-  line-height: 1.3;
-}
-.estimator-link {
-  position: relative;
-  width: 24px;
-  height: clamp(32px, 4.2vh, 44px);
-  margin: 0 auto;
-}
-.estimator-link::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 8px;
-  width: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(var(--accent-b), var(--accent-a));
-}
-.estimator-link::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid var(--accent-a);
-}
-.estimator-dot {
-  left: calc(50% - 4px);
-  top: 0;
-  animation: estimatorPulse 2s ease-in-out infinite;
-}
-
 .router-title {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 4px 8px;
   margin-bottom: clamp(12px, 1.5vh, 17px);
 }
 .router-title .mark {
-  width: clamp(28px, 1.8vw, 36px);
-  height: clamp(28px, 1.8vw, 36px);
+  width: clamp(21px, 1.4vw, 29px);
+  height: clamp(21px, 1.4vw, 29px);
   filter: url(#glow);
 }
 .router-title h2 { margin: 0; }
@@ -575,7 +698,9 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 1.1vh, 12px);
+  /* centred in the space left under the card title, not dumped at the bottom */
   margin-top: auto;
+  margin-bottom: auto;
   padding-left: 18px;
 }
 .executor-branch::before {
@@ -590,9 +715,10 @@ html, body {
 .executor-box {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  gap: 2px 8px;
   padding: 10px 11px;
   border: 1px solid rgba(94, 231, 255, 0.22);
   border-radius: 10px;
@@ -693,12 +819,6 @@ html, body {
   82% { opacity: 1; }
   100% { left: calc(100% - 10px); opacity: 0; }
 }
-@keyframes estimatorPulse {
-  0% { top: 0; opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { top: calc(100% - 10px); opacity: 0; }
-}
 @keyframes branchPulse {
   0%, 100% { transform: translateX(-3px); opacity: 0.35; }
   50% { transform: translateX(9px); opacity: 1; }
@@ -711,6 +831,31 @@ html, body {
 }
 
 @media (max-width: 1180px) {
+  /* Stacked, the flow chart is taller than the slide. Centring it here
+     overflows past the top of the board (unreachable even while scrolling),
+     so pin it to the top and let the slide scroll. */
+  .flowchart-board {
+    /* stacked, flex controls height — don't let it shrink under its content */
+    flex: 0 0 auto;
+    align-self: stretch;
+    justify-content: flex-start;
+  }
+  .impl-stage {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .phone-demo {
+    flex: 0 0 auto;
+    align-items: center;
+  }
+  .phone-frame { flex: 0 0 auto; }
+  .phone-frame img { max-height: 44vh; }
+  .phone-demo-notes {
+    flex-flow: row wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  .phone-note { flex: 1 1 240px; }
   .flowchart-main {
     grid-template-columns: minmax(0, 720px);
     justify-content: center;
@@ -748,6 +893,39 @@ html, body {
     animation-name: routePulseVertical;
   }
   .feedback-items { flex-wrap: wrap; }
+
+  /* The gates inside the router stay a horizontal chain even when the outer
+     rail stacks, so undo the vertical connector treatment for them. */
+  .stage-connector {
+    width: clamp(16px, 2vw, 26px);
+    height: 28px;
+  }
+  .stage-connector::before {
+    left: 0;
+    right: 9px;
+    top: 50%;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(139, 123, 255, 0.38), rgba(94, 231, 255, 0.78));
+  }
+  .stage-connector::after {
+    left: auto;
+    right: 1px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-right: 0;
+    border-bottom: 6px solid transparent;
+    border-left: 9px solid var(--accent-a);
+  }
+  .stage-connector .flow-dot {
+    left: 0;
+    top: calc(50% - 4px);
+    animation-name: routePulse;
+  }
 }
 
 @keyframes routePulseVertical {
@@ -759,7 +937,6 @@ html, body {
 
 @media (prefers-reduced-motion: reduce) {
   .flow-dot,
-  .estimator-dot,
   .executor-box::after,
   .feedback-return-dot { animation: none; }
 }

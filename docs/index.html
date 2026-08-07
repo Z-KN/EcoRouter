@@ -136,89 +136,106 @@
         <h1 class="headline full">One pipeline, three live executors, and a calibrated estimator in between.</h1>
       </div>
 
-      <div class="flowchart-board" role="img" aria-label="EcoRouter flow chart. A prompt is analyzed locally, checked by privacy and calibrated quality gates, scored by EcoRouter, routed to phone, PC, or cloud, and returned with measured-energy feedback.">
-        <div class="flowchart-main">
-          <article class="flow-node flow-prompt">
-            <span class="node-type">Input</span>
-            <h2>Prompt</h2>
-            <p>Request starts on the user's device.</p>
-          </article>
+      <div class="impl-stage">
 
-          <div class="flow-connector connector-1" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-analysis">
-            <span class="node-type">Local</span>
-            <h2>Local analysis</h2>
-            <p>Read PII and intent before any network call.</p>
-            <div class="node-tags"><span>PII</span><span>Intent</span></div>
-          </article>
-
-          <div class="flow-connector connector-2" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-privacy">
-            <span class="node-type">Privacy gate</span>
-            <h2>Sensitivity check</h2>
-            <p>Matched prompts exclude cloud immediately.</p>
-            <span class="node-status">Local only if sensitive</span>
-          </article>
-
-          <div class="flow-connector connector-3" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-quality">
-            <span class="node-type">Quality gate</span>
-            <div class="estimator-box">
-              <strong>Calibrated estimator</strong>
-              <span>106 calibration prompts</span>
-            </div>
-            <div class="estimator-link" aria-hidden="true"><span class="estimator-dot"></span></div>
-            <div class="quality-box">
-              <strong>Cost + quality</strong>
-              <span>Is this device good enough?</span>
-            </div>
-          </article>
-
-          <div class="flow-connector connector-4" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-router">
-            <span class="node-type">Router</span>
-            <div class="router-title"><svg class="mark"><use href="#ecorouter-mark"></use></svg><h2>EcoRouter</h2></div>
-            <p>Rank trusted candidates for the active profile.</p>
-            <div class="node-tags"><span>Latency</span><span>Energy</span><span>Quality</span></div>
-          </article>
-
-          <div class="flow-connector connector-5" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-executors">
-            <span class="node-type">Live fan-out</span>
-            <h2>Executors</h2>
-            <div class="executor-branch">
-              <div class="executor-box"><strong>Phone</strong><span>Wireless</span></div>
-              <div class="executor-box"><strong>PC</strong><span>NPU</span></div>
-              <div class="executor-box"><strong>Cloud</strong><span>API</span></div>
-            </div>
-          </article>
-
-          <div class="flow-connector connector-6" aria-hidden="true"><span class="flow-dot"></span></div>
-
-          <article class="flow-node flow-result">
-            <span class="node-type">Output</span>
-            <h2>Result</h2>
-            <p>Response plus measured energy.</p>
-            <span class="node-status node-status-good">Returned live</span>
-          </article>
-        </div>
-
-        <div class="feedback-return">
-          <span class="feedback-return-dot" aria-hidden="true"></span>
-          <div class="feedback-items">
-            <strong>Estimator refreshed</strong>
-            <span aria-hidden="true">←</span>
-            <strong>Calibration set</strong>
-            <span aria-hidden="true">←</span>
-            <strong>Measured energy from result</strong>
+        <figure class="phone-demo">
+          <figcaption class="phone-demo-head">
+            <span class="phone-demo-kicker">Phone executor · live</span>
+            <strong>Qwen3-0.6B on the NPU</strong>
+          </figcaption>
+          <div class="phone-frame">
+            <img src="assets/img/phone-executor-demo.jpg?v=2"
+                 alt="EcoRouter's Android app: a sideloaded Qwen3-0.6B model loaded on the phone's NPU, a router-server toggle, and an on-device answer to &quot;Explain what an NPU is&quot; that wrongly describes it as a structure within the brain."
+                 decoding="async">
           </div>
-          <span class="feedback-caption">Continuous feedback</span>
+          <div class="phone-demo-notes">
+            <span class="phone-note"><i aria-hidden="true">✓</i><span>Sideloaded model, on the NPU, no cloud call.</span></span>
+            <span class="phone-note phone-note-bad"><i aria-hidden="true">✕</i><span>“NPU stands for <b>Nuclear Power Plants</b>” — which is what the quality gate is for.</span></span>
+          </div>
+        </figure>
+
+        <div class="flowchart-board" role="img" aria-label="EcoRouter flow chart. A prompt enters EcoRouter, which runs local analysis, a privacy gate, and a calibrated quality gate before ranking candidates, then routes to phone, PC, or cloud and returns the result with measured-energy feedback.">
+          <div class="flowchart-main">
+            <article class="flow-node flow-prompt">
+              <span class="node-type">Input</span>
+              <h2>Prompt</h2>
+              <p>Request starts on the user's device.</p>
+            </article>
+
+            <div class="flow-connector connector-1" aria-hidden="true"><span class="flow-dot"></span></div>
+
+            <article class="flow-node flow-router">
+              <span class="node-type">Router</span>
+              <div class="router-head">
+                <div class="router-title"><svg class="mark"><use href="#ecorouter-mark"></use></svg><h2>EcoRouter</h2></div>
+                <p>Every gate runs inside the router, before any candidate is ranked for the active profile.</p>
+              </div>
+
+              <div class="router-stages">
+                <article class="stage-card stage-local">
+                  <span class="stage-type">Local</span>
+                  <h3>Local analysis</h3>
+                  <p>Read PII and intent before any network call.</p>
+                  <div class="node-tags"><span>PII</span><span>Intent</span></div>
+                </article>
+
+                <div class="flow-connector stage-connector connector-2" aria-hidden="true"><span class="flow-dot"></span></div>
+
+                <article class="stage-card stage-privacy">
+                  <span class="stage-type">Privacy gate</span>
+                  <h3>Sensitivity check</h3>
+                  <p>Matched prompts exclude cloud immediately.</p>
+                  <span class="node-status">Local only if sensitive</span>
+                </article>
+
+                <div class="flow-connector stage-connector connector-3" aria-hidden="true"><span class="flow-dot"></span></div>
+
+                <article class="stage-card stage-quality">
+                  <span class="stage-type">Quality gate</span>
+                  <h3>Calibrated estimator</h3>
+                  <p>106 calibration prompts, scored against this prompt.</p>
+                  <span class="node-status node-status-est">Is this device good enough?</span>
+                </article>
+              </div>
+
+              <div class="node-tags router-tags"><span>Latency</span><span>Energy</span><span>Quality</span></div>
+            </article>
+
+            <div class="flow-connector connector-4" aria-hidden="true"><span class="flow-dot"></span></div>
+
+            <article class="flow-node flow-executors">
+              <span class="node-type">Live fan-out</span>
+              <h2>Executors</h2>
+              <div class="executor-branch">
+                <div class="executor-box"><strong>Phone</strong><span>Wireless</span></div>
+                <div class="executor-box"><strong>PC</strong><span>NPU</span></div>
+                <div class="executor-box"><strong>Cloud</strong><span>API</span></div>
+              </div>
+            </article>
+
+            <div class="flow-connector connector-5" aria-hidden="true"><span class="flow-dot"></span></div>
+
+            <article class="flow-node flow-result">
+              <span class="node-type">Output</span>
+              <h2>Result</h2>
+              <p>Response plus measured energy.</p>
+              <span class="node-status node-status-good">Returned live</span>
+            </article>
+          </div>
+
+          <div class="feedback-return">
+            <span class="feedback-return-dot" aria-hidden="true"></span>
+            <div class="feedback-items">
+              <strong>Estimator refreshed</strong>
+              <span aria-hidden="true">←</span>
+              <strong>Calibration set</strong>
+              <span aria-hidden="true">←</span>
+              <strong>Measured energy from result</strong>
+            </div>
+            <span class="feedback-caption">Continuous feedback</span>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
