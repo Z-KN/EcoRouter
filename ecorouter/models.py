@@ -68,7 +68,7 @@ class Device(str, Enum):
 class OptimizationProfile(str, Enum):
     BALANCED = "balanced"
     LOW_LATENCY = "low-latency"
-    ENERGY_SAVER = "energy-saver"
+    LOW_ENERGY = "low-energy"
     HIGH_QUALITY = "high-quality"
 
 

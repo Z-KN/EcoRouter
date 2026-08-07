@@ -484,7 +484,7 @@ class CliTests(unittest.TestCase):
                     "--prompt",
                     "What model are you?",
                     "--profile",
-                    "energy-saver",
+                    "low-energy",
                     "--config",
                     "unused",
                     "--live-phone",

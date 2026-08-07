@@ -175,7 +175,7 @@ requests served) without spending a generation. Live phone execution has a 120-s
 accommodate on-device decode; the server rejects a second concurrent request (`429`) rather than
 racing the native model handle, and rejects requests without a valid bearer token (`401`).
 
-Available optimization profiles are `balanced`, `low-latency`, `energy-saver`, and
+Available optimization profiles are `balanced`, `low-latency`, `low-energy`, and
 `high-quality`. Built-in telemetry scenarios are `healthy`, `phone-low-battery`,
 `pc-congested`, and `cloud-offline`. Both `route` and `run` accept `--no-estimator` to skip the
 calibrated per-prompt quality estimator and use static capability scores only (see
@@ -477,7 +477,7 @@ latency, energy, and quality penalties (each clamped to `[0, 1]`; lower score wi
 | --- | ---: | ---: | ---: |
 | balanced | 0.500 | 0.333 | 0.167 |
 | low-latency | 0.850 | 0.075 | 0.075 |
-| energy-saver | 0.150 | 0.800 | 0.050 |
+| low-energy | 0.150 | 0.800 | 0.050 |
 | high-quality | 0.100 | 0.100 | 0.800 |
 
 The quality penalty (`1 - capability_score`) is scored on every eligible candidate, not just when
@@ -496,7 +496,7 @@ with the calibrated estimator wired in, healthy telemetry, origin PC:
 | --- | ---: | ---: | ---: |
 | balanced | 48 | 31 | 27 |
 | low-latency | 51 | 8 | 47 |
-| energy-saver | 52 | 45 | 9 |
+| low-energy | 52 | 45 | 9 |
 | high-quality | 0 | 15 | 91 |
 
 These prompts are also what the estimator was calibrated on, so every prediction is trusted here

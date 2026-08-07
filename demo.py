@@ -11,7 +11,7 @@ quality estimate came from, the measured energy constant used, and which gate
 Usage:
     python demo.py                 # decisions only
     python demo.py --live          # also execute one prompt on real hardware
-    python demo.py --profile energy-saver
+    python demo.py --profile low-energy
 """
 from __future__ import annotations
 
@@ -238,12 +238,12 @@ def main() -> int:
 
     show(router, estimator, telemetry,
          "What is 15 percent of 240?",
-         OptimizationProfile.ENERGY_SAVER,
+         OptimizationProfile.LOW_ENERGY,
          "[4] Same easy prompt, healthy device - stays on the phone.")
 
     show(router, estimator, low_battery,
          "What is 15 percent of 240?",
-         OptimizationProfile.ENERGY_SAVER,
+         OptimizationProfile.LOW_ENERGY,
          "[5] Same prompt, phone battery low - routing leaves the device.")
 
     show(router, estimator, telemetry,

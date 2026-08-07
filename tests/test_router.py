@@ -143,7 +143,7 @@ class EcoRouterTests(unittest.TestCase):
         executors = default_simulated_executors()
         executors[Device.PHONE] = ObservedPhoneExecutor()
         result = heuristic_router(configs).run(
-            request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
+            request_for("What model are you?", profile=OptimizationProfile.LOW_ENERGY),
             executors,
         )
 
@@ -232,7 +232,7 @@ class EcoRouterTests(unittest.TestCase):
         executors = default_simulated_executors()
         executors[Device.PHONE] = ObservedPhoneExecutor()
         result = heuristic_router(configs).run(
-            request_for("What model are you?", profile=OptimizationProfile.ENERGY_SAVER),
+            request_for("What model are you?", profile=OptimizationProfile.LOW_ENERGY),
             executors,
         )
 

@@ -38,7 +38,7 @@ _PROFILE_WEIGHTS: dict[OptimizationProfile, dict[str, float]] = {
         "energy": 0.075,
         "quality": 0.075,
     },
-    OptimizationProfile.ENERGY_SAVER: {
+    OptimizationProfile.LOW_ENERGY: {
         "latency": 0.150,
         "energy": 0.800,
         "quality": 0.050,

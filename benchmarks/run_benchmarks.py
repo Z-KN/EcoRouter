@@ -49,7 +49,7 @@ _PROFILE_WEIGHTS = {
         "cost": 0.05,
         "quality": 0.10,
     },
-    "energy-saver": {
+    "low-energy": {
         "latency": 0.15,
         "energy": 0.40,
         "utilization": 0.10,
