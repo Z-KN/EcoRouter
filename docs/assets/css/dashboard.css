@@ -305,8 +305,9 @@
 
 .hub-label {
   text-anchor: middle;
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 700;
+  letter-spacing: -0.02em;
   fill: var(--text-primary);
 }
 .hub-sublabel {

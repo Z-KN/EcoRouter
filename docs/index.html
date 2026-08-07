@@ -53,7 +53,7 @@
     <div class="bg-fx" aria-hidden="true"></div>
 
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg><span class="wordmark-text"><span class="wordmark-name">PEQRouter</span><span class="wordmark-expansion">: Privacy, Efficiency, Quality</span></span></div>
       <div class="slide-index"><span class="idx-current">01</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -126,7 +126,7 @@
     <div class="bg-fx" aria-hidden="true"></div>
 
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg><span class="wordmark-text"><span class="wordmark-name">PEQRouter</span><span class="wordmark-expansion">: Privacy, Efficiency, Quality</span></span></div>
       <div class="slide-index"><span class="idx-current">02</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -168,38 +168,90 @@
               <span class="node-type">Router</span>
               <div class="router-head">
                 <div class="router-title"><svg class="mark"><use href="#peqrouter-mark"></use></svg><h2>PEQRouter</h2></div>
-                <p>Every gate runs inside the router, before any candidate is ranked for the active profile.</p>
+                <p>Every gate runs locally before candidates are ranked for the active profile.</p>
+                <span class="detail-hint">Hover or focus a gate or score signal for implementation details.</span>
               </div>
 
               <div class="router-stages">
-                <article class="stage-card stage-local">
-                  <span class="stage-type">Local</span>
+                <article class="stage-card stage-local tech-target" tabindex="0" aria-describedby="tech-local-analysis">
+                  <span class="stage-type">Regex + heuristics</span>
                   <h3>Local analysis</h3>
-                  <p>Read PII and intent before any network call.</p>
+                  <p>Classify PII, intent, complexity, and token budget.</p>
                   <div class="node-tags"><span>PII</span><span>Intent</span></div>
+                  <div class="tech-popover" id="tech-local-analysis" role="tooltip">
+                    <strong>Dependency-free prompt analyzer</strong>
+                    <p>Seven compiled regex detectors cover email, SSN, payment card, phone number, secrets, Title-Case names, and street addresses. Deterministic patterns also infer intent and complexity; matched values are discarded and only category names survive.</p>
+                    <code>required_quality = min(.95, .45 + .50 × complexity)</code>
+                  </div>
                 </article>
 
                 <div class="flow-connector stage-connector connector-2" aria-hidden="true"><span class="flow-dot"></span></div>
 
-                <article class="stage-card stage-privacy">
-                  <span class="stage-type">Privacy gate</span>
-                  <h3>Sensitivity check</h3>
-                  <p>Matched prompts exclude cloud immediately.</p>
+                <article class="stage-card stage-privacy tech-target" tabindex="0" aria-describedby="tech-privacy-gate">
+                  <span class="stage-type">Fail-closed policy</span>
+                  <h3>Privacy gate</h3>
+                  <p>Any PII category removes cloud before scoring.</p>
                   <span class="node-status">Local only if sensitive</span>
+                  <div class="tech-popover" id="tech-privacy-gate" role="tooltip">
+                    <strong>Cloud exclusion is a hard gate</strong>
+                    <p>If any detector matches, <code>sensitive=true</code> and cloud receives the exclusion reason <code>cloud blocked by privacy policy</code>. The prompt remains eligible only for available local devices; privacy is never relaxed when quality degrades.</p>
+                    <p>No Presidio, spaCy, model download, or network call is required.</p>
+                  </div>
                 </article>
 
                 <div class="flow-connector stage-connector connector-3" aria-hidden="true"><span class="flow-dot"></span></div>
 
-                <article class="stage-card stage-quality">
-                  <span class="stage-type">Quality gate</span>
-                  <h3>Calibrated estimator</h3>
-                  <p>106 calibration prompts, scored against this prompt.</p>
+                <article class="stage-card stage-quality tech-target" tabindex="0" aria-describedby="tech-quality-gate">
+                  <span class="stage-type">Frozen MiniLM · k-NN</span>
+                  <h3>Quality heads</h3>
+                  <p>Per-device pass probability and answer length.</p>
                   <span class="node-status node-status-est">Is this device good enough?</span>
+                  <div class="tech-popover" id="tech-quality-gate" role="tooltip">
+                    <strong>MiniLM is frozen—not fine-tuned</strong>
+                    <p>A pinned <code>all-MiniLM-L6-v2</code> encoder is mean-pooled and L2-normalized. Two k-NN heads (<code>k=5</code>) use 106 measured prompts to predict per-device <code>P(pass)</code> and token-length p50/p90.</p>
+                    <p><code>P(pass) ≥ .50</code> passes. The head abstains below cosine similarity <code>.309</code> or for an unseen intent, then the router uses its documented fallback.</p>
+                  </div>
                 </article>
               </div>
 
-              <div class="node-tags router-tags"><span>Latency</span><span>Energy</span><span>Quality</span></div>
+              <div class="node-tags router-tags">
+                <span class="metric-tag metric-latency tech-target" tabindex="0" aria-describedby="tech-latency-score">Latency
+                  <span class="tech-popover" id="tech-latency-score" role="tooltip">
+                    <strong>Predicted latency</strong>
+                    <code>network_ms + 1000 × tokens / throughput</code>
+                    <small>The normalized penalty is clamped at 10 seconds. Balanced-profile weight: <code>0.500</code>.</small>
+                  </span>
+                </span>
+                <span class="metric-tag metric-energy tech-target" tabindex="0" aria-describedby="tech-energy-score">Energy
+                  <span class="tech-popover" id="tech-energy-score" role="tooltip">
+                    <strong>Predicted energy</strong>
+                    <code>phone/PC: tokens × measured J/token</code>
+                    <code>cloud: 75 W × predicted latency</code>
+                    <small>The normalized penalty is clamped at 700 J. Balanced-profile weight: <code>0.333</code>.</small>
+                  </span>
+                </span>
+                <span class="metric-tag metric-quality tech-target" tabindex="0" aria-describedby="tech-quality-score">Quality
+                  <span class="tech-popover" id="tech-quality-score" role="tooltip">
+                    <strong>Hard gate, then preference</strong>
+                    <small>The trusted k-NN head decides eligibility. Among devices that pass, quality contributes <code>1 − capability_score</code>. Balanced-profile weight: <code>0.167</code>.</small>
+                  </span>
+                </span>
+              </div>
             </article>
+
+            <div class="feedback-return">
+              <span class="feedback-return-dot" aria-hidden="true"></span>
+              <span class="feedback-source-line" aria-hidden="true"></span>
+              <span class="feedback-loop-arrow" aria-hidden="true"></span>
+              <div class="feedback-items">
+                <strong>Estimator refreshed</strong>
+                <span aria-hidden="true">←</span>
+                <strong>Calibration set</strong>
+                <span aria-hidden="true">←</span>
+                <strong>Measured energy from result</strong>
+              </div>
+              <span class="feedback-caption">Continuous feedback</span>
+            </div>
 
             <div class="flow-connector connector-4" aria-hidden="true"><span class="flow-dot"></span></div>
 
@@ -207,9 +259,24 @@
               <span class="node-type">Live fan-out</span>
               <h2>Executors</h2>
               <div class="executor-branch">
-                <div class="executor-box"><strong>Phone</strong><span>Wireless</span></div>
-                <div class="executor-box"><strong>PC</strong><span>NPU</span></div>
-                <div class="executor-box"><strong>Cloud</strong><span>API</span></div>
+                <div class="executor-box tech-target" tabindex="0" aria-describedby="tech-phone-executor"><strong>Phone</strong><span>Wireless</span>
+                  <div class="tech-popover" id="tech-phone-executor" role="tooltip">
+                    <strong>Qwen3-0.6B · GenieX NPU</strong>
+                    <p>The Android foreground service exposes an OpenAI-compatible endpoint over wireless LAN with bearer-token authentication. It returns latency, tokens, TTFT, decode speed, and measured NPU energy.</p>
+                  </div>
+                </div>
+                <div class="executor-box tech-target" tabindex="0" aria-describedby="tech-pc-executor"><strong>PC</strong><span>NPU</span>
+                  <div class="tech-popover" id="tech-pc-executor" role="tooltip">
+                    <strong>Qwen3-VL-4B · X-Elite</strong>
+                    <p>A local OpenAI-compatible server dispatches to the Snapdragon X-Elite Hexagon NPU and returns observed latency, tokens, and backend metadata.</p>
+                  </div>
+                </div>
+                <div class="executor-box tech-target" tabindex="0" aria-describedby="tech-cloud-executor"><strong>Cloud</strong><span>API</span>
+                  <div class="tech-popover" id="tech-cloud-executor" role="tooltip">
+                    <strong>Llama-3.3-70B · Cirrascale</strong>
+                    <p>Privacy-approved prompts use the Imagine API. Wall-clock latency and token usage are observed; cloud energy is estimated as the Cloud AI 100's 75 W TDP multiplied by request latency.</p>
+                  </div>
+                </div>
               </div>
             </article>
 
@@ -222,18 +289,6 @@
               <span class="node-status node-status-good">Returned live</span>
             </article>
           </div>
-
-          <div class="feedback-return">
-            <span class="feedback-return-dot" aria-hidden="true"></span>
-            <div class="feedback-items">
-              <strong>Estimator refreshed</strong>
-              <span aria-hidden="true">←</span>
-              <strong>Calibration set</strong>
-              <span aria-hidden="true">←</span>
-              <strong>Measured energy from result</strong>
-            </div>
-            <span class="feedback-caption">Continuous feedback</span>
-          </div>
         </div>
 
       </div>
@@ -244,7 +299,7 @@
   <section class="slide" id="slide-3" data-slide="3">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg><span class="wordmark-text"><span class="wordmark-name">PEQRouter</span><span class="wordmark-expansion">: Privacy, Efficiency, Quality</span></span></div>
       <div class="slide-index"><span class="idx-current">03</span> / <span class="idx-total">04</span></div>
     </header>
 
@@ -397,7 +452,7 @@
   <section class="slide" id="slide-4" data-slide="4">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
-      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg>PEQRouter</div>
+      <div class="wordmark"><svg class="mark small"><use href="#peqrouter-mark"></use></svg><span class="wordmark-text"><span class="wordmark-name">PEQRouter</span><span class="wordmark-expansion">: Privacy, Efficiency, Quality</span></span></div>
       <div class="slide-index"><span class="idx-current">04</span> / <span class="idx-total">04</span></div>
     </header>
 
