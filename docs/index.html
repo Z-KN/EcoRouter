@@ -319,16 +319,82 @@
     </div>
   </section>
 
-  <!-- ============ SLIDE 4 : EVALUATION (placeholder) ============ -->
-  <section class="slide slide-placeholder" id="slide-4" data-slide="4">
+  <!-- ============ SLIDE 4 : EVALUATION ============ -->
+  <section class="slide" id="slide-4" data-slide="4">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
       <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
       <div class="slide-index"><span class="idx-current">04</span> / <span class="idx-total">04</span></div>
     </header>
-    <div class="slide-body placeholder-body">
-      <p class="kicker">Evaluation</p>
-      <h1 class="headline">Coming next.</h1>
+
+    <div class="slide-body eval-layout">
+      <div class="eval-head">
+        <p class="kicker center">Evaluation</p>
+        <h1 class="headline full">What happens if a prompt only ever ran on one device, all the time?</h1>
+        <p class="subhead center">
+          106-prompt calibration set, measured on real phone / PC / cloud hardware — the same sweep
+          EcoRouter's own quality and energy heads are calibrated on. Not simulated.
+        </p>
+      </div>
+
+      <div class="eval-stats">
+        <div class="eval-stat"><span class="eval-stat-value">106</span><span class="eval-stat-label">calibration prompts</span></div>
+        <div class="eval-stat"><span class="eval-stat-value">100</span><span class="eval-stat-label">mechanically graded</span></div>
+        <div class="eval-stat"><span class="eval-stat-value">6</span><span class="eval-stat-label">PII-bearing prompts</span></div>
+        <div class="eval-stat"><span class="eval-stat-value">3</span><span class="eval-stat-label">devices measured</span></div>
+      </div>
+
+      <div class="eval-panel">
+        <div class="eval-legend">
+          <span class="eval-leg-item"><i class="eval-dot eval-dot-phone"></i>Always phone</span>
+          <span class="eval-leg-item"><i class="eval-dot eval-dot-pc"></i>Always PC</span>
+          <span class="eval-leg-item"><i class="eval-dot eval-dot-cloud"></i>Always cloud</span>
+          <span class="eval-leg-item"><i class="eval-dot eval-dot-router"></i>EcoRouter (balanced)</span>
+        </div>
+
+        <div class="eval-metrics">
+
+          <div class="eval-metric">
+            <div class="eval-metric-head"><span class="eval-metric-title">Latency</span><span class="eval-metric-unit">mean ms / response</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:10.5%"></div></div><span class="eval-bar-value">915</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:100%"></div></div><span class="eval-bar-value">8,705</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:53.9%"></div></div><span class="eval-bar-value">4,693</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:43.5%"></div></div><span class="eval-bar-value">3,790</span></div>
+          </div>
+
+          <div class="eval-metric">
+            <div class="eval-metric-head"><span class="eval-metric-title">Energy</span><span class="eval-metric-unit">mean joules / response</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:0.2%"></div></div><span class="eval-bar-value">0.63</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:16.4%"></div></div><span class="eval-bar-value">57.8</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:100%"></div></div><span class="eval-bar-value">352.0</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:43.6%"></div></div><span class="eval-bar-value">153.5</span></div>
+          </div>
+
+          <div class="eval-metric">
+            <div class="eval-metric-head"><span class="eval-metric-title">Quality</span><span class="eval-metric-unit">pass rate, 100 graded prompts</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:46%"></div></div><span class="eval-bar-value">46%</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:93%"></div></div><span class="eval-bar-value">93%</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:96%"></div></div><span class="eval-bar-value">96%</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:94%"></div></div><span class="eval-bar-value">94%</span></div>
+          </div>
+
+          <div class="eval-metric">
+            <div class="eval-metric-head"><span class="eval-metric-title">Privacy violations</span><span class="eval-metric-unit">PII prompts leaked off-device, of 6</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-bad" style="width:100%"></div></div><span class="eval-bar-value">6</span></div>
+            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="eval-takeaway">
+        No always-one-device policy is safe by default: phone is fast and cheap but wrong on more than
+        half of math/logic prompts; PC and cloud are accurate but ~9.5x and ~560x phone's energy
+        respectively; cloud also leaks every PII prompt it's fed. EcoRouter's balanced profile matches
+        PC/cloud-level quality while cutting energy 72% vs. always-cloud and keeping zero privacy violations.
+      </p>
     </div>
   </section>
 

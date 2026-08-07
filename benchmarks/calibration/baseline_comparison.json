@@ -1,0 +1,175 @@
+{
+  "calibration_set_size": 106,
+  "pii_prompt_count": 6,
+  "graded_prompt_count": 100,
+  "note": "Baseline = each device answers every calibration prompt unconditionally (no routing, no privacy gate). Data is drawn from the real forced-device calibration sweep (benchmarks/calibration/runs/*.jsonl), the same measurements EcoRouter's own calibration heads are fit on -- not simulated.",
+  "always_device_baselines": {
+    "phone": {
+      "coverage": 106,
+      "coverage_of_total": "106/106",
+      "missing_ids": [],
+      "latency_ms": {
+        "mean": 914.9,
+        "median": 969.8,
+        "p90": 1366.0,
+        "max": 1559.6
+      },
+      "energy_joules": {
+        "mean": 0.6277,
+        "median": 0.6297,
+        "total_over_calibration_set": 3.14,
+        "source": "measured"
+      },
+      "completion_tokens": {
+        "mean": 57.6
+      },
+      "quality": {
+        "graded_n": 100,
+        "graded_total_possible": 100,
+        "pass": 46,
+        "fail": 54,
+        "pass_rate": 0.46,
+        "bad_quality_rate": 0.54
+      },
+      "privacy": {
+        "pii_prompts_in_set": 6,
+        "violations_if_always_this_device": 0,
+        "violation_rate_over_pii_prompts": 0.0
+      }
+    },
+    "pc": {
+      "coverage": 106,
+      "coverage_of_total": "106/106",
+      "missing_ids": [],
+      "latency_ms": {
+        "mean": 8704.8,
+        "median": 7227.9,
+        "p90": 15159.2,
+        "max": 15434.7
+      },
+      "energy_joules": {
+        "mean": 57.8321,
+        "median": 44.9296,
+        "total_over_calibration_set": 6130.2,
+        "source": "measured"
+      },
+      "completion_tokens": {
+        "mean": 129.6
+      },
+      "quality": {
+        "graded_n": 100,
+        "graded_total_possible": 100,
+        "pass": 93,
+        "fail": 7,
+        "pass_rate": 0.93,
+        "bad_quality_rate": 0.07
+      },
+      "privacy": {
+        "pii_prompts_in_set": 6,
+        "violations_if_always_this_device": 0,
+        "violation_rate_over_pii_prompts": 0.0
+      }
+    },
+    "cloud": {
+      "coverage": 100,
+      "coverage_of_total": "100/106",
+      "missing_ids": [],
+      "latency_ms": {
+        "mean": 4693.3,
+        "median": 3932.0,
+        "p90": 9186.7,
+        "max": 12772.0
+      },
+      "energy_joules": {
+        "mean": 351.9985,
+        "median": 294.9031,
+        "total_over_calibration_set": 35199.85,
+        "source": "measured_or_TDPxlatency_estimate"
+      },
+      "completion_tokens": {
+        "mean": 114.7
+      },
+      "quality": {
+        "graded_n": 100,
+        "graded_total_possible": 100,
+        "pass": 96,
+        "fail": 4,
+        "pass_rate": 0.96,
+        "bad_quality_rate": 0.04
+      },
+      "privacy": {
+        "pii_prompts_in_set": 6,
+        "violations_if_always_this_device": 6,
+        "violation_rate_over_pii_prompts": 1.0
+      }
+    }
+  },
+  "category_quality": {
+    "phone": {
+      "math": {
+        "pass": 13,
+        "n": 35,
+        "rate": 0.3714
+      },
+      "mcq": {
+        "pass": 11,
+        "n": 30,
+        "rate": 0.3667
+      },
+      "fact": {
+        "pass": 14,
+        "n": 20,
+        "rate": 0.7
+      },
+      "code": {
+        "pass": 8,
+        "n": 15,
+        "rate": 0.5333
+      }
+    },
+    "pc": {
+      "math": {
+        "pass": 32,
+        "n": 35,
+        "rate": 0.9143
+      },
+      "mcq": {
+        "pass": 26,
+        "n": 30,
+        "rate": 0.8667
+      },
+      "fact": {
+        "pass": 20,
+        "n": 20,
+        "rate": 1.0
+      },
+      "code": {
+        "pass": 15,
+        "n": 15,
+        "rate": 1.0
+      }
+    },
+    "cloud": {
+      "math": {
+        "pass": 33,
+        "n": 35,
+        "rate": 0.9429
+      },
+      "mcq": {
+        "pass": 28,
+        "n": 30,
+        "rate": 0.9333
+      },
+      "fact": {
+        "pass": 20,
+        "n": 20,
+        "rate": 1.0
+      },
+      "code": {
+        "pass": 15,
+        "n": 15,
+        "rate": 1.0
+      }
+    }
+  }
+}

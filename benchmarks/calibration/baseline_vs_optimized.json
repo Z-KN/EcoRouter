@@ -1,0 +1,177 @@
+{
+  "always_device": {
+    "phone": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 914.9,
+        "median": 969.8
+      },
+      "energy_joules": {
+        "mean": 0.6277,
+        "total": 3.14
+      },
+      "completion_tokens_mean": 57.6,
+      "quality": {
+        "graded_n": 100,
+        "pass": 46,
+        "fail": 54,
+        "pass_rate": 0.46
+      },
+      "privacy_violations": 0
+    },
+    "pc": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 8704.8,
+        "median": 7227.9
+      },
+      "energy_joules": {
+        "mean": 57.8321,
+        "total": 6130.2
+      },
+      "completion_tokens_mean": 129.6,
+      "quality": {
+        "graded_n": 100,
+        "pass": 93,
+        "fail": 7,
+        "pass_rate": 0.93
+      },
+      "privacy_violations": 0
+    },
+    "cloud": {
+      "n_prompts": 100,
+      "n_matched": 100,
+      "missing": [],
+      "latency_ms": {
+        "mean": 4693.3,
+        "median": 3932.0
+      },
+      "energy_joules": {
+        "mean": 351.9985,
+        "total": 35199.85
+      },
+      "completion_tokens_mean": 114.7,
+      "quality": {
+        "graded_n": 100,
+        "pass": 96,
+        "fail": 4,
+        "pass_rate": 0.96
+      },
+      "privacy_violations": 6,
+      "privacy_note": "cloud responses for PII prompts were never collected (run_sweep.py refuses to send them); violation count reflects what an ungated always-cloud policy would do, not a measured leak"
+    }
+  },
+  "optimized_router": {
+    "balanced": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 3790.4,
+        "median": 1713.7
+      },
+      "energy_joules": {
+        "mean": 153.4929,
+        "total": 9670.05
+      },
+      "completion_tokens_mean": 83.4,
+      "quality": {
+        "graded_n": 100,
+        "pass": 94,
+        "fail": 6,
+        "pass_rate": 0.94
+      },
+      "privacy_violations": 0,
+      "device_distribution": {
+        "phone": 48,
+        "cloud": 27,
+        "pc": 31
+      },
+      "degraded_n": 0
+    },
+    "low-latency": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 3110.5,
+        "median": 1640.0
+      },
+      "energy_joules": {
+        "mean": 291.6285,
+        "total": 17497.71
+      },
+      "completion_tokens_mean": 89.4,
+      "quality": {
+        "graded_n": 100,
+        "pass": 94,
+        "fail": 6,
+        "pass_rate": 0.94
+      },
+      "privacy_violations": 0,
+      "device_distribution": {
+        "phone": 51,
+        "cloud": 47,
+        "pc": 8
+      },
+      "degraded_n": 0
+    },
+    "low-energy": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 4250.5,
+        "median": 1960.4
+      },
+      "energy_joules": {
+        "mean": 92.4835,
+        "total": 5456.53
+      },
+      "completion_tokens_mean": 86.2,
+      "quality": {
+        "graded_n": 100,
+        "pass": 95,
+        "fail": 5,
+        "pass_rate": 0.95
+      },
+      "privacy_violations": 0,
+      "device_distribution": {
+        "phone": 52,
+        "pc": 45,
+        "cloud": 9
+      },
+      "degraded_n": 0
+    },
+    "high-quality": {
+      "n_prompts": 106,
+      "n_matched": 106,
+      "missing": [],
+      "latency_ms": {
+        "mean": 5478.5,
+        "median": 4477.6
+      },
+      "energy_joules": {
+        "mean": 309.6772,
+        "total": 32825.78
+      },
+      "completion_tokens_mean": 122.6,
+      "quality": {
+        "graded_n": 100,
+        "pass": 97,
+        "fail": 3,
+        "pass_rate": 0.97
+      },
+      "privacy_violations": 0,
+      "device_distribution": {
+        "cloud": 91,
+        "pc": 15
+      },
+      "degraded_n": 0
+    }
+  }
+}

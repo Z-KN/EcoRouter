@@ -1,0 +1,2554 @@
+{
+  "balanced": [
+    {
+      "id": "math_001",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_002",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_003",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_004",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_005",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_006",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_007",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_008",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_009",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_010",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_011",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_012",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_013",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_014",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_015",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_016",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_017",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_018",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_019",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_020",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_021",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_022",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_023",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_024",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_025",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_026",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_027",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_028",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_029",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_030",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_031",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_032",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_033",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_034",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_035",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_001",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_002",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_003",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_004",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_005",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_006",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_007",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_008",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_009",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_010",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_011",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_012",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_013",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_014",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_015",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_016",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_017",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_018",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_019",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_020",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_021",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_022",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_023",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_024",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_025",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_026",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_027",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_028",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_029",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_030",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_001",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_002",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_003",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_004",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_005",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_006",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_007",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_008",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_009",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_010",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_011",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_012",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_013",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_014",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_015",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_016",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_017",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_018",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_019",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_020",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_001",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_002",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_003",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_004",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_005",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_006",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_007",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_008",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_009",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_010",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_011",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_012",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_013",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_014",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_015",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_001",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_002",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_003",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_004",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_005",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_006",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    }
+  ],
+  "low-latency": [
+    {
+      "id": "math_001",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_002",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_003",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_004",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_005",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_006",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_007",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_008",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_009",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_010",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_011",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_012",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_013",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_014",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_015",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_016",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_017",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_018",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_019",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_020",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_021",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_022",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_023",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_024",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_025",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_026",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_027",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_028",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_029",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_030",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_031",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_032",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_033",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_034",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_035",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_001",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_002",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_003",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_004",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_005",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_006",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_007",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_008",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_009",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_010",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_011",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_012",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_013",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_014",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_015",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_016",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_017",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_018",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_019",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_020",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_021",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_022",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_023",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_024",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_025",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_026",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_027",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_028",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_029",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_030",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_001",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_002",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_003",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_004",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_005",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_006",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_007",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_008",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_009",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_010",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_011",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_012",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_013",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_014",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_015",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_016",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_017",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_018",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_019",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_020",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_001",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_002",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_003",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_004",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_005",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_006",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_007",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_008",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_009",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_010",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_011",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_012",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_013",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_014",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_015",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_001",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_002",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_003",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_004",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_005",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_006",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    }
+  ],
+  "low-energy": [
+    {
+      "id": "math_001",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_002",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_003",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_004",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_005",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_006",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_007",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_008",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_009",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_010",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_011",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_012",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_013",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_014",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_015",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_016",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_017",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_018",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_019",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_020",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_021",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_022",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_023",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_024",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_025",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_026",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_027",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_028",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_029",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_030",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_031",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_032",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_033",
+      "category": "math",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "math_034",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "math_035",
+      "category": "math",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_001",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_002",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_003",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_004",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_005",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_006",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_007",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_008",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_009",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_010",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_011",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_012",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_013",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_014",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_015",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_016",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_017",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_018",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_019",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_020",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_021",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_022",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_023",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_024",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_025",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_026",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_027",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_028",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_029",
+      "category": "mcq",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "mcq_030",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_001",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_002",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_003",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_004",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_005",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_006",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_007",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_008",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_009",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_010",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_011",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_012",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_013",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_014",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_015",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_016",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_017",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_018",
+      "category": "fact",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "fact_019",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_020",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_001",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_002",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_003",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_004",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_005",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_006",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_007",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_008",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_009",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_010",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_011",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_012",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "code_013",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_014",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_015",
+      "category": "code",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_001",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_002",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_003",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_004",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_005",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    },
+    {
+      "id": "pii_006",
+      "category": "pii",
+      "selected_device": "phone",
+      "degraded": false
+    }
+  ],
+  "high-quality": [
+    {
+      "id": "math_001",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_002",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_003",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_004",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_005",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_006",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_007",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_008",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_009",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_010",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_011",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_012",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_013",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_014",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_015",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_016",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_017",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_018",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_019",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_020",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_021",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_022",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_023",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_024",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_025",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_026",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_027",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_028",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_029",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_030",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_031",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_032",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_033",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_034",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "math_035",
+      "category": "math",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_001",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_002",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_003",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_004",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_005",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_006",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_007",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_008",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_009",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_010",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_011",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_012",
+      "category": "mcq",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "mcq_013",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_014",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_015",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_016",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_017",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_018",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_019",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_020",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_021",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_022",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_023",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_024",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_025",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_026",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_027",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_028",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_029",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "mcq_030",
+      "category": "mcq",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_001",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_002",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_003",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_004",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_005",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_006",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_007",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_008",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_009",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_010",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_011",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_012",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_013",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_014",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_015",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_016",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_017",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_018",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "fact_019",
+      "category": "fact",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "fact_020",
+      "category": "fact",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_001",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_002",
+      "category": "code",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "code_003",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_004",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_005",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_006",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_007",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_008",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_009",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_010",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_011",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_012",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_013",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_014",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "code_015",
+      "category": "code",
+      "selected_device": "cloud",
+      "degraded": false
+    },
+    {
+      "id": "pii_001",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "pii_002",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "pii_003",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "pii_004",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "pii_005",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    },
+    {
+      "id": "pii_006",
+      "category": "pii",
+      "selected_device": "pc",
+      "degraded": false
+    }
+  ]
+}
