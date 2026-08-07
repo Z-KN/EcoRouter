@@ -236,9 +236,6 @@
 .live-input-note code {
   font-size: 0.74rem;
 }
-.live-input-note.is-error {
-  color: var(--status-critical);
-}
 
 /* ---------- Flow diagram ---------- */
 
@@ -598,6 +595,9 @@
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
+  max-height: clamp(180px, 32vh, 340px);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
 }
 
 .response-primary-metrics {

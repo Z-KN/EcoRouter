@@ -1,7 +1,7 @@
 # PEQRouter
 
-PEQRouter is a hardware-aware router for generative AI workloads. Given a text prompt, its
-origin, and a telemetry snapshot, it selects one of three destinations:
+**PEQRouter** — **P**rivate, **E**fficient, **Q**uality-aware routing for generative AI. Given a
+text prompt, its origin, and a telemetry snapshot, it selects one of three destinations:
 
 - a model deployed on a phone;
 - a model deployed on a PC; or
@@ -569,6 +569,7 @@ privacy-preserving redaction, a learned (MLP/GBDT) latency/energy predictor beyo
 calibrated estimator, an API, and a dashboard are explicitly deferred and tracked in
 [TODO.md](TODO.md).
 
+<<<<<<< Updated upstream
 
 Contributors:
 Kaining Zhou (zkn.ms@outlook.com)
@@ -576,3 +577,12 @@ Shreyas Donti (shreyasdonti15@gmail.com)
 Leo Lu (leo.hz.lu@gmail.com)
 Aadesh Madnaik (aadesh.madnaik@gmail.com)
 Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
+=======
+## Contributors
+
+- Kaining Zhou (zkn.ms@outlook.com)
+- Shreyas Donti (shreyasdonti15@gmail.com)
+- Leo Lu (leo.hz.lu@gmail.com)
+- Aadesh Madnaik (aadesh.madnaik@gmail.com)
+- Rex Remigius Stephen Jothi (rexremigius1@gmail.com)
+>>>>>>> Stashed changes
