@@ -12,13 +12,13 @@ export default function Prompt() {
   );
 
   return (
-    <div className="scale-80">
-      <div className="flex w-97.5 flex-col gap-3">
+    <div className="scale-100">
+      <div className="flex w-80 flex-col gap-3">
         <div className="flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#171717] shadow-xl">
           {/* Header */}
           <div className="grid grid-cols-[1fr_auto] gap-y-1 border-b border-white/10 px-5 py-4">
             <h1 className="text-base font-semibold text-white">
-                EcoRouter Prompt
+                Prompt
             </h1>
 
             <button
@@ -35,7 +35,7 @@ export default function Prompt() {
 
 
           {/* Footer */}
-          <div className="flex flex-col gap-2 px-5 pb-5 pt-5">
+          <div className="flex flex-col gap-2 px-4 pb-4 pt-4">
             <form>
               <div className="rounded-2xl bg-[#262626]">
                 {/* Input */}
@@ -43,7 +43,7 @@ export default function Prompt() {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   rows={3}
-                  className="w-full resize-none bg-transparent px-4 pt-3 text-[14px] leading-6 text-white outline-none placeholder:text-[#8a8a8a]"
+                  className="w-full resize-none bg-transparent px-4 pt-3 text-[14px] leading-3.5 text-white outline-none placeholder:text-[#8a8a8a]"
                   placeholder="Ask anything..."
                 />
 
@@ -62,7 +62,7 @@ export default function Prompt() {
         </div>
 
         <p className="px-2 text-center text-xs text-[#7a7a7a]">
-          Demo is read only. Press send to send messages.
+          Submit your prompt here.
         </p>
       </div>
     </div>

@@ -1,11 +1,14 @@
+import EcoRouter from "@/components/EcoRouter";
+import Devices from "@/components/Devices";
 import Prompt from "@/components/Prompt";
 import Response from "@/components/Response";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black px-12 py-16">
+    <main className="flex min-h-screen flex-col bg-black px-8 py-8">
+      {/* Header */}
       <div className="text-center">
-        <h1 className="text-6xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-bold text-white">
           EcoRouter Dashboard Demo
         </h1>
 
@@ -14,11 +17,25 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mt-20 grid grid-cols-4 justify-items-center gap-8">
-        <Prompt />
-        <Prompt />
-        <Prompt />
-        <Response />
+      {/* Dashboard */}
+      <div className="flex flex-1 items-center">
+        <div className="grid w-full grid-cols-[1fr_auto_240px_1fr] items-center gap-8">
+          <div className="flex justify-start">
+            <Prompt />
+          </div>
+
+          <div className="flex justify-center">
+            <EcoRouter />
+          </div>
+
+          <div className="flex justify-center">
+            <Devices />
+          </div>
+
+          <div className="flex justify-end">
+            <Response />
+          </div>
+        </div>
       </div>
     </main>
   );

@@ -9,7 +9,7 @@ export default function Response() {
         {/* Header */}
         <div className="grid grid-cols-[1fr_auto] gap-y-1 border-b border-white/10 px-5 py-4">
           <h1 className="text-base font-semibold text-white">
-            EcoRouter Response
+            Response
           </h1>
 
           <button
