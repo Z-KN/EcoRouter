@@ -145,6 +145,11 @@ class CalibratedEstimator:
         self._prompts = self._meta["prompts"]
         self._embed_model = self._meta["embed_model"]
 
+        # Warms the lru_cache in _load_embedder so the multi-second torch/transformers
+        # load happens here, at construction, instead of on whichever prompt is the
+        # first one a long-running caller (e.g. docs/server.py) happens to receive.
+        _load_embedder(self._embed_model)
+
     # -- device constants measured during the same sweep ------------------
 
     def observed_model_id(self, device: Device) -> str | None:
