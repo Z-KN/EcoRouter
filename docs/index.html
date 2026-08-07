@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 <body>
 
@@ -306,16 +307,152 @@
     </div>
   </section>
 
-  <!-- ============ SLIDE 3 : DASHBOARD (placeholder) ============ -->
-  <section class="slide slide-placeholder" id="slide-3" data-slide="3">
+  <!-- ============ SLIDE 3 : DASHBOARD ============ -->
+  <section class="slide" id="slide-3" data-slide="3">
     <div class="bg-fx" aria-hidden="true"></div>
     <header class="topbar">
       <div class="wordmark"><svg class="mark small"><use href="#ecorouter-mark"></use></svg>EcoRouter</div>
       <div class="slide-index"><span class="idx-current">03</span> / <span class="idx-total">04</span></div>
     </header>
-    <div class="slide-body placeholder-body">
-      <p class="kicker">Dashboard</p>
-      <h1 class="headline">Coming next.</h1>
+
+    <div class="slide-body dash-slide-body">
+      <div class="dash-head">
+        <p class="kicker center">Dashboard</p>
+        <h1 class="headline full">One routing decision, fully explained.</h1>
+        <p class="subhead center">
+          Prompt → EcoRouter → phone / PC / cloud — the decision parameters, candidate
+          scoring, and response for one example, end to end.
+        </p>
+      </div>
+
+      <div class="viz-root">
+        <div class="dash-topbar">
+          <span class="dash-topbar-label">Example</span>
+          <div class="scenario-tabs" id="scenarioTabs" role="tablist" aria-label="Example prompt"></div>
+        </div>
+
+        <main class="layout">
+          <!-- Left: prompt -->
+          <section class="panel prompt-panel" aria-labelledby="promptHeading">
+            <h2 id="promptHeading">Prompt</h2>
+            <div class="prompt-meta">
+              <span class="chip chip-device" id="originChip"></span>
+              <span class="chip chip-neutral" id="profileChip"></span>
+            </div>
+            <p class="prompt-text" id="promptText"></p>
+
+            <div class="attachment-slot" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="icon"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9.5" r="1.5" /><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19" /></svg>
+              <span>Image input — coming soon</span>
+            </div>
+
+            <div class="live-input" aria-disabled="true">
+              <label for="liveInput">Try your own prompt</label>
+              <div class="live-input-row">
+                <input id="liveInput" type="text" placeholder="Live routing coming soon…" disabled />
+                <button type="button" disabled>Route</button>
+              </div>
+              <p class="live-input-note">
+                This will POST to EcoRouter and render its actual response.
+              </p>
+            </div>
+          </section>
+
+          <!-- Middle: flow diagram -->
+          <section class="panel flow-panel" aria-labelledby="flowHeading">
+            <h2 id="flowHeading">Routing flow</h2>
+            <svg id="flowSvg" viewBox="0 0 640 700" role="img" aria-labelledby="flowDesc">
+              <desc id="flowDesc">Prompt flowing into EcoRouter, which routes it to one of phone, PC, or cloud.</desc>
+
+              <!-- input: prompt -> hub -->
+              <path id="pathIn" class="flow-path" d="M8,325 L176,325" />
+              <!-- output: hub -> phone / pc / cloud -->
+              <path id="pathPhone" class="flow-path" data-device="phone" d="M324,305 C384,305 384,160 494,160" />
+              <path id="pathPc" class="flow-path" data-device="pc" d="M324,325 L494,325" />
+              <path id="pathCloud" class="flow-path" data-device="cloud" d="M324,345 C384,345 384,540 494,540" />
+
+              <g id="packetIn"></g>
+              <g id="packetOut"></g>
+
+              <!-- prompt marker -->
+              <g class="flow-node flow-node-prompt" transform="translate(8,325)">
+                <circle r="30" />
+                <svg viewBox="0 0 24 24" x="-17" y="-17" width="34" height="34" class="icon"><path d="M4 4h16v12H8l-4 4z" /></svg>
+              </g>
+
+              <!-- hub -->
+              <g class="flow-node flow-node-hub" transform="translate(256,325)">
+                <circle r="80" />
+                <text x="0" y="-4" class="hub-label">EcoRouter</text>
+                <text x="0" y="26" class="hub-sublabel" id="hubProfile"></text>
+              </g>
+
+              <!-- device nodes -->
+              <g class="flow-node flow-node-device" data-device="phone" transform="translate(552,135)">
+                <circle r="58" />
+                <svg viewBox="0 0 24 24" x="-21" y="-25" width="42" height="42" class="icon"><rect x="7" y="2" width="10" height="20" rx="2" /><line x1="11" y1="18" x2="13" y2="18" /></svg>
+                <text y="87" class="device-label">Phone</text>
+                <text y="113" class="device-sublabel" id="phoneModelLabel"></text>
+              </g>
+              <g class="flow-node flow-node-device" data-device="pc" transform="translate(552,325)">
+                <circle r="58" />
+                <svg viewBox="0 0 24 24" x="-22" y="-25" width="46" height="46" class="icon"><rect x="2" y="4" width="20" height="13" rx="1.5" /><line x1="2" y1="20" x2="22" y2="20" /></svg>
+                <text y="87" class="device-label">PC</text>
+                <text y="113" class="device-sublabel" id="pcModelLabel"></text>
+              </g>
+              <g class="flow-node flow-node-device" data-device="cloud" transform="translate(552,515)">
+                <circle r="58" />
+                <svg viewBox="0 0 24 24" x="-25" y="-22" width="49" height="49" class="icon"><path d="M7 18a5 5 0 0 1-.5-9.98A6 6 0 0 1 18 10.5 4.5 4.5 0 0 1 17.5 18z" /></svg>
+                <text y="87" class="device-label">Cloud</text>
+                <text y="113" class="device-sublabel" id="cloudModelLabel"></text>
+              </g>
+            </svg>
+          </section>
+
+          <!-- Response -->
+          <section class="panel response-panel" aria-labelledby="responseHeading">
+            <h2 id="responseHeading">Response</h2>
+            <div class="response-header" id="responseHeader"></div>
+            <p class="response-text" id="responseText"></p>
+          </section>
+
+          <!-- Decision parameters -->
+          <section class="panel full-width" aria-labelledby="paramsHeading">
+            <h2 id="paramsHeading">Decision parameters</h2>
+            <div class="stat-grid" id="statGrid"></div>
+            <p class="explanation" id="explanationText"></p>
+
+            <div class="table-wrap">
+              <table class="candidates-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Device</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Latency</th>
+                    <th scope="col">Energy</th>
+                    <th scope="col">Cloud cost</th>
+                  </tr>
+                </thead>
+                <tbody id="candidatesBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Execution metrics -->
+          <section class="panel full-width" aria-labelledby="metricsHeading">
+            <h2 id="metricsHeading">Execution metrics</h2>
+            <div class="stat-grid" id="metricsGrid"></div>
+            <p class="metrics-scope" id="metricsScope"></p>
+          </section>
+        </main>
+
+        <p class="dash-footer">
+          Illustrative example data — shapes match <code>ExecutionResult.to_dict()</code> in
+          <code>ecorouter/models.py</code>. Not a live EcoRouter run.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -406,6 +543,8 @@
   <button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button>
 </nav>
 
+<script src="assets/js/dashboard-scenarios.js"></script>
+<script src="assets/js/dashboard-app.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
