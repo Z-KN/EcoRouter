@@ -118,9 +118,6 @@
         </div>
       </div>
 
-      <ul class="footer-strip center">
-        <li>phone</li><li>PC</li><li>cloud</li><li>regex PII gate</li><li>calibrated per-prompt quality</li>
-      </ul>
     </div>
   </section>
 
@@ -139,170 +136,89 @@
         <h1 class="headline full">One pipeline, three live executors, and a calibrated estimator in between.</h1>
       </div>
 
-      <div class="fig-wrap fig-wrap-lg fig-highlighted">
-        <svg class="routing-fig horizontal" viewBox="-470 -360 2610 1190" role="img" aria-labelledby="fig2-title">
-          <title id="fig2-title">EcoRouter's routing pipeline: local analysis feeds a sensitivity gate and a calibrated estimator, which gate a profile-weighted scoring step (or bypass it when untrusted), fanning out to three live executors whose measured energy feeds back into the offline calibration sweep.</title>
+      <div class="flowchart-board" role="img" aria-label="EcoRouter flow chart. A prompt is analyzed locally, checked by privacy and calibrated quality gates, scored by EcoRouter, routed to phone, PC, or cloud, and returned with measured-energy feedback.">
+        <div class="flowchart-main">
+          <article class="flow-node flow-prompt">
+            <span class="node-type">Input</span>
+            <h2>Prompt</h2>
+            <p>Request starts on the user's device.</p>
+          </article>
 
-          <!-- spine connecting prompt through the main chain to the fan-out point -->
-          <path class="edge edge-in" d="M158,190 L1482,190" />
+          <div class="flow-connector connector-1" aria-hidden="true"><span class="flow-dot"></span></div>
 
-          <!-- feedback loop: measured energy back into the calibration sweep (drawn first, so the
-               main chain renders on top of it where they cross) -->
-          <path class="edge edge-loop" d="M1987,239 C2020,340 1780,560 1482,560 L1122,560 C820,560 500,560 300,480 C220,440 230,250 230,120 C230,10 400,-90 771,-90" />
-          <polygon class="edge-loop-arrow" points="0,-8 14,0 0,8" transform="translate(771,-90)" />
+          <article class="flow-node flow-analysis">
+            <span class="node-type">Local</span>
+            <h2>Local analysis</h2>
+            <p>Read PII and intent before any network call.</p>
+            <div class="node-tags"><span>PII</span><span>Intent</span></div>
+          </article>
 
-          <!-- sensitivity gate self-loop -->
-          <path class="edge edge-loop" d="M500,156 C520,90 730,90 750,156" />
+          <div class="flow-connector connector-2" aria-hidden="true"><span class="flow-dot"></span></div>
 
-          <!-- bypass arc: untrusted estimate skips scoring entirely -->
-          <path class="edge edge-loop" d="M950,224 C950,320 1482,320 1482,190" />
+          <article class="flow-node flow-privacy">
+            <span class="node-type">Privacy gate</span>
+            <h2>Sensitivity check</h2>
+            <p>Matched prompts exclude cloud immediately.</p>
+            <span class="node-status">Local only if sensitive</span>
+          </article>
 
-          <!-- prompt node -->
-          <g class="node node-prompt">
-            <rect x="8" y="155" width="150" height="70" rx="30" />
-            <text x="83" y="200" text-anchor="middle">Prompt</text>
-          </g>
+          <div class="flow-connector connector-3" aria-hidden="true"><span class="flow-dot"></span></div>
 
-          <!-- local analysis -->
-          <g class="node node-step">
-            <rect x="194" y="142" width="250" height="96" rx="28" />
-            <text x="319" y="180" text-anchor="middle" class="step-label">Local analysis</text>
-            <text x="319" y="214" text-anchor="middle" class="step-sub">PII + intent</text>
-          </g>
-
-          <!-- sensitivity gate -->
-          <g class="gate">
-            <rect x="480" y="156" width="270" height="68" rx="30" class="gate-pill" />
-            <text x="615" y="198" text-anchor="middle">sensitivity gate</text>
-          </g>
-          <text x="615" y="65" text-anchor="middle" class="edge-label">excludes cloud if matched</text>
-
-          <!-- calibrated estimator (offset above the spine) -->
-          <g class="node node-step node-estimator">
-            <rect x="771" y="-139" width="330" height="98" rx="26" />
-            <text x="936" y="-100" text-anchor="middle" class="step-label">Calibrated estimator</text>
-            <text x="936" y="-64" text-anchor="middle" class="step-sub">106 calibration prompts</text>
-          </g>
-          <path class="edge edge-feed" d="M936,-41 L936,156" />
-
-          <!-- cost + quality gate -->
-          <g class="gate">
-            <rect x="786" y="156" width="300" height="68" rx="30" class="gate-pill" />
-            <text x="936" y="198" text-anchor="middle">cost + quality gate</text>
-          </g>
-          <text x="1200" y="300" text-anchor="middle" class="edge-label">untrusted → skip scoring</text>
-
-          <!-- profile-weighted scoring -->
-          <g class="node node-step">
-            <rect x="1122" y="141" width="300" height="98" rx="26" />
-            <text x="1272" y="180" text-anchor="middle" class="step-label">Profile score</text>
-            <text x="1272" y="216" text-anchor="middle" class="step-sub">latency · energy · quality</text>
-          </g>
-          <text x="1104" y="170" text-anchor="middle" class="edge-label">trusted</text>
-
-          <!-- fan-out edges from the junction to each device -->
-          <path class="edge" d="M1482,190 C1502,190 1502,50 1542,50" />
-          <path class="edge" d="M1482,190 L1542,190" />
-          <path class="edge" d="M1482,190 C1502,190 1502,330 1542,330" />
-
-          <!-- device + live-executor nodes -->
-          <g class="node node-device">
-            <rect x="1542" y="0" width="270" height="100" rx="26" />
-            <text x="1677" y="42" text-anchor="middle" class="device-label">Phone</text>
-            <text x="1677" y="76" text-anchor="middle" class="device-sub">on-device, wireless</text>
-          </g>
-          <g class="node node-device">
-            <rect x="1542" y="140" width="270" height="100" rx="26" />
-            <text x="1677" y="182" text-anchor="middle" class="device-label">PC</text>
-            <text x="1677" y="216" text-anchor="middle" class="device-sub">on-device, NPU</text>
-          </g>
-          <g class="node node-device">
-            <rect x="1542" y="280" width="270" height="100" rx="26" />
-            <text x="1677" y="322" text-anchor="middle" class="device-label">Cloud</text>
-            <text x="1677" y="356" text-anchor="middle" class="device-sub">cloud API</text>
-          </g>
-
-          <!-- merge edges from each device into the execution result -->
-          <path class="edge" d="M1812,50 C1832,50 1832,190 1882,190" />
-          <path class="edge" d="M1812,190 L1882,190" />
-          <path class="edge" d="M1812,330 C1832,330 1832,190 1882,190" />
-
-          <!-- execution result -->
-          <g class="node node-step node-result">
-            <rect x="1882" y="141" width="210" height="98" rx="26" />
-            <text x="1987" y="180" text-anchor="middle" class="step-label">Result</text>
-            <text x="1987" y="216" text-anchor="middle" class="step-sub">measured energy</text>
-          </g>
-
-          <!-- pulse dots tracing the live request path -->
-          <circle class="pulse pulse-main" r="6.5" />
-          <circle class="pulse pulse-a" r="6.5" />
-          <circle class="pulse pulse-b" r="6.5" />
-          <circle class="pulse pulse-c" r="6.5" />
-          <circle class="pulse pulse-loop" r="6.5" />
-
-          <!-- ===== annotation callouts: short, high-level text boxes with arrows into the diagram ===== -->
-
-          <!-- callout: analysis -->
-          <path class="callout-line" d="M-60,90 L194,190" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(194,190) rotate(22)" />
-          <foreignObject x="-420" y="15" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Analysis</span>
-              <p class="callout-desc">Reads the prompt locally — no network calls yet.</p>
+          <article class="flow-node flow-quality">
+            <span class="node-type">Quality gate</span>
+            <div class="estimator-box">
+              <strong>Calibrated estimator</strong>
+              <span>106 calibration prompts</span>
             </div>
-          </foreignObject>
-
-          <!-- callout: privacy -->
-          <path class="callout-line" d="M560,-110 L615,156" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(615,156) rotate(78)" />
-          <foreignObject x="380" y="-260" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Privacy</span>
-              <p class="callout-desc">Sensitive prompts never leave the device.</p>
+            <div class="estimator-link" aria-hidden="true"><span class="estimator-dot"></span></div>
+            <div class="quality-box">
+              <strong>Cost + quality</strong>
+              <span>Is this device good enough?</span>
             </div>
-          </foreignObject>
+          </article>
 
-          <!-- callout: estimator -->
-          <path class="callout-line" d="M951,-170 L936,-139" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(936,-139) rotate(116)" />
-          <foreignObject x="771" y="-320" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Estimator</span>
-              <p class="callout-desc">Learns which device is good enough.</p>
-            </div>
-          </foreignObject>
+          <div class="flow-connector connector-4" aria-hidden="true"><span class="flow-dot"></span></div>
 
-          <!-- callout: scoring -->
-          <path class="callout-line" d="M1302,350 L1272,239" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1272,239) rotate(-105)" />
-          <foreignObject x="1122" y="350" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Scoring</span>
-              <p class="callout-desc">Balances speed, energy, and quality.</p>
-            </div>
-          </foreignObject>
+          <article class="flow-node flow-router">
+            <span class="node-type">Router</span>
+            <div class="router-title"><svg class="mark"><use href="#ecorouter-mark"></use></svg><h2>EcoRouter</h2></div>
+            <p>Rank trusted candidates for the active profile.</p>
+            <div class="node-tags"><span>Latency</span><span>Energy</span><span>Quality</span></div>
+          </article>
 
-          <!-- callout: execution -->
-          <path class="callout-line" d="M1830,-110 L1677,0" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1677,0) rotate(144)" />
-          <foreignObject x="1650" y="-260" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Execution</span>
-              <p class="callout-desc">Runs on real hardware, not a simulation.</p>
-            </div>
-          </foreignObject>
+          <div class="flow-connector connector-5" aria-hidden="true"><span class="flow-dot"></span></div>
 
-          <!-- callout: feedback -->
-          <path class="callout-line" d="M1330,620 L1300,560" />
-          <polygon class="callout-arrowhead" points="0,-8 14,0 0,8" transform="translate(1300,560) rotate(-117)" />
-          <foreignObject x="1150" y="620" width="360" height="150">
-            <div xmlns="http://www.w3.org/1999/xhtml" class="callout-box">
-              <span class="callout-title">Feedback</span>
-              <p class="callout-desc">Results sharpen the next estimate.</p>
+          <article class="flow-node flow-executors">
+            <span class="node-type">Live fan-out</span>
+            <h2>Executors</h2>
+            <div class="executor-branch">
+              <div class="executor-box"><strong>Phone</strong><span>Wireless</span></div>
+              <div class="executor-box"><strong>PC</strong><span>NPU</span></div>
+              <div class="executor-box"><strong>Cloud</strong><span>API</span></div>
             </div>
-          </foreignObject>
-        </svg>
+          </article>
+
+          <div class="flow-connector connector-6" aria-hidden="true"><span class="flow-dot"></span></div>
+
+          <article class="flow-node flow-result">
+            <span class="node-type">Output</span>
+            <h2>Result</h2>
+            <p>Response plus measured energy.</p>
+            <span class="node-status node-status-good">Returned live</span>
+          </article>
+        </div>
+
+        <div class="feedback-return">
+          <span class="feedback-return-dot" aria-hidden="true"></span>
+          <div class="feedback-items">
+            <strong>Estimator refreshed</strong>
+            <span aria-hidden="true">←</span>
+            <strong>Calibration set</strong>
+            <span aria-hidden="true">←</span>
+            <strong>Measured energy from result</strong>
+          </div>
+          <span class="feedback-caption">Continuous feedback</span>
+        </div>
       </div>
     </div>
   </section>
@@ -506,35 +422,43 @@
         <div class="eval-metrics">
 
           <div class="eval-metric">
-            <div class="eval-metric-head"><span class="eval-metric-title">Latency</span><span class="eval-metric-unit">mean ms / response</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:10.5%"></div></div><span class="eval-bar-value">915</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:100%"></div></div><span class="eval-bar-value">8,705</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:53.9%"></div></div><span class="eval-bar-value">4,693</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:43.5%"></div></div><span class="eval-bar-value">3,790</span></div>
+            <div class="eval-metric-head"><span class="eval-metric-title">Latency</span><span class="eval-metric-unit">mean ms / response · lower is better</span></div>
+            <div class="eval-vbars">
+              <div class="eval-vbar"><span class="eval-vbar-value">915</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:10.5%"></div></div><span class="eval-vbar-label">Phone</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">8,705</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:100%"></div></div><span class="eval-vbar-label">PC</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">4,693</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:53.9%"></div></div><span class="eval-vbar-label">Cloud</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">3,790</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.5%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+            </div>
           </div>
 
           <div class="eval-metric">
-            <div class="eval-metric-head"><span class="eval-metric-title">Energy</span><span class="eval-metric-unit">mean joules / response</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:0.2%"></div></div><span class="eval-bar-value">0.63</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:16.4%"></div></div><span class="eval-bar-value">57.8</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:100%"></div></div><span class="eval-bar-value">352.0</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:43.6%"></div></div><span class="eval-bar-value">153.5</span></div>
+            <div class="eval-metric-head"><span class="eval-metric-title">Energy</span><span class="eval-metric-unit">mean joules / response · lower is better</span></div>
+            <div class="eval-vbars">
+              <div class="eval-vbar"><span class="eval-vbar-value">0.63</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:0.2%"></div></div><span class="eval-vbar-label">Phone</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">57.8</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:16.4%"></div></div><span class="eval-vbar-label">PC</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">352.0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:100%"></div></div><span class="eval-vbar-label">Cloud</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">153.5</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:43.6%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+            </div>
           </div>
 
           <div class="eval-metric">
-            <div class="eval-metric-head"><span class="eval-metric-title">Quality</span><span class="eval-metric-unit">pass rate, 100 graded prompts</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-phone" style="width:46%"></div></div><span class="eval-bar-value">46%</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-pc" style="width:93%"></div></div><span class="eval-bar-value">93%</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-cloud" style="width:96%"></div></div><span class="eval-bar-value">96%</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-router" style="width:94%"></div></div><span class="eval-bar-value">94%</span></div>
+            <div class="eval-metric-head"><span class="eval-metric-title">Quality</span><span class="eval-metric-unit">pass rate · higher is better</span></div>
+            <div class="eval-vbars">
+              <div class="eval-vbar"><span class="eval-vbar-value">46%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:46%"></div></div><span class="eval-vbar-label">Phone</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">93%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:93%"></div></div><span class="eval-vbar-label">PC</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">96%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:96%"></div></div><span class="eval-vbar-label">Cloud</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">94%</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:94%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+            </div>
           </div>
 
           <div class="eval-metric">
-            <div class="eval-metric-head"><span class="eval-metric-title">Privacy violations</span><span class="eval-metric-unit">PII prompts leaked off-device, of 6</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Phone</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">PC</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">Cloud</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-bad" style="width:100%"></div></div><span class="eval-bar-value">6</span></div>
-            <div class="eval-bar-row"><span class="eval-bar-label">EcoRouter</span><div class="eval-bar-track"><div class="eval-bar-fill eval-fill-good" style="width:2%"></div></div><span class="eval-bar-value">0</span></div>
+            <div class="eval-metric-head"><span class="eval-metric-title">Privacy violations</span><span class="eval-metric-unit">PII prompts leaked · lower is better</span></div>
+            <div class="eval-vbars">
+              <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-phone" style="height:2%"></div></div><span class="eval-vbar-label">Phone</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-pc" style="height:2%"></div></div><span class="eval-vbar-label">PC</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">6</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-cloud" style="height:100%"></div></div><span class="eval-vbar-label">Cloud</span></div>
+              <div class="eval-vbar"><span class="eval-vbar-value">0</span><div class="eval-vbar-track"><div class="eval-vbar-fill eval-fill-router" style="height:2%"></div></div><span class="eval-vbar-label">EcoRouter</span></div>
+            </div>
           </div>
 
         </div>
