@@ -82,6 +82,10 @@ dependencies {
     implementation 'com.geyifeng.immersionbar:immersionbar:3.2.2'
     implementation 'com.geyifeng.immersionbar:immersionbar-ktx:3.2.2'
 
+    // Testing (JVM unit tests under src/test -- the router package is pure
+    // Kotlin with no Android framework dependency, so it runs here directly)
+    testImplementation 'junit:junit:4.13.2'
+
     // Testing (instrumented UI Automator tests under src/androidTest)
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:core:1.6.1'
